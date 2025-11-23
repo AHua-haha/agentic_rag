@@ -7,9 +7,12 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"llm_dev/codebase/impl"
 	ctx "llm_dev/context"
+	"llm_dev/database"
 	"llm_dev/model"
 	"os"
+	"strings"
 
 	"github.com/rs/zerolog/log"
 	"github.com/sashabaranov/go-openai"
@@ -32,41 +35,27 @@ func NewModel(baseurl string, apikey string) *Model {
 }
 
 type AgentContext struct {
-	userPrompt string
-	history    []openai.ChatCompletionMessage
-	finished   bool
-
-	preTaskHistory []openai.ChatCompletionMessage
+	userPrompt    string
+	history       []openai.ChatCompletionMessage
+	finished      bool
+	finalResponse string
 
 	ctxMgr []ctx.ContextMgr
 
 	toolHandlerMap map[string]model.ToolDef
 }
 
-func NewAgentContext(preHistory []openai.ChatCompletionMessage, userprompt string, ctxMgr ...ctx.ContextMgr) *AgentContext {
+func NewAgentContext(userprompt string, ctxMgr ...ctx.ContextMgr) *AgentContext {
 	ctx := AgentContext{
 		userPrompt:     userprompt,
 		finished:       false,
 		toolHandlerMap: make(map[string]model.ToolDef),
-		preTaskHistory: preHistory,
 		ctxMgr:         ctxMgr,
 	}
 	for _, mgr := range ctxMgr {
 		ctx.registerTool(mgr.GetToolDef())
 	}
 	return &ctx
-}
-func (ctx *AgentContext) getResult() []openai.ChatCompletionMessage {
-	usermsg := openai.ChatCompletionMessage{
-		Role:    "user",
-		Content: ctx.userPrompt,
-	}
-	res := []openai.ChatCompletionMessage{usermsg}
-	historyLen := len(ctx.history)
-	if historyLen != 0 {
-		res = append(res, ctx.history[historyLen-1])
-	}
-	return res
 }
 func (ctx *AgentContext) genRequest(sysPrompt string) openai.ChatCompletionRequest {
 	req := openai.ChatCompletionRequest{
@@ -86,9 +75,7 @@ func (ctx *AgentContext) genRequest(sysPrompt string) openai.ChatCompletionReque
 		Role:    "user",
 		Content: ctx.userPrompt,
 	}
-	req.Messages = append(req.Messages, sysmsg)
-	req.Messages = append(req.Messages, ctx.preTaskHistory...)
-	req.Messages = append(req.Messages, usermsg)
+	req.Messages = append(req.Messages, sysmsg, usermsg)
 	req.Messages = append(req.Messages, ctx.history...)
 	for _, tool := range ctx.toolHandlerMap {
 		req.Tools = append(req.Tools, openai.Tool{
@@ -140,16 +127,25 @@ func (ctx *AgentContext) registerTool(tools []model.ToolDef) {
 }
 
 type BaseAgent struct {
-	model Model
-	root  string
+	model   Model
+	root    string
+	buildOp *impl.BuildCodeBaseCtxOps
 
-	history []openai.ChatCompletionMessage
+	historyContextMgr ctx.HistoryContextMgr
 }
 
 func NewBaseAgent(codebase string, model Model) BaseAgent {
+	buildOp := &impl.BuildCodeBaseCtxOps{
+		RootPath: codebase,
+		Db:       database.GetDBClient().Database("llm_dev"),
+	}
 	agent := BaseAgent{
-		model: model,
-		root:  codebase,
+		model:   model,
+		root:    codebase,
+		buildOp: buildOp,
+		historyContextMgr: ctx.HistoryContextMgr{
+			BuildOps: buildOp,
+		},
 	}
 	return agent
 }
@@ -159,27 +155,27 @@ type AggregateChunk struct {
 	toolCalls map[int]openai.ToolCall
 }
 
-func (self *AggregateChunk) addChunk(delta openai.ChatCompletionStreamChoiceDelta) {
+func (acc *AggregateChunk) addChunk(delta openai.ChatCompletionStreamChoiceDelta) {
 	if delta.Content != "" {
-		self.msg.Content += delta.Content
+		acc.msg.Content += delta.Content
 	}
 	for _, toolCall := range delta.ToolCalls {
 		index := *toolCall.Index
-		value, exist := self.toolCalls[index]
+		value, exist := acc.toolCalls[index]
 		if !exist {
 			value = toolCall
 		} else {
 			value.Function.Arguments += toolCall.Function.Arguments
 		}
-		self.toolCalls[index] = value
+		acc.toolCalls[index] = value
 	}
 }
-func (self *AggregateChunk) res() openai.ChatCompletionMessage {
-	self.msg.Role = "assistant"
-	for _, toolcall := range self.toolCalls {
-		self.msg.ToolCalls = append(self.msg.ToolCalls, toolcall)
+func (acc *AggregateChunk) res() openai.ChatCompletionMessage {
+	acc.msg.Role = "assistant"
+	for _, toolcall := range acc.toolCalls {
+		acc.msg.ToolCalls = append(acc.msg.ToolCalls, toolcall)
 	}
-	return self.msg
+	return acc.msg
 }
 
 func (agent *BaseAgent) handleResponse(stream *openai.ChatCompletionStream, ctx *AgentContext) {
@@ -213,13 +209,17 @@ func (agent *BaseAgent) handleResponse(stream *openai.ChatCompletionStream, ctx 
 	ctx.addMessage(resp)
 	for _, toolCall := range resp.ToolCalls {
 		msg, err := ctx.toolCall(toolCall)
-		file.WriteString(fmt.Sprintf("TOOL CALL:\n%s\n", msg.Content))
+		file.WriteString(fmt.Sprintf("%s, %s\n", toolCall.Function.Name, toolCall.Function.Arguments))
+		file.WriteString(fmt.Sprintf("TOOL CALL RESULT:\n%s\n", msg.Content))
 		if err != nil {
 			log.Error().Err(err).Any("toolcall", toolCall).Msg("tool call failed")
 		} else {
 			log.Info().Any("tool call", toolCall).Any("result", msg.Content).Msg("run tool call success")
 			ctx.addMessage(msg)
 		}
+	}
+	if strings.HasPrefix(resp.Content, "FINAL RESPONSE") {
+		ctx.finalResponse = resp.Content
 	}
 	var buf bytes.Buffer
 	ctx.writeContext(&buf)
@@ -233,27 +233,33 @@ func (agent *BaseAgent) handleResponse(stream *openai.ChatCompletionStream, ctx 
 }
 
 func (agent *BaseAgent) NewUserTask(userprompt string) {
+	callGraphMgr := ctx.NewCallGraphMgr(agent.root, agent.buildOp)
+	filectxMgr := ctx.NewFileCtxMgr(agent.root, agent.buildOp)
+	outlineCtxMgr := ctx.NewOutlineCtxMgr(agent.root, agent.buildOp)
 	buildContextMgr := ctx.BuildContextMgr{}
-	taskCtxMgr := ctx.TaskContextMgr{}
-	ctx := NewAgentContext(agent.history, userprompt, &buildContextMgr, &taskCtxMgr)
+	taskCtxMgr := ctx.NewTaskCtxMgr(userprompt)
+	readMgr := ctx.ReadContextMgr{
+		Root: agent.root,
+	}
+	agentCtx := NewAgentContext(userprompt, &callGraphMgr, &outlineCtxMgr, &buildContextMgr, &agent.historyContextMgr, &filectxMgr, &readMgr, &taskCtxMgr)
 	for {
 		// var buf bytes.Buffer
 		// // ctx.fileCtxMgr.WriteUsedDefs(&buf)
 		// ctx.fileCtxMgr.WriteAutoLoadCtx(&buf)
 		// fmt.Print(buf.String())
-		req := ctx.genRequest(systemPompt)
+		req := agentCtx.genRequest(systemPompt)
 		stream, err := agent.model.CreateChatCompletionStream(context.TODO(), req)
 		if err != nil {
 			log.Error().Err(err).Msg("create chat completion stream failed")
 			break
 		}
 		defer stream.Close()
-		agent.handleResponse(stream, ctx)
-		if ctx.done() {
+		agent.handleResponse(stream, agentCtx)
+		if agentCtx.done() {
 			break
 		}
 	}
-	agent.history = append(agent.history, ctx.getResult()...)
+	agent.historyContextMgr.RecordUserTask(userprompt, agentCtx.finalResponse, taskCtxMgr.Records)
 }
 
 func DebugMsg(msg *openai.ChatCompletionRequest) {
