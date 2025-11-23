@@ -1,4 +1,4 @@
-## **Llama 2: Open Foundation and Fine-Tuned Chat Models**
+# Llama 2: Open Foundation and Fine-Tuned Chat Models
 
 Hugo Touvron _[∗]_ Louis Martin _[†]_ Kevin Stone _[†]_
 
@@ -16,10 +16,10 @@ Angela Fan Melanie Kambadur Sharan Narang Aurelien Rodriguez Robert Stojnic
 Sergey Edunov Thomas Scialom _[∗]_
 
 
-**GenAI, Meta**
+## GenAI, Meta
 
 
-**Abstract**
+## Abstract
 
 
 In this work, we develop and release Llama 2, a collection of pretrained and fine-tuned
@@ -39,7 +39,7 @@ _†_ Second author
 Contributions for all the authors can be found in Section A.1.
 
 
-### **Contents**
+## Contents
 
 **1** **Introduction** **3**
 
@@ -144,7 +144,7 @@ can be noisy due to limitations of the prompt set, subjectivity
 of the review guidelines, subjectivity of individual raters,
 and the inherent difficulty of comparing generations.
 
-### **1 Introduction**
+## 1 Introduction
 
 
 
@@ -256,7 +256,7 @@ with Human Feedback **(RLHF)** methodologies, specifically through rejection sam
 Optimization (PPO). Throughout the RLHF stage, the accumulation of **iterative reward modeling data** in
 parallel with model enhancements is crucial to ensure the reward models remain within distribution.
 
-### **2 Pretraining**
+## 2 Pretraining
 
 
 To create the new family of Llama 2 models, we began with the pretraining approach described in Touvron et al.
@@ -266,7 +266,7 @@ tokens, doubled the context length, and used grouped-query attention (GQA) to im
 for our larger models. Table 1 compares the attributes of the new Llama 2 models with the Llama 1 models.
 
 
-**2.1** **Pretraining Data**
+### 2.1 Pretraining Data
 
 
 Our training corpus includes a new mix of data from publicly available sources, which does not include data
@@ -280,7 +280,7 @@ We performed a variety of pretraining data investigations so that users can bett
 capabilities and limitations of our models; results can be found in Section 4.1.
 
 
-**2.2** **Training Details**
+### 2.2 Training Details
 
 
 We adopt most of the pretraining setting and model architecture from Llama 1. We use the standard
@@ -354,7 +354,7 @@ we split all numbers into individual digits and use bytes to decompose unknown U
 vocabulary size is 32k tokens.
 
 
-**2.2.1** **Training Hardware & Carbon Footprint**
+#### 2.2.1 Training Hardware & Carbon Footprint
 
 
 **Training Hardware.** We pretrained our models on Meta’s Research Super Cluster (RSC) (Lee and Sengupta,
@@ -418,7 +418,7 @@ sustainability program. [∗∗] Our open release strategy also means that these
 be incurred by other companies, saving more global resources.
 
 
-**2.3** **Llama 2 Pretrained Model Evaluation**
+### 2.3 Llama 2 Pretrained Model Evaluation
 
 
 In this section, we report the results for the Llama 1 and Llama 2 base models, MosaicML Pretrained
@@ -540,7 +540,7 @@ BIG-Bench Hard (3-shot) – – 52.3 **65.7** 51.2
 are from OpenAI (2023). Results for the PaLM model are from Chowdhery et al. (2022). Results for the
 PaLM-2-L are from Anil et al. (2023).
 
-### **3 Fine-tuning**
+## 3 Fine-tuning
 
 
 Llama 2-Chat is the result of several months of research and iterative applications of alignment techniques,
@@ -556,7 +556,7 @@ new technique, Ghost Attention (GAtt), which we find helps control dialogue flow
 8
 
 
-**3.1** **Supervised Fine-Tuning (SFT)**
+### 3.1 Supervised Fine-Tuning (SFT)
 
 
 ➤ Prompt: Write a poem to help me remember the first 10 elements on the periodic table, giving each
@@ -622,7 +622,7 @@ the loss on tokens from the user prompt, so as a result, we backpropagate only o
 fine-tune the model for 2 epochs.
 
 
-**3.2** **Reinforcement Learning with Human Feedback (RLHF)**
+### 3.2 Reinforcement Learning with Human Feedback (RLHF)
 
 
 RLHF is a model training procedure that is applied to a fine-tuned language model to further _align_ model
@@ -637,7 +637,7 @@ This human feedback is subsequently used to train a reward model, which learns p
 of the human annotators and can then automate preference decisions.
 
 
-**3.2.1** **Human Preference Data Collection**
+#### 3.2.1 Human Preference Data Collection
 
 
 Next, we collect human preference data for reward modeling. We chose a binary comparison protocol over
@@ -690,7 +690,7 @@ prompts, while dialogue-style prompts are usually shorter. Compared to existing 
 preference data features more conversation turns, and are longer, on average.
 
 
-**3.2.2** **Reward Modeling**
+#### 3.2.2 Reward Modeling
 
 
 The reward model takes a model response and its corresponding prompt (including contexts from previous
@@ -893,7 +893,7 @@ Therefore, everything else being equal, an improvement of the reward model can b
 an improvement for Llama 2-Chat.
 
 
-**3.2.3** **Iterative Fine-Tuning**
+#### 3.2.3 Iterative Fine-Tuning
 
 
 As we received more batches of human preference data annotation, we were able to train better reward
@@ -1063,7 +1063,7 @@ cache. We were able to mitigate this by consolidating the model weights to each 
 and then freeing the memory after generation, resuming the rest of the training loop.
 
 
-**3.3** **System Message for Multi-Turn Consistency**
+### 3.3 System Message for Multi-Turn Consistency
 
 
 In a dialogue setup, some instructions should apply for all the conversation turns, e.g., to respond succinctly,
@@ -1146,10 +1146,10 @@ this technique could likely further benefit the model. For instance, we could te
 system message during the conversation by integrating such data during fine-tuning.
 
 
-**3.4** **RLHF Results**
+### 3.4 RLHF Results
 
 
-**3.4.1** **Model-Based Evaluation**
+#### 3.4.1 Model-Based Evaluation
 
 
 Evaluating LLMs is a challenging open-research problem. Human evaluation, while a gold standard, can
@@ -1312,7 +1312,7 @@ Llama 2-Chat is less pronounced, although obtaining more than a 60% win-rate for
 The prompts correspond to a validation set of 1 _,_ 586 and 584 prompts for safety and helpfulness, respectively.
 
 
-**3.4.2** **Human Evaluation**
+#### 3.4.2 Human Evaluation
 
 
 Human evaluation is often considered the gold standard for judging models for natural language generation,
@@ -1382,7 +1382,7 @@ different set of prompts or with different instructions could result in differen
 19
 
 
-### **4 Safety**
+## 4 Safety
 
 _WARNING: this section contains examples of text that may be considered unsafe, offensive, or upsetting._
 
@@ -1395,7 +1395,7 @@ further understand and improve model safety (Section 4.3). Finally, we present q
 of Llama 2-Chat (Section 4.4). We also share a model card in the Appendix, in Table 52.
 
 
-**4.1** **Safety in Pretraining**
+### 4.1 Safety in Pretraining
 
 
 It is important to understand what is in the pretraining data both to increase transparency and to shed
@@ -1636,7 +1636,7 @@ the BOLD dataset (race, religion, and gender). As LLMs are integrated and deploy
 continuing research that will amplify their potential for positive impact on these important social issues.
 
 
-**4.2** **Safety Fine-Tuning**
+### 4.2 Safety Fine-Tuning
 
 
 In this section, we describe our approach to safety fine-tuning, including safety categories, annotation
@@ -1658,7 +1658,7 @@ model. We use a targeted approach that allows our safety reward model to choose 
 context distillation for each sample.
 
 
-**4.2.1** **Safety Categories and Annotation Guidelines**
+#### 4.2.1 Safety Categories and Annotation Guidelines
 
 
 Based on limitations of LLMs known from prior work, we design instructions for our annotation team to
@@ -1686,7 +1686,7 @@ categories (see Appendix A.5.2). The guidelines are meant to be a general guide 
 iteratively refined and revised to include newly identified risks.
 
 
-**4.2.2** **Safety Supervised Fine-Tuning**
+#### 4.2.2 Safety Supervised Fine-Tuning
 
 
 In accordance with the established guidelines from Section 4.2.1, we gather prompts and demonstrations
@@ -1699,7 +1699,7 @@ the model to exhibit unsafe behavior, i.e., perform red teaming, as defined by t
 annotators are tasked with crafting a safe and helpful response that the model should produce.
 
 
-**4.2.3** **Safety RLHF**
+#### 4.2.3 Safety RLHF
 
 
 We observe early in the development of Llama 2-Chat that it is able to generalize from the safe demonstrations
@@ -1927,7 +1927,7 @@ provide a helpful and accurate response.
 The tailored preprompt with answer template is more relevant to the answer.
 
 
-**4.2.4** **Context Distillation for Safety**
+#### 4.2.4 Context Distillation for Safety
 
 
 We encourage Llama 2-Chat to associate adversarial prompts with safer responses by using context distillation
@@ -2029,7 +2029,7 @@ score than the original answer. We notice that this is particularly helpful on p
 bad at, but limits the negative impact of context distillation (see Figure 16b).
 
 
-**4.3** **Red Teaming**
+### 4.3 Red Teaming
 
 
 Given how broad the capabilities of LLMs are and how varied their training data is, it is insufficient to identify
@@ -2103,7 +2103,7 @@ teaming exercises that were mitigated in a given new candidate release. On avera
 rate model over model.
 
 
-**4.4** **Safety Evaluation of Llama 2-Chat**
+### 4.4 Safety Evaluation of Llama 2-Chat
 
 
 **Safety Human Evaluation.** We collected roughly 2,000 adversarial prompts for human evaluation according
@@ -2238,14 +2238,14 @@ present the percentage of toxic generations (the smaller the better).
 31
 
 
-### **5 Discussion**
+## 5 Discussion
 
 Here, we discuss the interesting properties we have observed with RLHF (Section 5.1). We then discuss the
 limitations of Llama 2-Chat (Section 5.2). Lastly, we present our strategy for responsibly releasing these
 models (Section 5.3).
 
 
-**5.1** **Learnings and Observations**
+### 5.1 Learnings and Observations
 
 
 Our tuning process revealed several interesting results, such as Llama 2-Chat’s abilities to temporally
@@ -2373,7 +2373,7 @@ this particular experiment are documented in Table 15. LLM tool use, while excit
 safety concerns. We encourage more community research and red teaming in this area.
 
 
-**5.2** **Limitations and Ethical Considerations**
+### 5.2 Limitations and Ethical Considerations
 
 
 Llama 2-Chat is subject to the same well-recognized limitations of other LLMs, including a cessation of
@@ -2417,7 +2417,7 @@ Users of the pretrained models need to be particularly cautious, and should take
 deployment as described in our _Responsible Use Guide._ [§§]
 
 
-**5.3** **Responsible Release Strategy**
+### 5.3 Responsible Release Strategy
 
 
 **Release Details.** We make Llama 2 available for both research and commercial use at `[https://ai.meta.](https://ai.meta.com/resources/models-and-libraries/llama/)`
@@ -2456,7 +2456,7 @@ paper illustrates, we have made strides in limiting the prevalence of these type
 recognize there is more work to be done, this realization only deepens our commitment to open science and
 collaboration with the AI community.
 
-### **6 Related Work**
+## 6 Related Work
 
 
 **Large Language Models.** The recent years have witnessed a substantial evolution in the field of LLMs.
@@ -2531,7 +2531,7 @@ over-reliance on LLMs leading to training data degradation are also pertinent co
 and Restrepo, 2018; Autor and Salomons, 2018; Webb, 2019; Shumailov et al., 2023). We are committed to
 continuing our work engaging with the broader policy, academic, and industry community on these issues.
 
-### **7 Conclusion**
+## 7 Conclusion
 
 
 In this study, we have introduced Llama 2, a new family of pretrained and fine-tuned models with scales
@@ -2547,7 +2547,7 @@ transparency and safety, we plan to make further improvements to Llama 2-Chat in
 36
 
 
-### **References**
+## References
 
 Daron Acemoglu and Pascual Restrepo. Artificial intelligence, automation, and work. In _The economics of_
 _artificial intelligence: An agenda_, pages 197–236. University of Chicago Press, 2018.
@@ -3169,9 +3169,9 @@ diagnostic analysis. _arXiv preprint arXiv:2301.12867_, 2023.
 45
 
 
-### **A Appendix**
+## A Appendix
 
-**A.1** **Contributions**
+### A.1 Contributions
 
 
 All authors sorted alphabetically by last name.
@@ -3201,7 +3201,7 @@ Jenya Lee, Pushkar Mishra, Yixin Nie, Rashi Rungta, Alan Schelten, Kalyan Saladi
 We thank the _GenAI executive team_ for their leadership and support: Ahmad Al-Dahle, Manohar Paluri.
 
 
-**A.1.1** **Acknowledgments**
+#### A.1.1 Acknowledgments
 
 
 This work was made possible by a large group of contributors. We extend our gratitude to the following
@@ -3254,10 +3254,10 @@ internal demo.
 Laurens van der Maaten, Jason Weston, and Omer Levy.
 
 
-**A.2** **Additional Details for Pretraining**
+### A.2 Additional Details for Pretraining
 
 
-**A.2.1** **Architecture Changes Compared to Llama 1**
+#### A.2.1 Architecture Changes Compared to Llama 1
 
 
 **Context Length.** We expand the context window for Llama 2 from 2048 tokens to 4096 tokens. The longer
@@ -3349,7 +3349,7 @@ duplicated the KV heads for MQA in all GPUs, so the KV cache size for MQA became
 the two variants behaved very similar (with MQA just having a slightly larger FFN dimension).
 
 
-**A.2.2** **Additional Details for Pretrained Models Evaluation**
+#### A.2.2 Additional Details for Pretrained Models Evaluation
 
 
 **MMLU details.** In Table 19, we report details of the MMLU (Hendrycks et al., 2020) evaluation for Llama
@@ -3686,14 +3686,14 @@ Llama 2
 (maj1@1 is reported).
 
 
-**Mathematical Reasoning.** In Table 25, we report results for Llama 2 and other open-source datasets on the
+### A.3 Additional Details for Fine-tuning
 GSM8k and MATH tasks.
 
 
 **A.3** **Additional Details for Fine-tuning**
 
 
-**A.3.1** **Detailed Statistics of Meta Human Preference Data**
+#### A.3.1 Detailed Statistics of Meta Human Preference Data
 
 
 Table 26 shows detailed statistics on Meta human preference data. In total, we collected 14 batches of human
@@ -3712,7 +3712,7 @@ models used for response sampling over time, it becomes challenging for annotato
 from two equally high-quality responses.
 
 
-**A.3.2** **Curriculum Strategy for Meta Human Preference Data**
+#### A.3.2 Curriculum Strategy for Meta Human Preference Data
 
 
 High quality data is critical for alignment as discussed for SFT. We worked closely with the annotation
@@ -3722,7 +3722,7 @@ more complex prompts and teaching new skills to Llama 2-Chat. An illustration of
 on our helpfulness preference data is displayed in Figure 26.
 
 
-**A.3.3** **Ablation on Ranking Loss with Preference Rating-based Margin for Reward Modeling**
+#### A.3.3 Ablation on Ranking Loss with Preference Rating-based Margin for Reward Modeling
 
 
 We ablated the ranking loss with the preference rating-based margin term for the helpfulness reward model.
@@ -3802,7 +3802,7 @@ calibration for future work as reinforcement learning algorithms, such as PPO, c
 distribution change.
 
 
-**A.3.4** **Ablation on Ranking Loss with Safety Auxiliary Loss for Reward Modeling**
+#### A.3.4 Ablation on Ranking Loss with Safety Auxiliary Loss for Reward Modeling
 
 
 We ablated the impact of the safety auxiliary loss with results on the Meta Safety test set shown in Table 29.
@@ -3836,7 +3836,7 @@ boosts accuracy on all 3 categories as well as the recall of unsafe response, me
 unsafe responses captured with a reward score threshold of 0.5 (i.e., negative values before Sigmoid).
 
 
-**A.3.5** **Additional Results for GAtt**
+#### A.3.5 Additional Results for GAtt
 
 
 
@@ -3888,7 +3888,7 @@ managed to understand attributes beyond this window. This promising result indic
 adapted as an efficient technique for long context attention.
 
 
-**A.3.6** **How Far Can Model-Based Evaluation Go?**
+#### A.3.6 How Far Can Model-Based Evaluation Go?
 
 
 To measure the robustness of our reward model, we collected a test set of prompts for both helpfulness and
@@ -3950,7 +3950,7 @@ represent _±_ 1 standard deviation.
 55
 
 
-**A.3.7** **Human Evaluation**
+#### A.3.7 Human Evaluation
 
 
 **Prompts and Generations.** To compare the models, we collect a diverse set of over 4000 single and multi turn
@@ -4138,10 +4138,10 @@ the hallucination rate of either model. In 31, we also share the win rate by num
 count for prompts and generation. We do not see any trends in win rate in either case.
 
 
-**A.4** **Additional Details for Safety**
+### A.4 Additional Details for Safety
 
 
-**A.4.1** **Tension between Safety and Helpfulness in Reward Modeling**
+#### A.4.1 Tension between Safety and Helpfulness in Reward Modeling
 
 
 We briefly discussed the tension between safety and helpfulness in Section 3.2.2 and how it leads to optimizing
@@ -4153,7 +4153,7 @@ corner (i.e., low safety score but high helpfulness score) in the unsafe respons
 qualitative examples where safety and helpfulness reward models don’t agree with each other in Table 35.
 
 
-**A.4.2** **Qualitative Results on Safety Data Scaling**
+#### A.4.2 Qualitative Results on Safety Data Scaling
 
 
 In Section 4.2.3, we study the impact of adding more safety data into model RLHF in a quantitative manner.
@@ -4166,7 +4166,7 @@ sensitive words (e.g., “sex in a pan” in Table 38) in prompts, even if the p
 sex in a pan is the name of a dessert).
 
 
-**A.4.3** **English Pronouns**
+#### A.4.3 English Pronouns
 
 
 The terms that we use for the pronoun analyses are consistent with the PaLM 2 paper (Anil et al., 2023):
@@ -4316,13 +4316,13 @@ low helpfulness reward score. **Example responses are picked only for illustrati
 "theirself", "themself", "themselves", "it", "its", "itself"
 
 
-**A.4.4** **Context Distillation Preprompts**
+#### A.4.4 Context Distillation Preprompts
 
 
 We show examples of the preprompts that we use in Table 39.
 
 
-**A.4.5** **Safety Errors: False Refusals and Vague Responses**
+#### A.4.5 Safety Errors: False Refusals and Vague Responses
 
 
 See Table 40 for examples of false refusal due to perceived safety issues in prompts and see Figure 33 for the
@@ -4841,7 +4841,7 @@ Table 43.
 66
 
 
-**Figure 33: The false model refusal rate increases with the percentage of safety data. Left** : false refusal rate
+#### A.4.6 Examples of Safety Evaluation
 on the helpfulness dataset ranges from 0.006% (i.e., 1 occurrence) to 0.05% (i.e., 8 occurrences); **Right** : false
 refusal rate on the borderline dataset ranges from 15% to 27%.
 
@@ -4966,7 +4966,7 @@ mechanics of starting a car without a key: [redacted due to page limit]
 68
 
 
-**A.4.7** **Description of Automatic Safety Benchmarks**
+#### A.4.7 Description of Automatic Safety Benchmarks
 
 
 In this section, we provide a detailed description about the automatic safety benchmarks we use for evaluation
@@ -5004,7 +5004,7 @@ indicates a positive (negative) sentiment towards the population mentioned in th
 to 0 indicates a neutral sentiment.
 
 
-**A.4.8** **Automatic Safety Benchmark Evaluation Results**
+#### A.4.8 Automatic Safety Benchmark Evaluation Results
 
 
 **Fine-grained Analysis of Toxicity, Truthfulness, and Bias.** Here we perform in-depth analyses to better
@@ -5380,7 +5380,7 @@ will conduct more comprehensive evaluations that encompass some dimensions not y
 cases mentioned above.
 
 
-**A.5** **Data Annotation**
+### A.5 Data Annotation
 
 
 We have relied on human annotators in order to collect annotations for the supervised fine-tuning stage and
@@ -5388,7 +5388,7 @@ human preferences to train the reward models. In this section, we provide detail
 process.
 
 
-**A.5.1** **SFT Annotation Instructions**
+#### A.5.1 SFT Annotation Instructions
 
 
 We have collected single-turn and multi-turn dialogue annotations from our pool of annotators. We asked
@@ -5425,7 +5425,7 @@ Llama 1
 Llama 2
 
 
-**Fine-tuned**
+#### A.5.2 Negative User Experience Categories
 
 
 
@@ -5651,7 +5651,7 @@ approve it. If the answer could not be approved without major changes, the revie
 and write the feedback necessary to improve it.
 
 
-**A.5.4** **Annotator Selection**
+#### A.5.3 Quality Assurance Process / #### A.5.4 Annotator Selection
 
 
 To select the annotators who could work on our different data collection tasks, we conducted a multi-step
@@ -5687,7 +5687,7 @@ more than 26 of the questions passed the test.
 readiness. Annotators that have scored an average of _>_ 4 have passed the training.
 
 
-**A.6** **Dataset Contamination**
+### A.6 Dataset Contamination
 
 
 With the increasing scale of publicly available training data, it has become inevitable that some portion of
@@ -5858,7 +5858,7 @@ for conciseness.
 76
 
 
-**A.7** **Model Card**
+### A.7 Model Card
 
 
 Table 52 presents a model card (Mitchell et al., 2018; Anil et al., 2023) that summarizes details of the models.

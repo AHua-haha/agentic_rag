@@ -2826,4 +2826,216 @@ A.5.4 Annotator Selection (line 5654)
 A.6 Dataset Contamination (line 5690)
 A.7 Model Card (line 5861)
 ```
-[END OF DOCUMENT CONTEXT]
+[END OF DOCUMENT CONTEXT]RESP:
+
+
+replace, {"arguments":"693s/.*/#### 3.2.2 Reward Modeling/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"2420s/.*/### 5.3 Responsible Release Strategy/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"259s/.*/## 2 Pretraining/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"3839s/.*/#### A.3.5 Additional Results for GAtt/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"4156s/.*/#### A.4.2 Qualitative Results on Safety Data Scaling/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"4319s/.*/#### A.4.4 Context Distillation Preprompts/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"640s/.*/#### 3.2.1 Human Preference Data Collection/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"2106s/.*/### 4.4 Safety Evaluation of Llama 2-Chat/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"4325s/.*/#### A.4.5 Safety Errors: False Refusals and Vague Responses/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"1149s/.*/### 3.4 RLHF Results/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"4141s/.*/### A.4 Additional Details for Safety/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"5383s/.*/### A.5 Data Annotation/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"2534s/.*/## 7 Conclusion/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"3172s/.*/## A Appendix/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"5428s/.*/#### A.5.2 Negative User Experience Categories/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"1930s/.*/#### 4.2.4 Context Distillation for Safety/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"421s/.*/### 2.3 Llama 2 Pretrained Model Evaluation/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"896s/.*/#### 3.2.3 Iterative Fine-Tuning/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"1152s/.*/#### 3.4.1 Model-Based Evaluation/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"1385s/.*/## 4 Safety/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"2550s/.*/## References/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"5690s/.*/### A.6 Dataset Contamination/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"19s/.*/## GenAI, Meta/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"543s/.*/## 3 Fine-tuning/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"625s/.*/### 3.2 Reinforcement Learning with Human Feedback (RLHF)/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 2
+replace, {"arguments":"3204s/.*/#### A.1.1 Acknowledgments/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"3689s/.*/### A.3 Additional Details for Fine-tuning/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"147s/.*/## 1 Introduction/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"1702s/.*/#### 4.2.3 Safety RLHF/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"2376s/.*/### 5.2 Limitations and Ethical Considerations/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"3805s/.*/#### A.3.4 Ablation on Ranking Loss with Safety Auxiliary Loss for Reward Modeling/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"4144s/.*/#### A.4.1 Tension between Safety and Helpfulness in Reward Modeling/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"5007s/.*/#### A.4.8 Automatic Safety Benchmark Evaluation Results/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"2241s/.*/## 5 Discussion/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"2248s/.*/### 5.1 Learnings and Observations/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"3257s/.*/### A.2 Additional Details for Pretraining/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"4844s/.*/#### A.4.6 Examples of Safety Evaluation/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"5654s/.*/#### A.5.4 Annotator Selection/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"269s/.*/### 2.1 Pretraining Data/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"1689s/.*/#### 4.2.2 Safety Supervised Fine-Tuning/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"559s/.*/### 3.1 Supervised Fine-Tuning (SFT)/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 2
+replace, {"arguments":"1639s/.*/### 4.2 Safety Fine-Tuning/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"3953s/.*/#### A.3.7 Human Evaluation/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"357s/.*/#### 2.2.1 Training Hardware & Carbon Footprint/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 127
+replace, {"arguments":"3260s/.*/#### A.2.1 Architecture Changes Compared to Llama 1/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"3352s/.*/#### A.2.2 Additional Details for Pretrained Models Evaluation/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"3725s/.*/#### A.3.3 Ablation on Ranking Loss with Preference Rating-based Margin for Reward Modeling/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"4969s/.*/#### A.4.7 Description of Automatic Safety Benchmarks/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"1066s/.*/### 3.3 System Message for Multi-Turn Consistency/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"1315s/.*/#### 3.4.2 Human Evaluation/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"2032s/.*/### 4.3 Red Teaming/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"3174s/.*/### A.1 Contributions/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"3891s/.*/#### A.3.6 How Far Can Model-Based Evaluation Go?/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"4169s/.*/#### A.4.3 English Pronouns/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"5391s/.*/#### A.5.1 SFT Annotation Instructions/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"5861s/.*/### A.7 Model Card/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"1s/.*/# Llama 2: Open Foundation and Fine-Tuned Chat Models/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"1398s/.*/### 4.1 Safety in Pretraining/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"1661s/.*/#### 4.2.1 Safety Categories and Annotation Guidelines/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"3715s/.*/#### A.3.2 Curriculum Strategy for Meta Human Preference Data/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"22s/.*/## Abstract/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"42s/.*/## Contents/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"283s/.*/### 2.2 Training Details/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"2459s/.*/## 6 Related Work/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"3696s/.*/#### A.3.1 Detailed Statistics of Meta Human Preference Data/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+replace, {"arguments":"5654s/.*/#### A.5.3 Quality Assurance Process/ /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed failed, Error:exit status 1
+CONTEXT:
+RESP:
+
+
+replace, {"arguments":"-i \\\n-e '1s/.*/# Llama 2: Open Foundation and Fine-Tuned Chat Models/' \\\n-e '19s/.*/## GenAI, Meta/' \\\n-e '22s/.*/## Abstract/' \\\n-e '42s/.*/## Contents/' \\\n-e '147s/.*/## 1 Introduction/' \\\n-e '259s/.*/## 2 Pretraining/' \\\n-e '269s/.*/### 2.1 Pretraining Data/' \\\n-e '283s/.*/### 2.2 Training Details/' \\\n-e '357s/.*/#### 2.2.1 Training Hardware \\& Carbon Footprint/' \\\n-e '421s/.*/### 2.3 Llama 2 Pretrained Model Evaluation/' \\\n-e '543s/.*/## 3 Fine-tuning/' \\\n-e '559s/.*/### 3.1 Supervised Fine-Tuning (SFT)/' \\\n-e '625s/.*/### 3.2 Reinforcement Learning with Human Feedback (RLHF)/' \\\n-e '640s/.*/#### 3.2.1 Human Preference Data Collection/' \\\n-e '693s/.*/#### 3.2.2 Reward Modeling/' \\\n-e '896s/.*/#### 3.2.3 Iterative Fine-Tuning/' \\\n-e '1066s/.*/### 3.3 System Message for Multi-Turn Consistency/' \\\n-e '1149s/.*/### 3.4 RLHF Results/' \\\n-e '1152s/.*/#### 3.4.1 Model-Based Evaluation/' \\\n-e '1315s/.*/#### 3.4.2 Human Evaluation/' \\\n-e '1385s/.*/## 4 Safety/' \\\n-e '1398s/.*/### 4.1 Safety in Pretraining/' \\\n-e '1639s/.*/### 4.2 Safety Fine-Tuning/' \\\n-e '1661s/.*/#### 4.2.1 Safety Categories and Annotation Guidelines/' \\\n-e '1689s/.*/#### 4.2.2 Safety Supervised Fine-Tuning/' \\\n-e '1702s/.*/#### 4.2.3 Safety RLHF/' \\\n-e '1930s/.*/#### 4.2.4 Context Distillation for Safety/' \\\n-e '2032s/.*/### 4.3 Red Teaming/' \\\n-e '2106s/.*/### 4.4 Safety Evaluation of Llama 2-Chat/' \\\n-e '2241s/.*/## 5 Discussion/' \\\n-e '2248s/.*/### 5.1 Learnings and Observations/' \\\n-e '2376s/.*/### 5.2 Limitations and Ethical Considerations/' \\\n-e '2420s/.*/### 5.3 Responsible Release Strategy/' \\\n-e '2459s/.*/## 6 Related Work/' \\\n-e '2534s/.*/## 7 Conclusion/' \\\n-e '2550s/.*/## References/' \\\n-e '3172s/.*/## A Appendix/' \\\n-e '3174s/.*/### A.1 Contributions/' \\\n-e '3204s/.*/#### A.1.1 Acknowledgments/' \\\n-e '3257s/.*/### A.2 Additional Details for Pretraining/' \\\n-e '3260s/.*/#### A.2.1 Architecture Changes Compared to Llama 1/' \\\n-e '3352s/.*/#### A.2.2 Additional Details for Pretrained Models Evaluation/' \\\n-e '3689s/.*/### A.3 Additional Details for Fine-tuning/' \\\n-e '3696s/.*/#### A.3.1 Detailed Statistics of Meta Human Preference Data/' \\\n-e '3715s/.*/#### A.3.2 Curriculum Strategy for Meta Human Preference Data/' \\\n-e '3725s/.*/#### A.3.3 Ablation on Ranking Loss with Preference Rating-based Margin for Reward Modeling/' \\\n-e '3805s/.*/#### A.3.4 Ablation on Ranking Loss with Safety Auxiliary Loss for Reward Modeling/' \\\n-e '3839s/.*/#### A.3.5 Additional Results for GAtt/' \\\n-e '3891s/.*/#### A.3.6 How Far Can Model-Based Evaluation Go\\?/' \\\n-e '3953s/.*/#### A.3.7 Human Evaluation/' \\\n-e '4141s/.*/### A.4 Additional Details for Safety/' \\\n-e '4144s/.*/#### A.4.1 Tension between Safety and Helpfulness in Reward Modeling/' \\\n-e '4156s/.*/#### A.4.2 Qualitative Results on Safety Data Scaling/' \\\n-e '4169s/.*/#### A.4.3 English Pronouns/' \\\n-e '4319s/.*/#### A.4.4 Context Distillation Preprompts/' \\\n-e '4325s/.*/#### A.4.5 Safety Errors: False Refusals and Vague Responses/' \\\n-e '4844s/.*/#### A.4.6 Examples of Safety Evaluation/' \\\n-e '4969s/.*/#### A.4.7 Description of Automatic Safety Benchmarks/' \\\n-e '5007s/.*/#### A.4.8 Automatic Safety Benchmark Evaluation Results/' \\\n-e '5383s/.*/### A.5 Data Annotation/' \\\n-e '5391s/.*/#### A.5.1 SFT Annotation Instructions/' \\\n-e '5428s/.*/#### A.5.2 Negative User Experience Categories/' \\\n-e '5654s/.*/#### A.5.3 Quality Assurance Process \\/ #### A.5.4 Annotator Selection/' \\\n-e '5690s/.*/### A.6 Dataset Contamination/' \\\n-e '5861s/.*/### A.7 Model Card/' \\\n/root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Execute sed success
+CONTEXT:
+RESP:
+I've reformatted the document headings in /root/workspace/agentic_rag/output.md according to the provided table of contents. If you want, I can display a diff or the updated sections.
+
+CONTEXT:
