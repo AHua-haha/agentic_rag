@@ -7,9 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"llm_dev/codebase/impl"
 	ctx "llm_dev/context"
-	"llm_dev/database"
 	"llm_dev/model"
 	"os"
 	"strings"
@@ -127,25 +125,15 @@ func (ctx *AgentContext) registerTool(tools []model.ToolDef) {
 }
 
 type BaseAgent struct {
-	model   Model
-	root    string
-	buildOp *impl.BuildCodeBaseCtxOps
-
-	historyContextMgr ctx.HistoryContextMgr
+	model Model
+	root  string
 }
 
 func NewBaseAgent(codebase string, model Model) BaseAgent {
-	buildOp := &impl.BuildCodeBaseCtxOps{
-		RootPath: codebase,
-		Db:       database.GetDBClient().Database("llm_dev"),
-	}
+
 	agent := BaseAgent{
-		model:   model,
-		root:    codebase,
-		buildOp: buildOp,
-		historyContextMgr: ctx.HistoryContextMgr{
-			BuildOps: buildOp,
-		},
+		model: model,
+		root:  codebase,
 	}
 	return agent
 }
@@ -233,15 +221,12 @@ func (agent *BaseAgent) handleResponse(stream *openai.ChatCompletionStream, ctx 
 }
 
 func (agent *BaseAgent) NewUserTask(userprompt string) {
-	callGraphMgr := ctx.NewCallGraphMgr(agent.root, agent.buildOp)
-	filectxMgr := ctx.NewFileCtxMgr(agent.root, agent.buildOp)
-	outlineCtxMgr := ctx.NewOutlineCtxMgr(agent.root, agent.buildOp)
 	buildContextMgr := ctx.BuildContextMgr{}
 	taskCtxMgr := ctx.NewTaskCtxMgr(userprompt)
 	readMgr := ctx.ReadContextMgr{
 		Root: agent.root,
 	}
-	agentCtx := NewAgentContext(userprompt, &callGraphMgr, &outlineCtxMgr, &buildContextMgr, &agent.historyContextMgr, &filectxMgr, &readMgr, &taskCtxMgr)
+	agentCtx := NewAgentContext(userprompt, &buildContextMgr, &readMgr, &taskCtxMgr)
 	for {
 		// var buf bytes.Buffer
 		// // ctx.fileCtxMgr.WriteUsedDefs(&buf)
@@ -259,7 +244,6 @@ func (agent *BaseAgent) NewUserTask(userprompt string) {
 			break
 		}
 	}
-	agent.historyContextMgr.RecordUserTask(userprompt, agentCtx.finalResponse, taskCtxMgr.Records)
 }
 
 func DebugMsg(msg *openai.ChatCompletionRequest) {
