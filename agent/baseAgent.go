@@ -57,7 +57,7 @@ func NewAgentContext(userprompt string, ctxMgr ...ctx.ContextMgr) *AgentContext 
 }
 func (ctx *AgentContext) genRequest(sysPrompt string) openai.ChatCompletionRequest {
 	req := openai.ChatCompletionRequest{
-		Model:  "openrouter/anthropic/claude-sonnet-4",
+		Model:  "openrouter/openai/gpt-5-mini",
 		Stream: true,
 	}
 

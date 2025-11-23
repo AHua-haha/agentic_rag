@@ -22,15 +22,15 @@ You have access to 'pin_chunk', 'grep', 'read_content' tools for searching and r
 
 `
 
-var pinChunk = openai.FunctionDefinition{
-	Name:   "pin_chunk",
+var recordChunk = openai.FunctionDefinition{
+	Name:   "record_chunk",
 	Strict: true,
 	Description: `
-Pin a chunk of content of a file.
+Record the relevant chunk that is helpful to solve the task.
 When a chunk is more than 50 lines, it will be omitted to 50 lines.
 
 Usage:
-- pin the relevant chunk that is helpful to solve the task.
+- record the relevant chunk that is helpful to solve the task.
 - summary long range chunk and pin it with comment.
 `,
 	Parameters: jsonschema.Definition{
@@ -54,7 +54,7 @@ Usage:
 				Description: "comment for the pined chunk",
 			},
 		},
-		Required: []string{"arguments"},
+		Required: []string{"file", "startline", "endline", "comment"},
 	},
 }
 var grep = openai.FunctionDefinition{
@@ -268,7 +268,7 @@ func (mgr *ReadContextMgr) GetToolDef() []model.ToolDef {
 	res := []model.ToolDef{
 		{FunctionDefinition: readContent, Handler: readHandler},
 		{FunctionDefinition: grep, Handler: grepHandler},
-		{FunctionDefinition: pinChunk, Handler: pinHandler},
+		{FunctionDefinition: recordChunk, Handler: pinHandler},
 	}
 	return res
 }

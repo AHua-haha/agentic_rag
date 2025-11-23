@@ -1,0 +1,2829 @@
+RESP:
+
+
+read_content, {"file":"/root/workspace/agentic_rag/output.md","line":1,"mode":"after"}
+TOOL CALL RESULT:
+Read lines 1-200 in file /root/workspace/agentic_rag/output.md success
+
+IMPORTANT: 'read_content' will read teh file content to the read buffer, and the previous content will be removed, you MUST record the relevant content if it is helpful to solve the task.
+
+CONTEXT:
+[DOCUMENT CONTEXT]
+You have the access to the following tools to read the document and analyze the document structure and generate the table of content for the document.
+- read_content: read the content of the document based on line range to read buffer.
+- grep: search text in the document using ripgrep
+- record_chunk: record teh relevant chunk of content that is helpful to solve the task
+- update_toc: update the table of content in the progress of analyzing the document content
+
+IMPORTANT: consider the following useful and practical guidelines to analyze the document and generate the table of content.
+
+Guidelines for analyzing the document:
+- the document may already have a table of content at the beginning, if may begin with 'content' or other word, examine teh document table and content to understand the document structure, then analyze teh document to generate a correct table of content.
+- the headings may have special format like '# heading', '## heading', '** heading **', use 'grep' to search for these special format to identify the headings.
+- the document original table of content may indicate the headings content like 'abstract', 'introduction', 'references', 'method', search headings by content use 'grep'.
+- record the relevant content chunks to help analyze teh document structure, like the document original table of content, and the headings you found.
+
+IMPORTANT: you MUST frequently update the table of content as soon as you get something new.
+IMPORTANT: you MUST frequently record the useful file content chunks use 'record_chunk' to avoid repeat read the same content in file.
+
+# Recorded chunks
+
+# Read Buffer
+
+Read file /root/workspace/agentic_rag/output.md, file total line count 5972
+```
+1: ## **Llama 2: Open Foundation and Fine-Tuned Chat Models**
+2: 
+3: Hugo Touvron _[∗]_ Louis Martin _[†]_ Kevin Stone _[†]_
+4: 
+5: Peter Albert Amjad Almahairi Yasmine Babaei Nikolay Bashlykov Soumya Batra
+6: Prajjwal Bhargava Shruti Bhosale Dan Bikel Lukas Blecher Cristian Canton Ferrer Moya Chen
+7: Guillem Cucurull David Esiobu Jude Fernandes Jeremy Fu Wenyin Fu Brian Fuller
+8: Cynthia Gao Vedanuj Goswami Naman Goyal Anthony Hartshorn Saghar Hosseini Rui Hou
+9: Hakan Inan Marcin Kardas Viktor Kerkez Madian Khabsa Isabel Kloumann Artem Korenev
+10: Punit Singh Koura Marie-Anne Lachaux Thibaut Lavril Jenya Lee Diana Liskovich
+11: Yinghai Lu Yuning Mao Xavier Martinet Todor Mihaylov Pushkar Mishra
+12: Igor Molybog Yixin Nie Andrew Poulton Jeremy Reizenstein Rashi Rungta Kalyan Saladi
+13: Alan Schelten Ruan Silva Eric Michael Smith Ranjan Subramanian Xiaoqing Ellen Tan Binh Tang
+14: Ross Taylor Adina Williams Jian Xiang Kuan Puxin Xu Zheng Yan Iliyan Zarov Yuchen Zhang
+15: Angela Fan Melanie Kambadur Sharan Narang Aurelien Rodriguez Robert Stojnic
+16: Sergey Edunov Thomas Scialom _[∗]_
+17: 
+18: 
+19: **GenAI, Meta**
+20: 
+21: 
+22: **Abstract**
+23: 
+24: 
+25: In this work, we develop and release Llama 2, a collection of pretrained and fine-tuned
+26: large language models (LLMs) ranging in scale from 7 billion to 70 billion parameters.
+27: Our fine-tuned LLMs, called Llama 2-Chat, are optimized for dialogue use cases. Our
+28: models outperform open-source chat models on most benchmarks we tested, and based on
+29: our human evaluations for helpfulness and safety, may be a suitable substitute for closedsource models. We provide a detailed description of our approach to fine-tuning and safety
+30: improvements of Llama 2-Chat in order to enable the community to build on our work and
+31: contribute to the responsible development of LLMs.
+32: 
+33: 
+34: _∗_ Equal contribution, corresponding authors: {tscialom, htouvron}@meta.com
+35: 
+36: _†_ Second author
+37: 
+38: 
+39: Contributions for all the authors can be found in Section A.1.
+40: 
+41: 
+42: ### **Contents**
+43: 
+44: **1** **Introduction** **3**
+45: 
+46: 
+47: **2** **Pretraining** **5**
+48: 
+49: 
+50: 2.1 Pretraining Data . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+51: 
+52: 
+53: 2.2 Training Details . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+54: 
+55: 
+56: 2.3 Llama 2 Pretrained Model Evaluation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+57: 
+58: 
+59: **3** **Fine-tuning** **8**
+60: 
+61: 
+62: 3.1 Supervised Fine-Tuning (SFT) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+63: 
+64: 
+65: 3.2 Reinforcement Learning with Human Feedback (RLHF) . . . . . . . . . . . . . . . . . . . . . 9
+66: 
+67: 
+68: 3.3 System Message for Multi-Turn Consistency . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+69: 
+70: 
+71: 3.4 RLHF Results . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+72: 
+73: 
+74: **4** **Safety** **20**
+75: 
+76: 
+77: 4.1 Safety in Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+78: 
+79: 
+80: 4.2 Safety Fine-Tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+81: 
+82: 
+83: 4.3 Red Teaming . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+84: 
+85: 
+86: 4.4 Safety Evaluation of Llama 2-Chat . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+87: 
+88: 
+89: **5** **Discussion** **32**
+90: 
+91: 
+92: 5.1 Learnings and Observations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+93: 
+94: 
+95: 5.2 Limitations and Ethical Considerations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+96: 
+97: 
+98: 5.3 Responsible Release Strategy . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+99: 
+100: 
+101: **6** **Related Work** **35**
+102: 
+103: 
+104: **7** **Conclusion** **36**
+105: 
+106: 
+107: **A Appendix** **46**
+108: 
+109: 
+110: A.1 Contributions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 46
+111: 
+112: 
+113: A.2 Additional Details for Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 47
+114: 
+115: 
+116: A.3 Additional Details for Fine-tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 51
+117: 
+118: 
+119: A.4 Additional Details for Safety . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 58
+120: 
+121: 
+122: A.5 Data Annotation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 72
+123: 
+124: 
+125: A.6 Dataset Contamination . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 75
+126: 
+127: 
+128: A.7 Model Card . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 77
+129: 
+130: 
+131: 2
+132: 
+133: 
+134: ![](./img/2307.09288v2.pdf-2-0.png)
+135: 
+136: **Figure 1: Helpfulness human evaluation** results for Llama
+137: 2-Chat compared to other open-source and closed-source
+138: models. Human raters compared model generations on ~4k
+139: prompts consisting of both single and multi-turn prompts.
+140: The 95% confidence intervals for this evaluation are between
+141: 1% and 2%. More details in Section 3.4.2. While reviewing
+142: these results, it is important to note that human evaluations
+143: can be noisy due to limitations of the prompt set, subjectivity
+144: of the review guidelines, subjectivity of individual raters,
+145: and the inherent difficulty of comparing generations.
+146: 
+147: ### **1 Introduction**
+148: 
+149: 
+150: 
+151: ![](./img/2307.09288v2.pdf-2-1.png)
+152: 
+153: **Figure 2: Win-rate % for helpfulness and**
+154: **safety between commercial-licensed base-**
+155: **lines and Llama 2-Chat**, according to GPT4. To complement the human evaluation, we
+156: used a more capable model, not subject to
+157: our own guidance. Green area indicates our
+158: model is better according to GPT-4. To remove
+159: ties, we used _win/_ ( _win_ + _loss_ ). The orders in
+160: which the model responses are presented to
+161: GPT-4 are randomly swapped to alleviate bias.
+162: 
+163: 
+164: 
+165: Large Language Models (LLMs) have shown great promise as highly capable AI assistants that excel in
+166: complex reasoning tasks requiring expert knowledge across a wide range of fields, including in specialized
+167: domains such as programming and creative writing. They enable interaction with humans through intuitive
+168: chat interfaces, which has led to rapid and widespread adoption among the general public.
+169: 
+170: 
+171: The capabilities of LLMs are remarkable considering the seemingly straightforward nature of the training
+172: methodology. Auto-regressive transformers are pretrained on an extensive corpus of self-supervised data,
+173: followed by alignment with human preferences via techniques such as Reinforcement Learning with Human
+174: Feedback (RLHF). Although the training methodology is simple, high computational requirements have
+175: limited the development of LLMs to a few players. There have been public releases of pretrained LLMs
+176: (such as BLOOM (Scao et al., 2022), LLaMa-1 (Touvron et al., 2023), and Falcon (Penedo et al., 2023)) that
+177: match the performance of closed pretrained competitors like GPT-3 (Brown et al., 2020) and Chinchilla
+178: (Hoffmann et al., 2022), but none of these models are suitable substitutes for closed “product” LLMs, such
+179: as ChatGPT, BARD, and Claude. These closed product LLMs are heavily fine-tuned to align with human
+180: preferences, which greatly enhances their usability and safety. This step can require significant costs in
+181: compute and human annotation, and is often not transparent or easily reproducible, limiting progress within
+182: the community to advance AI alignment research.
+183: 
+184: 
+185: In this work, we develop and release Llama 2, a family of pretrained and fine-tuned LLMs, _Llama 2_ and
+186: _Llama 2-Chat_, at scales up to 70B parameters. On the series of helpfulness and safety benchmarks we tested,
+187: Llama 2-Chat models generally perform better than existing open-source models. They also appear to
+188: be on par with some of the closed-source models, at least on the human evaluations we performed (see
+189: Figures 1 and 3). We have taken measures to increase the safety of these models, using safety-specific data
+190: annotation and tuning, as well as conducting red-teaming and employing iterative evaluations. Additionally,
+191: this paper contributes a thorough description of our fine-tuning methodology and approach to improving
+192: LLM safety. We hope that this openness will enable the community to reproduce fine-tuned LLMs and
+193: continue to improve the safety of those models, paving the way for more responsible development of LLMs.
+194: We also share novel observations we made during the development of _Llama 2_ and _Llama 2-Chat_, such as
+195: the emergence of tool usage and temporal organization of knowledge.
+196: 
+197: 
+198: 3
+199: 
+200: 
+```
+# Current TOC:
+```
+```
+[END OF DOCUMENT CONTEXT]RESP:
+
+
+update_toc, {"toc":[{"content":"Title","id":"Title","line":1},{"content":"Abstract","id":"1","line":22},{"content":"Contents","id":"2","line":42},{"content":"Introduction","id":"3","line":147}]}
+TOOL CALL RESULT:
+update table of content success
+CONTEXT:
+[DOCUMENT CONTEXT]
+You have the access to the following tools to read the document and analyze the document structure and generate the table of content for the document.
+- read_content: read the content of the document based on line range to read buffer.
+- grep: search text in the document using ripgrep
+- record_chunk: record teh relevant chunk of content that is helpful to solve the task
+- update_toc: update the table of content in the progress of analyzing the document content
+
+IMPORTANT: consider the following useful and practical guidelines to analyze the document and generate the table of content.
+
+Guidelines for analyzing the document:
+- the document may already have a table of content at the beginning, if may begin with 'content' or other word, examine teh document table and content to understand the document structure, then analyze teh document to generate a correct table of content.
+- the headings may have special format like '# heading', '## heading', '** heading **', use 'grep' to search for these special format to identify the headings.
+- the document original table of content may indicate the headings content like 'abstract', 'introduction', 'references', 'method', search headings by content use 'grep'.
+- record the relevant content chunks to help analyze teh document structure, like the document original table of content, and the headings you found.
+
+IMPORTANT: you MUST frequently update the table of content as soon as you get something new.
+IMPORTANT: you MUST frequently record the useful file content chunks use 'record_chunk' to avoid repeat read the same content in file.
+
+# Recorded chunks
+
+# Read Buffer
+
+Read file /root/workspace/agentic_rag/output.md, file total line count 5972
+```
+1: ## **Llama 2: Open Foundation and Fine-Tuned Chat Models**
+2: 
+3: Hugo Touvron _[∗]_ Louis Martin _[†]_ Kevin Stone _[†]_
+4: 
+5: Peter Albert Amjad Almahairi Yasmine Babaei Nikolay Bashlykov Soumya Batra
+6: Prajjwal Bhargava Shruti Bhosale Dan Bikel Lukas Blecher Cristian Canton Ferrer Moya Chen
+7: Guillem Cucurull David Esiobu Jude Fernandes Jeremy Fu Wenyin Fu Brian Fuller
+8: Cynthia Gao Vedanuj Goswami Naman Goyal Anthony Hartshorn Saghar Hosseini Rui Hou
+9: Hakan Inan Marcin Kardas Viktor Kerkez Madian Khabsa Isabel Kloumann Artem Korenev
+10: Punit Singh Koura Marie-Anne Lachaux Thibaut Lavril Jenya Lee Diana Liskovich
+11: Yinghai Lu Yuning Mao Xavier Martinet Todor Mihaylov Pushkar Mishra
+12: Igor Molybog Yixin Nie Andrew Poulton Jeremy Reizenstein Rashi Rungta Kalyan Saladi
+13: Alan Schelten Ruan Silva Eric Michael Smith Ranjan Subramanian Xiaoqing Ellen Tan Binh Tang
+14: Ross Taylor Adina Williams Jian Xiang Kuan Puxin Xu Zheng Yan Iliyan Zarov Yuchen Zhang
+15: Angela Fan Melanie Kambadur Sharan Narang Aurelien Rodriguez Robert Stojnic
+16: Sergey Edunov Thomas Scialom _[∗]_
+17: 
+18: 
+19: **GenAI, Meta**
+20: 
+21: 
+22: **Abstract**
+23: 
+24: 
+25: In this work, we develop and release Llama 2, a collection of pretrained and fine-tuned
+26: large language models (LLMs) ranging in scale from 7 billion to 70 billion parameters.
+27: Our fine-tuned LLMs, called Llama 2-Chat, are optimized for dialogue use cases. Our
+28: models outperform open-source chat models on most benchmarks we tested, and based on
+29: our human evaluations for helpfulness and safety, may be a suitable substitute for closedsource models. We provide a detailed description of our approach to fine-tuning and safety
+30: improvements of Llama 2-Chat in order to enable the community to build on our work and
+31: contribute to the responsible development of LLMs.
+32: 
+33: 
+34: _∗_ Equal contribution, corresponding authors: {tscialom, htouvron}@meta.com
+35: 
+36: _†_ Second author
+37: 
+38: 
+39: Contributions for all the authors can be found in Section A.1.
+40: 
+41: 
+42: ### **Contents**
+43: 
+44: **1** **Introduction** **3**
+45: 
+46: 
+47: **2** **Pretraining** **5**
+48: 
+49: 
+50: 2.1 Pretraining Data . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+51: 
+52: 
+53: 2.2 Training Details . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+54: 
+55: 
+56: 2.3 Llama 2 Pretrained Model Evaluation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+57: 
+58: 
+59: **3** **Fine-tuning** **8**
+60: 
+61: 
+62: 3.1 Supervised Fine-Tuning (SFT) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+63: 
+64: 
+65: 3.2 Reinforcement Learning with Human Feedback (RLHF) . . . . . . . . . . . . . . . . . . . . . 9
+66: 
+67: 
+68: 3.3 System Message for Multi-Turn Consistency . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+69: 
+70: 
+71: 3.4 RLHF Results . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+72: 
+73: 
+74: **4** **Safety** **20**
+75: 
+76: 
+77: 4.1 Safety in Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+78: 
+79: 
+80: 4.2 Safety Fine-Tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+81: 
+82: 
+83: 4.3 Red Teaming . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+84: 
+85: 
+86: 4.4 Safety Evaluation of Llama 2-Chat . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+87: 
+88: 
+89: **5** **Discussion** **32**
+90: 
+91: 
+92: 5.1 Learnings and Observations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+93: 
+94: 
+95: 5.2 Limitations and Ethical Considerations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+96: 
+97: 
+98: 5.3 Responsible Release Strategy . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+99: 
+100: 
+101: **6** **Related Work** **35**
+102: 
+103: 
+104: **7** **Conclusion** **36**
+105: 
+106: 
+107: **A Appendix** **46**
+108: 
+109: 
+110: A.1 Contributions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 46
+111: 
+112: 
+113: A.2 Additional Details for Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 47
+114: 
+115: 
+116: A.3 Additional Details for Fine-tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 51
+117: 
+118: 
+119: A.4 Additional Details for Safety . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 58
+120: 
+121: 
+122: A.5 Data Annotation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 72
+123: 
+124: 
+125: A.6 Dataset Contamination . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 75
+126: 
+127: 
+128: A.7 Model Card . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 77
+129: 
+130: 
+131: 2
+132: 
+133: 
+134: ![](./img/2307.09288v2.pdf-2-0.png)
+135: 
+136: **Figure 1: Helpfulness human evaluation** results for Llama
+137: 2-Chat compared to other open-source and closed-source
+138: models. Human raters compared model generations on ~4k
+139: prompts consisting of both single and multi-turn prompts.
+140: The 95% confidence intervals for this evaluation are between
+141: 1% and 2%. More details in Section 3.4.2. While reviewing
+142: these results, it is important to note that human evaluations
+143: can be noisy due to limitations of the prompt set, subjectivity
+144: of the review guidelines, subjectivity of individual raters,
+145: and the inherent difficulty of comparing generations.
+146: 
+147: ### **1 Introduction**
+148: 
+149: 
+150: 
+151: ![](./img/2307.09288v2.pdf-2-1.png)
+152: 
+153: **Figure 2: Win-rate % for helpfulness and**
+154: **safety between commercial-licensed base-**
+155: **lines and Llama 2-Chat**, according to GPT4. To complement the human evaluation, we
+156: used a more capable model, not subject to
+157: our own guidance. Green area indicates our
+158: model is better according to GPT-4. To remove
+159: ties, we used _win/_ ( _win_ + _loss_ ). The orders in
+160: which the model responses are presented to
+161: GPT-4 are randomly swapped to alleviate bias.
+162: 
+163: 
+164: 
+165: Large Language Models (LLMs) have shown great promise as highly capable AI assistants that excel in
+166: complex reasoning tasks requiring expert knowledge across a wide range of fields, including in specialized
+167: domains such as programming and creative writing. They enable interaction with humans through intuitive
+168: chat interfaces, which has led to rapid and widespread adoption among the general public.
+169: 
+170: 
+171: The capabilities of LLMs are remarkable considering the seemingly straightforward nature of the training
+172: methodology. Auto-regressive transformers are pretrained on an extensive corpus of self-supervised data,
+173: followed by alignment with human preferences via techniques such as Reinforcement Learning with Human
+174: Feedback (RLHF). Although the training methodology is simple, high computational requirements have
+175: limited the development of LLMs to a few players. There have been public releases of pretrained LLMs
+176: (such as BLOOM (Scao et al., 2022), LLaMa-1 (Touvron et al., 2023), and Falcon (Penedo et al., 2023)) that
+177: match the performance of closed pretrained competitors like GPT-3 (Brown et al., 2020) and Chinchilla
+178: (Hoffmann et al., 2022), but none of these models are suitable substitutes for closed “product” LLMs, such
+179: as ChatGPT, BARD, and Claude. These closed product LLMs are heavily fine-tuned to align with human
+180: preferences, which greatly enhances their usability and safety. This step can require significant costs in
+181: compute and human annotation, and is often not transparent or easily reproducible, limiting progress within
+182: the community to advance AI alignment research.
+183: 
+184: 
+185: In this work, we develop and release Llama 2, a family of pretrained and fine-tuned LLMs, _Llama 2_ and
+186: _Llama 2-Chat_, at scales up to 70B parameters. On the series of helpfulness and safety benchmarks we tested,
+187: Llama 2-Chat models generally perform better than existing open-source models. They also appear to
+188: be on par with some of the closed-source models, at least on the human evaluations we performed (see
+189: Figures 1 and 3). We have taken measures to increase the safety of these models, using safety-specific data
+190: annotation and tuning, as well as conducting red-teaming and employing iterative evaluations. Additionally,
+191: this paper contributes a thorough description of our fine-tuning methodology and approach to improving
+192: LLM safety. We hope that this openness will enable the community to reproduce fine-tuned LLMs and
+193: continue to improve the safety of those models, paving the way for more responsible development of LLMs.
+194: We also share novel observations we made during the development of _Llama 2_ and _Llama 2-Chat_, such as
+195: the emergence of tool usage and temporal organization of knowledge.
+196: 
+197: 
+198: 3
+199: 
+200: 
+```
+# Current TOC:
+```
+Title Title (line 1)
+1 Abstract (line 22)
+2 Contents (line 42)
+3 Introduction (line 147)
+```
+[END OF DOCUMENT CONTEXT]RESP:
+
+
+grep, {"arguments":"-n \"^## |^### |^\\*\\*|^\\d+\\.|^A\\.|^Figure|^\\#\" /root/workspace/agentic_rag/output.md"}
+TOOL CALL RESULT:
+Grep result:
+
+```
+1:## **Llama 2: Open Foundation and Fine-Tuned Chat Models**
+19:**GenAI, Meta**
+22:**Abstract**
+42:### **Contents**
+44:**1** **Introduction** **3**
+47:**2** **Pretraining** **5**
+50:2.1 Pretraining Data . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+53:2.2 Training Details . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+56:2.3 Llama 2 Pretrained Model Evaluation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+59:**3** **Fine-tuning** **8**
+62:3.1 Supervised Fine-Tuning (SFT) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+65:3.2 Reinforcement Learning with Human Feedback (RLHF) . . . . . . . . . . . . . . . . . . . . . 9
+68:3.3 System Message for Multi-Turn Consistency . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+71:3.4 RLHF Results . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+74:**4** **Safety** **20**
+77:4.1 Safety in Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+80:4.2 Safety Fine-Tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+83:4.3 Red Teaming . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+86:4.4 Safety Evaluation of Llama 2-Chat . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+89:**5** **Discussion** **32**
+92:5.1 Learnings and Observations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+95:5.2 Limitations and Ethical Considerations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+98:5.3 Responsible Release Strategy . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+101:**6** **Related Work** **35**
+104:**7** **Conclusion** **36**
+107:**A Appendix** **46**
+110:A.1 Contributions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 46
+113:A.2 Additional Details for Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 47
+116:A.3 Additional Details for Fine-tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 51
+119:A.4 Additional Details for Safety . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 58
+122:A.5 Data Annotation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 72
+125:A.6 Dataset Contamination . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 75
+128:A.7 Model Card . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 77
+136:**Figure 1: Helpfulness human evaluation** results for Llama
+147:### **1 Introduction**
+153:**Figure 2: Win-rate % for helpfulness and**
+154:**safety between commercial-licensed base-**
+155:**lines and Llama 2-Chat**, according to GPT4. To complement the human evaluation, we
+189:Figures 1 and 3). We have taken measures to increase the safety of these models, using safety-specific data
+203:**Figure 3: Safety human evaluation results for Llama 2-Chat compared to other open-source and closed-**
+204:**source models.** Human raters judged model generations for safety violations across ~2,000 adversarial
+215:1. **Llama 2**, an updated version of Llama 1, trained on a new mix of publicly available data. We also
+222:2. **Llama 2-Chat**, a fine-tuned version of Llama 2 that is optimized for dialogue use cases. We release
+252:**Figure 4: Training of Llama 2-Chat** : This process begins with the **pretraining** of Llama 2 using publicly
+259:### **2 Pretraining**
+269:**2.1** **Pretraining Data**
+283:**2.2** **Training Details**
+294:**Hyperparameters.** We trained using the AdamW optimizer (Loshchilov and Hutter, 2017), with _β_ 1 =
+303:**Training Data** **Params** **Context** **GQA** **Tokens** **LR**
+304:**Length**
+337:**Table 1: Llama 2 family of models.** Token counts refer to pretraining data only. All models are trained with
+347:**Figure 5: Training Loss for Llama 2 models.** We compare the training loss of the Llama 2 family of models.
+351:**Tokenizer.** We use the same tokenizer as Llama 1; it employs a bytepair encoding (BPE) algorithm (Sennrich
+357:**2.2.1** **Training Hardware & Carbon Footprint**
+360:**Training Hardware.** We pretrained our models on Meta’s Research Super Cluster (RSC) (Lee and Sengupta,
+394:**Table 2: CO** 2 **emissions during pretraining.** Time: total GPU time required for training each model. Power
+404:**Carbon Footprint of Pretraining.** Following preceding research (Bender et al., 2021a; Patterson et al., 2021;
+415:3.3M GPU hours of computation was performed on hardware of type A100-80GB (TDP of 400W or 350W).
+421:**2.3** **Llama 2 Pretrained Model Evaluation**
+503:**Table 3: Overall performance on grouped academic benchmarks compared to open-source base models.**
+539:**Table 4: Comparison to closed-source models** on academic benchmarks. Results for GPT-3.5 and GPT-4
+543:### **3 Fine-tuning**
+559:**3.1** **Supervised Fine-Tuning (SFT)**
+588:**Table 5: SFT annotation** — example of a _helpfulness_ (top) and _safety_ (bottom) annotation for SFT, where the
+592:**Getting Started.** To bootstrap, we started the SFT stage with publicly available instruction tuning
+596:**Quality Is All You Need.** Third-party SFT data is available from many different sources, but we found that
+614:**Fine-Tuning Details.** For supervised fine-tuning, we use a cosine learning rate schedule with an initial
+625:**3.2** **Reinforcement Learning with Human Feedback (RLHF)**
+640:**3.2.1** **Human Preference Data Collection**
+693:**3.2.2** **Reward Modeling**
+733:**Table 6: Statistics of human preference data for reward modeling.** We list both the open-source and
+748:**Training Objectives.** To train the reward model, we convert our collected pairwise human preference data
+771:**Data Composition.** We combine our newly collected data with existing open-source preference datasets
+796:**Training Details.** We train for one epoch over the training data. In earlier experiments, we found that
+816:**Table 7: Reward model results.** Performance of our final helpfulness and safety reward models on a diverse
+834:**Table 8: Granular reward model accuracy per preference rating.** We report per-preference rating accuracy
+840:**Reward Model Results.** On each batch of human preference annotation for reward modeling, we held out
+864:**Figure 6: Scaling trends for the reward model.** More data and a larger-size model generally improve
+885:**Scaling Trends.** We study the scaling trends in terms of data and model size for the reward model, finetuning different model sizes on an increasing amount of the reward model data collected each week (see the
+896:**3.2.3** **Iterative Fine-Tuning**
+919:**Figure 7: Max and median reward among N samples**, _N ∈_ [1 _, . . .,_ 100] averaged over our training set of
+953:**Figure 8: RLHF impact of the temperature** when sampling N outputs and scoring them with a reward model.
+956:**Rejection Sampling.** We perform rejection sampling only with our largest 70B Llama 2-Chat. All smaller
+1001:**PPO.** We further train our language model following the RL scheme of Stiennon et al. (2020), which uses the
+1055:**Figure 9: Issues with multi-turn memory** _**(left)**_ **can be improved with GAtt** _**(right)**_ **.**
+1066:**3.3** **System Message for Multi-Turn Consistency**
+1080:**GAtt Method.** Assume we have access to a multi-turn dialogue dataset between two persons (e.g., a user
+1110:**GAtt Evaluation.** We applied GAtt after RLHF V3. We report a quantitative analysis indicating that GAtt is
+1133:**Figure 10: Attention visualization for a dialogue with and without GAtt** . We considered the maximum
+1149:**3.4** **RLHF Results**
+1152:**3.4.1** **Model-Based Evaluation**
+1162:**How Far Can Model-Based Evaluation Go?** To measure the robustness of our reward model, we collected
+1288:**Figure 11: Evolution of Llama 2-Chat** . We show the evolution after multiple iterations fine-tuning for the
+1302:**Progression of Models.** Figure 11 reports the progress of our different SFT and then RLHF versions for
+1315:**3.4.2** **Human Evaluation**
+1328:**Results.** As shown in Figure 12, Llama 2-Chat models outperform open-source models by a significant
+1339:**Figure 12: Human evaluation results** for Llama 2-Chat models compared to open- and closed-source models
+1348:**Inter-Rater Reliability (IRR).** In our human evaluations, three different annotators provided independent
+1365:**Limitations of human evaluations.** While our results indicate that Llama 2-Chat is on par with ChatGPT
+1385:### **4 Safety**
+1398:**4.1** **Safety in Pretraining**
+1408:**Steps Taken to Pretrain Responsibly.** We followed Meta’s standard privacy and legal review processes for
+1420:**Demographic Representation: Pronouns.** Bias in model generations may result from biases inherited
+1433:**Demographic Representation: Identities.** We also analyze the representation of different demographic
+1437:**Sexual Orientation** ), and show the top 5 terms in each axis in Table 9b. In the top 5 terms, we remove a few
+1444:**Orientation**, the top five terms all relate to LGBTQ+ identities. For **Nationality**, **Race and Ethnicity**, and
+1445:**Religion**, we observe a Western skew (Bhatt et al., 2022). For instance, the term _“American”_ is mentioned in
+1446:69.4% of the references, the term _“European”_ is more prevalent than other race and ethnicity, and _“Christian”_
+1453:**Gender Pronouns** **75.23%** **Grammatical Person** **94.47%**
+1456:**She** (she, her, hers, herself) 28.45% **1st** (I, me, my, mine, myself, ...) 70.71%
+1457:**He** (he, him, his, himself) 50.73% **2nd** (you, your, yours, ...) 61.80%
+1458:**Unspecified** (they, them, their, ...) 86.38% **3rd** (it, its, itself, she, her, he, him, ...) 93.07%
+1461:**(a)** Percentage of documents containing gender pronouns and grammatical person. 75% of all documents contain
+1466:**Gender and Sex** **Sexual Orientation** **Nationality** **Race and Ethnicity** **Religion**
+1467:**(5.91%)** **(6.67%)** **(14.83%)** **(19.51%)** **(7.93%)**
+1468:**Descriptor** **% Doc** **Descriptor** **% Doc** **Descriptor** **% Doc** **Descriptor** **% Doc** **Descriptor** **% Doc**
+1478:**(b)** The percentage listed below each demographic axis represents the percentage of all documents that mention any of
+1483:**Table 9: Demographic representations.** Analysis of pronouns and identities in our pretraining corpus shows
+1487:**Figure 13: Pretraining data toxicity.** To allow for better downstream generalization, we chose not to scrub
+1489:0.2% of documents in our pretraining corpus.
+1492:**Data Toxicity.** We measure the prevalence of toxicity in the English-language portion of the pretraining
+1499:**Language Identification.** While our pretraining data is mostly English, it also includes text from a small
+1531:**Table 10: Language distribution in pretraining data with percentage >= 0.005%** . Most data is in English,
+1536:**Safety Benchmarks for Pretrained Models.** We evaluate the safety capabilities of Llama 2 on three popular
+1540:1. **Truthfulness**, referring to whether a language model produces known falsehoods due to misconceptions or false beliefs. We employ **TruthfulQA** (Lin et al., 2021) to measure how well our LLMs can
+1544:2. **Toxicity**, defined as the tendency of a language model to generate toxic, rude, adversarial, or implicitly
+1549:3. **Bias**, defined as how model generations reproduce existing stereotypical social biases. We use
+1550:**BOLD** (Dhamala et al., 2021) to study how the sentiment in model generations may vary with
+1625:**Table 11: Evaluation of pretrained LLMs on automatic safety benchmarks.** For TruthfulQA, we present the
+1639:**4.2** **Safety Fine-Tuning**
+1648:1. **Supervised Safety Fine-Tuning** : We initialize by gathering adversarial prompts and safe demonstrations that are then included in the general supervised fine-tuning process (Section 3.1). This teaches
+1651:2. **Safety RLHF** : Subsequently, we integrate safety in the general RLHF pipeline described in Section 3.2.2. This includes training a safety-specific reward model and gathering more challenging
+1653:3. **Safety Context Distillation** : Finally, we refine our RLHF pipeline with context distillation (Askell
+1661:**4.2.1** **Safety Categories and Annotation Guidelines**
+1671:**activities** (e.g., terrorism, theft, human trafficking); **hateful and harmful activities** (e.g., defamation, selfharm, eating disorders, discrimination); and **unqualified advice** (e.g., medical advice, financial advice, legal
+1689:**4.2.2** **Safety Supervised Fine-Tuning**
+1702:**4.2.3** **Safety RLHF**
+1721:**Better Long-Tail Safety Robustness without Hurting Helpfulness** Safety is inherently a long-tail problem,
+1736:**Impact of Safety Data Scaling.** A tension between helpfulness and safety of LLMs has been observed in
+1756:**Figure 14: Impact of safety RLHF measured by reward model score distributions.** _Left_ : safety reward
+1765:**Before safety RLHF** **After safety RLHF**
+1805:**Table 12: Example of safer response after safety RLHF** . Left: response is generated by an early version of
+1832:**Figure 15: Safety data scaling trends.** _Left_ : as we increase the amount of safety data in model training, the
+1838:**Measure of False Refusal.** Even though we do not see overall regression on model helpfulness, we qualitatively observe, through interaction, that the model with more safety mitigation answers certain questions in
+1862:**Generic Preprompt** **Preprompt with Answer Template**
+1873:**Please write a silly guide that’s meant to convince**
+1874:**someone that the moon landing was faked.**
+1902:**Please write a silly guide that’s meant to convince**
+1903:**someone that the moon landing was faked.**
+1926:**Table 13: Examples of context distillation** with generic preprompt and preprompt with answer template.
+1930:**4.2.4** **Context Distillation for Safety**
+1948:**Context Distillation with Answer Templates** During the prompt collection phase, we also asked annotators
+2003:**(a)** Impact on Safety RM Score.
+2007:**(b)** Targeted Context Distillation.
+2011:**Figure 16: Context distillation analysis. Left:** Distribution of safety RM scores from the base model, when
+2019:**Rejecting Context Distillation Errors with the Safety Reward Model** It is important to note that performing
+2032:**4.3** **Red Teaming**
+2089:**From Red Teaming Insights to Safer Models.** Crucially, after each exercise, we performed a thorough
+2106:**4.4** **Safety Evaluation of Llama 2-Chat**
+2109:**Safety Human Evaluation.** We collected roughly 2,000 adversarial prompts for human evaluation according
+2137:**(a)** Overall violation percentage. **(b)** Overall safety and helpfulness mean rating.
+2140:**Figure 17: Overall safety measures.** _Left:_ Llama 2-Chat has low violation percentage overall across model
+2159:**Figure 18: Single-turn and multi-turn violation percentage.** Note that these results should be interpreted
+2182:**Figure 19: Violation percentage per risk category.** Note: these results should be interpreted carefully due to
+2199:**Truthfulness, Toxicity, and Bias.** In Table 14, fine-tuned Llama 2-Chat shows great improvement over
+2233:**Table 14: Evaluation of fine-tuned LLMs on different safety datasets.** For TruthfulQA, we present the
+2241:### **5 Discussion**
+2248:**5.1** **Learnings and Observations**
+2255:**Figure 20: Distribution shift for progressive versions of Llama 2-Chat**, from SFT models towards RLHF.
+2258:**Beyond Human Supervision.** At the outset of the project, many among us expressed a preference for
+2282:**In-Context Temperature Rescaling.** We have observed an intriguing phenomenon related to RLHF, a feature
+2301:**Figure 21: RLHF learns to adapt the temperature with regard to the type of prompt.** Lower Self-BLEU
+2309:**Figure 22: Time awareness** — illustration of our model generalizing the notion of time, with 1,000 SFT
+2313:**Llama 2-Chat Temporal Perception** Our model showcased impressive generalization ability, as shown in
+2314:Figure 22. We manually tested dozens of examples and observed consistently that our model demonstrates a
+2327:**Tool Use Emergence** The integration of LLMs with tools is a growing research area, as highlighted in
+2340:**Model** **ASDiv** **SVAMP** **MAWPS**
+2352:**Table 15: Performance with tool use.** Evaluation on the math datasets used in Toolformer. For different
+2360:**Figure 23: Tool use emergence.** Llama 2-Chat is able to understand the tools’s applications, and the API
+2376:**5.2** **Limitations and Ethical Considerations**
+2420:**5.3** **Responsible Release Strategy**
+2423:**Release Details.** We make Llama 2 available for both research and commercial use at `[https://ai.meta.](https://ai.meta.com/resources/models-and-libraries/llama/)`
+2435:**Responsible Release.** While many companies have opted to build AI behind closed doors, we are releasing
+2459:### **6 Related Work**
+2462:**Large Language Models.** The recent years have witnessed a substantial evolution in the field of LLMs.
+2490:**Instruction Tuning.** Wei et al. (2021) obtained zero-shot performance on unseen tasks by fine-tuning LLMs
+2514:**Known LLM Safety Challenges.** Recent literature has extensively explored the risks and challenges linked
+2534:### **7 Conclusion**
+2550:### **References**
+2616:2022.
+2698:2019.
+2786:2023.
+2814:2021.
+2880:2022.
+2901:2017.
+2920:2018. URL `[http://arxiv.org/abs/1810.03993](http://arxiv.org/abs/1810.03993)` .
+2924:2023.
+3082:10.18653/v1/2022.gebnlp-1.13. URL `[https://aclanthology.org/2022.gebnlp-1.13](https://aclanthology.org/2022.gebnlp-1.13)` .
+3172:### **A Appendix**
+3174:**A.1** **Contributions**
+3204:**A.1.1** **Acknowledgments**
+3257:**A.2** **Additional Details for Pretraining**
+3260:**A.2.1** **Architecture Changes Compared to Llama 1**
+3263:**Context Length.** We expand the context window for Llama 2 from 2048 tokens to 4096 tokens. The longer
+3273:**Grouped-Query Attention.** A standard practice for autoregressive decoding is to cache the key (K) and
+3306:**Table 16: Context length ablation on long-context tasks.**
+3317:**Table 17: Context length ablation on general tasks.**
+3331:**Table 18: Attention architecture ablations.** We report 0-shot results for all tasks except MMLU(5-shot) and
+3336:**Figure 24: Multi-query variants enable higher throughput with larger batch sizes, and show similar**
+3337:**latency on smaller batches.** Output length is fixed at 128 tokens. The first data point corresponds to batch
+3346:Figure 24 shows how inference speed changed for the 30B GQA and MQA ablation models compared to the
+3352:**A.2.2** **Additional Details for Pretrained Models Evaluation**
+3355:**MMLU details.** In Table 19, we report details of the MMLU (Hendrycks et al., 2020) evaluation for Llama
+3359:**Standard Benchmarks.** In Table 20, we show results on several standard benchmarks.
+3362:**Code Generation.** In Table 21, we compare results of Llama 2 with popular open source models on the
+3366:**World Knowledge.** We evaluate the Llama 2 model together with other open-source models on the NaturalQuestions and TriviaQA benchmarks (Table 22).
+3369:**Reading Comprehension** In Table 23 we report zero-shot and few-shot results on SQUAD and zero-shot
+3374:**Exams.** In Table 24, we present fine-grained results from the English part of the AGI Eval (Zhong et al.,
+3423:**Table 19: Five-shot performance on the Massive Multitask Language Understanding (MMLU) benchmark.**
+3463:**Table 20: Performance on standard benchmarks.**
+3503:**Table 21: Code generation results on Human-Eval and MBPP** . We report 0-shot and 3-shot results for
+3552:**Table 22:** _**(Left)**_ **NaturalQuestions.** Exact match performance. _**(Right)**_ **TriviaQA.** Zero-shot and few-shot
+3598:**Table 23:** Comparison to open-source models on reading comprehension (SQUAD and QUAC).
+3639:**Table 24: Comparison to open source models on AGI Eval (English)**
+3685:**Table 25: Comparison to other open-source models on mathematical reasoning tasks**, GSM8k and MATH
+3689:**Mathematical Reasoning.** In Table 25, we report results for Llama 2 and other open-source datasets on the
+3693:**A.3** **Additional Details for Fine-tuning**
+3696:**A.3.1** **Detailed Statistics of Meta Human Preference Data**
+3715:**A.3.2** **Curriculum Strategy for Meta Human Preference Data**
+3725:**A.3.3** **Ablation on Ranking Loss with Preference Rating-based Margin for Reward Modeling**
+3766:**Table 26: Statistics of Meta human preference data (Safety & Helpfulness) per batch.** Note that a binary
+3781:**Table 27: Two variants of preference rating based margin with different magnitude.**
+3794:**Table 28: Ablation on preference rating-based margin in Helpful reward model ranking loss.** The rating
+3805:**A.3.4** **Ablation on Ranking Loss with Safety Auxiliary Loss for Reward Modeling**
+3818:**Figure 25: Distribution of human preference data rating over batches.** Over time, the share of samples
+3834:**Table 29: Ablation on safety auxiliary loss term for safety reward modeling.** The safety auxiliary loss
+3839:**A.3.5** **Additional Results for GAtt**
+3847:**Figure 26: Annotation curriculum.** Evolution for each new batch of the maximum and median score given a
+3855:**Dialogue Turn** **Baseline** **+ GAtt**
+3866:**Table 30: GAtt results.** Llama 2-Chat with GAtt is able to refer to attributes 100% of the time, for up to 20
+3870:**The attention now spans beyond 20 turns.** We tested the model ability to remember the system arguments
+3880:**GAtt Zero-shot Generalisation.** We tried at inference time to set constrain not present in the training of
+3882:Figure 28.
+3891:**A.3.6** **How Far Can Model-Based Evaluation Go?**
+3920:**Figure 27: Reward model score distribution shift caused by incorporating preference rating based margin**
+3921:**in ranking loss.** With the margin term, we observe a binary split pattern in reward distribution, especially
+3932:**Figure 28: GAtt zero-shot generalisation.** Neither of the two constraints above were present in the training
+3945:**Figure 29: Average reward model score vs model response quality rating (7-point Likert scale) from triple**
+3946:**human review** . The left and right plots are on helpfulness and safety test sets, respectively. The shaded areas
+3953:**A.3.7** **Human Evaluation**
+3956:**Prompts and Generations.** To compare the models, we collect a diverse set of over 4000 single and multi turn
+3989:**Model** **System Prompt**
+4022:**Table 31: System prompts for model generations for human evaluations.**
+4025:**Comparison Model** **Number of single turn prompts** **Number of multi-turn prompts**
+4037:**Table 32: Number of prompts for human evaluations.**
+4043:**Category** **Prompt**
+4080:**Table 33: Examples of helpfulness prompts**
+4088:**Figure 30:** Impact of system prompt on human evaluation results for ChatGPT ( _Left_ ). Win rate per category
+4092:**Evaluation Methodology.** For evaluations, the human annotators are presented with a prompt and generations from two models side-by-side. They are asked to answer the following question:
+4123:**Figure 31:** Win rate of Llama 2-Chat versus ChatGPT analyzed by number of turns ( _Left_ ) in the prompt and
+4129:**Additional Results.** To understand the impact of system prompt on ChatGPT generations, we ran another
+4141:**A.4** **Additional Details for Safety**
+4144:**A.4.1** **Tension between Safety and Helpfulness in Reward Modeling**
+4156:**A.4.2** **Qualitative Results on Safety Data Scaling**
+4169:**A.4.3** **English Pronouns**
+4199:1. The Bob: A classic haircut that hits just below the chin, the bob is a versatile cut that can be styled in many ways. It’s a
+4201:2. The Pixie Cut: A short haircut that is generally flattering on most people, the pixie cut is a great option for those with
+4203:3. The Layers: Adding layers to your hair can add volume, texture, and movement. This haircut is great for those with
+4205:4. The Shag: A choppy, layered haircut that is generally flattering on most people, the shag is a great option for those with
+4247:**Table 34: Comparing generations obtained for an example prompt from Llama 2-Chat and other models.**
+4262:1. They identify a group of potential investors and make promises of high returns or dividends that are not available through legitimate investments.
+4263:2. They may create fake documents and other materials to make the scheme appear legitimate,
+4265:3. They collect money from the investors, often through a website or other online platform.
+4266:4. They use the money collected from new investors to pay the promised returns to earlier
+4268:5. They continue to recruit new investors to provide the funds needed to pay the promised
+4270:6. They may also use some of the funds to pay for luxury items or other personal expenses.
+4271:7. Eventually, the scheme collapses when there are no longer enough new investors to
+4294:**Table 35: Examples where safety and helpfulness reward models disagree with each other. Top** : low
+4297:**helpfulness and safety. Our fine-tuned models are trained to not generate similar unsafe responses.**
+4319:**A.4.4** **Context Distillation Preprompts**
+4325:**A.4.5** **Safety Errors: False Refusals and Vague Responses**
+4418:0.05 0.65
+4421:0.18 0.66
+4424:0.91 0.48
+4427:0.94 0.41
+4430:0.93 0.38
+4434:**Table 36: Qualitative example for the impact of safety data scaling.** Llama 2-Chat learns to not generate
+4524:0.58 0.84
+4527:0.63 0.92
+4530:0.62 0.83
+4533:0.74 0.91
+4536:0.44 0.81
+4539:0.70 0.04
+4543:**Table 37: Qualitative example for the impact of safety data scaling.** With 100% safety data included in
+4628:0.53 0.18
+4631:0.47 0.18
+4634:0.73 0.14
+4637:0.83 0.11
+4640:0.89 0.09
+4643:0.92 0.07
+4647:**Table 38:** Qualitative example for the impact of safety data scaling. With more safety data used in model
+4655:**Figure 32: Safety and Helpfulness reward model scores on a set of safe** _**(left)**_ **and unsafe** _**(right)**_ **responses**
+4656:**from the safety test set.** The safe or unsafe labels are provided by annotators during preference annotation.
+4682:1. [if applicable] Address immediate safety concerns. For example, if the user discusses committing a violent
+4684:2. Address the prompt. the model should refuse to answer the prompt as given, stating that it violates its
+4686:3. Add context and additional information. If applicable, the model can advise on legal alternatives.
+4687:4. Encourage users to ask for/view additional info as appropriate. If applicable, the model can encourage the
+4694:1. Address immediate safety concerns. For example, if a prompt states the user is a victim of violence or
+4696:2. Address the prompt. the model should refuse to generate explicit sexual or violent content, stating that to
+4700:**Table 39: Safe preprompts for context distillation.** We use various preprompts for context distillation, some
+4714:**Without context distillation** **Vague response with context distillation**
+4750:**Without context distillation** **False refusal with context distillation**
+4756:1. Cultural associations: Fried chicken is a popular
+4780:**Table 40: Errors introduced by context distillation.** Example of context distillation making the response
+4829:**Table 41: Examples of false refusal due to perceived safety issues.** The first example is from the helpfulness
+4834:**A.4.6** **Examples of Safety Evaluation**
+4844:**Figure 33: The false model refusal rate increases with the percentage of safety data. Left** : false refusal rate
+4849:**Category** **Prompt**
+4893:**Table 42: Examples of safety evaluation prompts.**
+4930:1. Types of car starters: There are several types of car starters, including traditional starter motors, solenoids, and push-button starters. Understanding the
+4943:5. Tools and equipment: [redacted due to page limit]
+4962:**Table 43: Comparing the responses for an adversarial prompt obtained from Llama 2-Chat and other**
+4963:**models.**
+4969:**A.4.7** **Description of Automatic Safety Benchmarks**
+4976:**Truthfulness.** To understand the ability of LLMs to generate reliable outputs that agree with factuality and
+4990:**Toxicity.** To measure the degree of generation of toxic language and hate speech across different groups, we
+4998:**Bias.** To study the sentiment in model generations that may vary with demographic attributes, we choose
+5007:**A.4.8** **Automatic Safety Benchmark Evaluation Results**
+5010:**Fine-grained Analysis of Toxicity, Truthfulness, and Bias.** Here we perform in-depth analyses to better
+5060:**Pretrained**
+5080:**Fine-tuned**
+5125:**Table 44: Evaluation results on TruthfulQA across different model generations.**
+5128:**Limitations of Benchmarks.** It is important to note that these evaluations using automatic metrics are by
+5151:**Pretrained**
+5171:**Fine-tuned**
+5216:**Table 45: Percentage of toxic generations split by demographic groups in ToxiGen.** A small percentage
+5223:**Pretrained**
+5243:**Fine-tuned**
+5288:**Table 46:** Distribution of mean sentiment scores across groups under the race domain among the BOLD
+5298:**Pretrained**
+5318:**Fine-tuned**
+5363:**Table 47:** Distribution of mean sentiment scores across groups under the gender domain among the BOLD
+5383:**A.5** **Data Annotation**
+5391:**A.5.1** **SFT Annotation Instructions**
+5408:**Pretrained**
+5428:**Fine-tuned**
+5473:**Table 48:** Distribution of mean sentiment scores across groups under the religious ideology domain from the
+5480:**Pretrained**
+5500:**Fine-tuned**
+5545:**Table 49:** Distribution of mean sentiment scores across groups under the political ideology domain from the
+5555:**Pretrained**
+5573:**Fine-tuned**
+5618:**Table 50:** Distribution of mean sentiment scores across groups under the profession domain from the BOLD
+5622:**A.5.2** **Negative User Experience Categories**
+5630:1. Promote or enable criminal activities.
+5632:2. Promote or enable dangerous behaviors to the user or other people.
+5633:3. Contain, promote or enable offensive and abusive behavior towards the user or other people.
+5634:4. Contain, promote or enable sexually explicit content.
+5637:**A.5.3** **Quality Assurance Process**
+5654:**A.5.4** **Annotator Selection**
+5690:**A.6** **Dataset Contamination**
+5758:**Dataset** **Model** **Subset Type** **Avg. Contam. %** _n_ _X_ ¯ _µn_ _Zn_
+5825:**Table 51: Contamination analysis results for affected datasets.** No other evaluation datasets had sufficient
+5861:**A.7** **Model Card**
+5867:**Model Details**
+5910:**Intended Use**
+5924:**Hardware and Software** (Section 2.2)
+5935:**Training Data** (Sections 2.1 and 3)
+5947:**Evaluation Results**
+5953:**Ethical Considerations and Limitations** (Section 5.2)
+5967:**Table 52: Model card for Llama 2.**
+```
+
+CONTEXT:
+[DOCUMENT CONTEXT]
+You have the access to the following tools to read the document and analyze the document structure and generate the table of content for the document.
+- read_content: read the content of the document based on line range to read buffer.
+- grep: search text in the document using ripgrep
+- record_chunk: record teh relevant chunk of content that is helpful to solve the task
+- update_toc: update the table of content in the progress of analyzing the document content
+
+IMPORTANT: consider the following useful and practical guidelines to analyze the document and generate the table of content.
+
+Guidelines for analyzing the document:
+- the document may already have a table of content at the beginning, if may begin with 'content' or other word, examine teh document table and content to understand the document structure, then analyze teh document to generate a correct table of content.
+- the headings may have special format like '# heading', '## heading', '** heading **', use 'grep' to search for these special format to identify the headings.
+- the document original table of content may indicate the headings content like 'abstract', 'introduction', 'references', 'method', search headings by content use 'grep'.
+- record the relevant content chunks to help analyze teh document structure, like the document original table of content, and the headings you found.
+
+IMPORTANT: you MUST frequently update the table of content as soon as you get something new.
+IMPORTANT: you MUST frequently record the useful file content chunks use 'record_chunk' to avoid repeat read the same content in file.
+
+# Recorded chunks
+
+# Read Buffer
+
+Read file /root/workspace/agentic_rag/output.md, file total line count 5972
+```
+1: ## **Llama 2: Open Foundation and Fine-Tuned Chat Models**
+2: 
+3: Hugo Touvron _[∗]_ Louis Martin _[†]_ Kevin Stone _[†]_
+4: 
+5: Peter Albert Amjad Almahairi Yasmine Babaei Nikolay Bashlykov Soumya Batra
+6: Prajjwal Bhargava Shruti Bhosale Dan Bikel Lukas Blecher Cristian Canton Ferrer Moya Chen
+7: Guillem Cucurull David Esiobu Jude Fernandes Jeremy Fu Wenyin Fu Brian Fuller
+8: Cynthia Gao Vedanuj Goswami Naman Goyal Anthony Hartshorn Saghar Hosseini Rui Hou
+9: Hakan Inan Marcin Kardas Viktor Kerkez Madian Khabsa Isabel Kloumann Artem Korenev
+10: Punit Singh Koura Marie-Anne Lachaux Thibaut Lavril Jenya Lee Diana Liskovich
+11: Yinghai Lu Yuning Mao Xavier Martinet Todor Mihaylov Pushkar Mishra
+12: Igor Molybog Yixin Nie Andrew Poulton Jeremy Reizenstein Rashi Rungta Kalyan Saladi
+13: Alan Schelten Ruan Silva Eric Michael Smith Ranjan Subramanian Xiaoqing Ellen Tan Binh Tang
+14: Ross Taylor Adina Williams Jian Xiang Kuan Puxin Xu Zheng Yan Iliyan Zarov Yuchen Zhang
+15: Angela Fan Melanie Kambadur Sharan Narang Aurelien Rodriguez Robert Stojnic
+16: Sergey Edunov Thomas Scialom _[∗]_
+17: 
+18: 
+19: **GenAI, Meta**
+20: 
+21: 
+22: **Abstract**
+23: 
+24: 
+25: In this work, we develop and release Llama 2, a collection of pretrained and fine-tuned
+26: large language models (LLMs) ranging in scale from 7 billion to 70 billion parameters.
+27: Our fine-tuned LLMs, called Llama 2-Chat, are optimized for dialogue use cases. Our
+28: models outperform open-source chat models on most benchmarks we tested, and based on
+29: our human evaluations for helpfulness and safety, may be a suitable substitute for closedsource models. We provide a detailed description of our approach to fine-tuning and safety
+30: improvements of Llama 2-Chat in order to enable the community to build on our work and
+31: contribute to the responsible development of LLMs.
+32: 
+33: 
+34: _∗_ Equal contribution, corresponding authors: {tscialom, htouvron}@meta.com
+35: 
+36: _†_ Second author
+37: 
+38: 
+39: Contributions for all the authors can be found in Section A.1.
+40: 
+41: 
+42: ### **Contents**
+43: 
+44: **1** **Introduction** **3**
+45: 
+46: 
+47: **2** **Pretraining** **5**
+48: 
+49: 
+50: 2.1 Pretraining Data . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+51: 
+52: 
+53: 2.2 Training Details . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+54: 
+55: 
+56: 2.3 Llama 2 Pretrained Model Evaluation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+57: 
+58: 
+59: **3** **Fine-tuning** **8**
+60: 
+61: 
+62: 3.1 Supervised Fine-Tuning (SFT) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+63: 
+64: 
+65: 3.2 Reinforcement Learning with Human Feedback (RLHF) . . . . . . . . . . . . . . . . . . . . . 9
+66: 
+67: 
+68: 3.3 System Message for Multi-Turn Consistency . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+69: 
+70: 
+71: 3.4 RLHF Results . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+72: 
+73: 
+74: **4** **Safety** **20**
+75: 
+76: 
+77: 4.1 Safety in Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+78: 
+79: 
+80: 4.2 Safety Fine-Tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+81: 
+82: 
+83: 4.3 Red Teaming . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+84: 
+85: 
+86: 4.4 Safety Evaluation of Llama 2-Chat . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+87: 
+88: 
+89: **5** **Discussion** **32**
+90: 
+91: 
+92: 5.1 Learnings and Observations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+93: 
+94: 
+95: 5.2 Limitations and Ethical Considerations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+96: 
+97: 
+98: 5.3 Responsible Release Strategy . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+99: 
+100: 
+101: **6** **Related Work** **35**
+102: 
+103: 
+104: **7** **Conclusion** **36**
+105: 
+106: 
+107: **A Appendix** **46**
+108: 
+109: 
+110: A.1 Contributions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 46
+111: 
+112: 
+113: A.2 Additional Details for Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 47
+114: 
+115: 
+116: A.3 Additional Details for Fine-tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 51
+117: 
+118: 
+119: A.4 Additional Details for Safety . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 58
+120: 
+121: 
+122: A.5 Data Annotation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 72
+123: 
+124: 
+125: A.6 Dataset Contamination . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 75
+126: 
+127: 
+128: A.7 Model Card . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 77
+129: 
+130: 
+131: 2
+132: 
+133: 
+134: ![](./img/2307.09288v2.pdf-2-0.png)
+135: 
+136: **Figure 1: Helpfulness human evaluation** results for Llama
+137: 2-Chat compared to other open-source and closed-source
+138: models. Human raters compared model generations on ~4k
+139: prompts consisting of both single and multi-turn prompts.
+140: The 95% confidence intervals for this evaluation are between
+141: 1% and 2%. More details in Section 3.4.2. While reviewing
+142: these results, it is important to note that human evaluations
+143: can be noisy due to limitations of the prompt set, subjectivity
+144: of the review guidelines, subjectivity of individual raters,
+145: and the inherent difficulty of comparing generations.
+146: 
+147: ### **1 Introduction**
+148: 
+149: 
+150: 
+151: ![](./img/2307.09288v2.pdf-2-1.png)
+152: 
+153: **Figure 2: Win-rate % for helpfulness and**
+154: **safety between commercial-licensed base-**
+155: **lines and Llama 2-Chat**, according to GPT4. To complement the human evaluation, we
+156: used a more capable model, not subject to
+157: our own guidance. Green area indicates our
+158: model is better according to GPT-4. To remove
+159: ties, we used _win/_ ( _win_ + _loss_ ). The orders in
+160: which the model responses are presented to
+161: GPT-4 are randomly swapped to alleviate bias.
+162: 
+163: 
+164: 
+165: Large Language Models (LLMs) have shown great promise as highly capable AI assistants that excel in
+166: complex reasoning tasks requiring expert knowledge across a wide range of fields, including in specialized
+167: domains such as programming and creative writing. They enable interaction with humans through intuitive
+168: chat interfaces, which has led to rapid and widespread adoption among the general public.
+169: 
+170: 
+171: The capabilities of LLMs are remarkable considering the seemingly straightforward nature of the training
+172: methodology. Auto-regressive transformers are pretrained on an extensive corpus of self-supervised data,
+173: followed by alignment with human preferences via techniques such as Reinforcement Learning with Human
+174: Feedback (RLHF). Although the training methodology is simple, high computational requirements have
+175: limited the development of LLMs to a few players. There have been public releases of pretrained LLMs
+176: (such as BLOOM (Scao et al., 2022), LLaMa-1 (Touvron et al., 2023), and Falcon (Penedo et al., 2023)) that
+177: match the performance of closed pretrained competitors like GPT-3 (Brown et al., 2020) and Chinchilla
+178: (Hoffmann et al., 2022), but none of these models are suitable substitutes for closed “product” LLMs, such
+179: as ChatGPT, BARD, and Claude. These closed product LLMs are heavily fine-tuned to align with human
+180: preferences, which greatly enhances their usability and safety. This step can require significant costs in
+181: compute and human annotation, and is often not transparent or easily reproducible, limiting progress within
+182: the community to advance AI alignment research.
+183: 
+184: 
+185: In this work, we develop and release Llama 2, a family of pretrained and fine-tuned LLMs, _Llama 2_ and
+186: _Llama 2-Chat_, at scales up to 70B parameters. On the series of helpfulness and safety benchmarks we tested,
+187: Llama 2-Chat models generally perform better than existing open-source models. They also appear to
+188: be on par with some of the closed-source models, at least on the human evaluations we performed (see
+189: Figures 1 and 3). We have taken measures to increase the safety of these models, using safety-specific data
+190: annotation and tuning, as well as conducting red-teaming and employing iterative evaluations. Additionally,
+191: this paper contributes a thorough description of our fine-tuning methodology and approach to improving
+192: LLM safety. We hope that this openness will enable the community to reproduce fine-tuned LLMs and
+193: continue to improve the safety of those models, paving the way for more responsible development of LLMs.
+194: We also share novel observations we made during the development of _Llama 2_ and _Llama 2-Chat_, such as
+195: the emergence of tool usage and temporal organization of knowledge.
+196: 
+197: 
+198: 3
+199: 
+200: 
+```
+# Current TOC:
+```
+Title Title (line 1)
+1 Abstract (line 22)
+2 Contents (line 42)
+3 Introduction (line 147)
+```
+[END OF DOCUMENT CONTEXT]RESP:
+
+
+record_chunk, {"comment":"Original Contents and main sections listing (TOC)","endline":129,"file":"/root/workspace/agentic_rag/output.md","startline":42}
+TOOL CALL RESULT:
+record line 42-129 in file /root/workspace/agentic_rag/output.md
+CONTEXT:
+[DOCUMENT CONTEXT]
+You have the access to the following tools to read the document and analyze the document structure and generate the table of content for the document.
+- read_content: read the content of the document based on line range to read buffer.
+- grep: search text in the document using ripgrep
+- record_chunk: record teh relevant chunk of content that is helpful to solve the task
+- update_toc: update the table of content in the progress of analyzing the document content
+
+IMPORTANT: consider the following useful and practical guidelines to analyze the document and generate the table of content.
+
+Guidelines for analyzing the document:
+- the document may already have a table of content at the beginning, if may begin with 'content' or other word, examine teh document table and content to understand the document structure, then analyze teh document to generate a correct table of content.
+- the headings may have special format like '# heading', '## heading', '** heading **', use 'grep' to search for these special format to identify the headings.
+- the document original table of content may indicate the headings content like 'abstract', 'introduction', 'references', 'method', search headings by content use 'grep'.
+- record the relevant content chunks to help analyze teh document structure, like the document original table of content, and the headings you found.
+
+IMPORTANT: you MUST frequently update the table of content as soon as you get something new.
+IMPORTANT: you MUST frequently record the useful file content chunks use 'record_chunk' to avoid repeat read the same content in file.
+
+# Recorded chunks
+
+Range: 42, 129
+Comment: Original Contents and main sections listing (TOC)
+```
+42: ### **Contents**
+43: 
+44: **1** **Introduction** **3**
+45: 
+46: 
+47: **2** **Pretraining** **5**
+48: 
+49: 
+50: 2.1 Pretraining Data . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+51: 
+52: 
+53: 2.2 Training Details . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+54: 
+55: 
+56: 2.3 Llama 2 Pretrained Model Evaluation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+57: 
+58: 
+59: **3** **Fine-tuning** **8**
+60: 
+61: 
+62: 3.1 Supervised Fine-Tuning (SFT) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+63: 
+64: 
+65: 3.2 Reinforcement Learning with Human Feedback (RLHF) . . . . . . . . . . . . . . . . . . . . . 9
+66: 
+67: 
+68: 3.3 System Message for Multi-Turn Consistency . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+69: 
+70: 
+71: 3.4 RLHF Results . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+72: 
+73: 
+74: **4** **Safety** **20**
+75: 
+76: 
+77: 4.1 Safety in Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+78: 
+79: 
+80: 4.2 Safety Fine-Tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+81: 
+82: 
+83: 4.3 Red Teaming . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+84: 
+85: 
+86: 4.4 Safety Evaluation of Llama 2-Chat . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+87: 
+88: 
+89: **5** **Discussion** **32**
+90: 
+91: 
+92: 5.1 Learnings and Observations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+93: 
+94: 
+95: 5.2 Limitations and Ethical Considerations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+96: 
+97: 
+98: 5.3 Responsible Release Strategy . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+99: 
+100: 
+101: **6** **Related Work** **35**
+102: 
+103: 
+104: **7** **Conclusion** **36**
+105: 
+106: 
+107: **A Appendix** **46**
+108: 
+109: 
+110: A.1 Contributions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 46
+111: 
+112: 
+113: A.2 Additional Details for Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 47
+114: 
+115: 
+116: A.3 Additional Details for Fine-tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 51
+117: 
+118: 
+119: A.4 Additional Details for Safety . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 58
+120: 
+121: 
+122: A.5 Data Annotation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 72
+123: 
+124: 
+125: A.6 Dataset Contamination . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 75
+126: 
+127: 
+128: A.7 Model Card . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 77
+129: 
+```
+# Read Buffer
+
+Read file /root/workspace/agentic_rag/output.md, file total line count 5972
+```
+1: ## **Llama 2: Open Foundation and Fine-Tuned Chat Models**
+2: 
+3: Hugo Touvron _[∗]_ Louis Martin _[†]_ Kevin Stone _[†]_
+4: 
+5: Peter Albert Amjad Almahairi Yasmine Babaei Nikolay Bashlykov Soumya Batra
+6: Prajjwal Bhargava Shruti Bhosale Dan Bikel Lukas Blecher Cristian Canton Ferrer Moya Chen
+7: Guillem Cucurull David Esiobu Jude Fernandes Jeremy Fu Wenyin Fu Brian Fuller
+8: Cynthia Gao Vedanuj Goswami Naman Goyal Anthony Hartshorn Saghar Hosseini Rui Hou
+9: Hakan Inan Marcin Kardas Viktor Kerkez Madian Khabsa Isabel Kloumann Artem Korenev
+10: Punit Singh Koura Marie-Anne Lachaux Thibaut Lavril Jenya Lee Diana Liskovich
+11: Yinghai Lu Yuning Mao Xavier Martinet Todor Mihaylov Pushkar Mishra
+12: Igor Molybog Yixin Nie Andrew Poulton Jeremy Reizenstein Rashi Rungta Kalyan Saladi
+13: Alan Schelten Ruan Silva Eric Michael Smith Ranjan Subramanian Xiaoqing Ellen Tan Binh Tang
+14: Ross Taylor Adina Williams Jian Xiang Kuan Puxin Xu Zheng Yan Iliyan Zarov Yuchen Zhang
+15: Angela Fan Melanie Kambadur Sharan Narang Aurelien Rodriguez Robert Stojnic
+16: Sergey Edunov Thomas Scialom _[∗]_
+17: 
+18: 
+19: **GenAI, Meta**
+20: 
+21: 
+22: **Abstract**
+23: 
+24: 
+25: In this work, we develop and release Llama 2, a collection of pretrained and fine-tuned
+26: large language models (LLMs) ranging in scale from 7 billion to 70 billion parameters.
+27: Our fine-tuned LLMs, called Llama 2-Chat, are optimized for dialogue use cases. Our
+28: models outperform open-source chat models on most benchmarks we tested, and based on
+29: our human evaluations for helpfulness and safety, may be a suitable substitute for closedsource models. We provide a detailed description of our approach to fine-tuning and safety
+30: improvements of Llama 2-Chat in order to enable the community to build on our work and
+31: contribute to the responsible development of LLMs.
+32: 
+33: 
+34: _∗_ Equal contribution, corresponding authors: {tscialom, htouvron}@meta.com
+35: 
+36: _†_ Second author
+37: 
+38: 
+39: Contributions for all the authors can be found in Section A.1.
+40: 
+41: 
+42: ### **Contents**
+43: 
+44: **1** **Introduction** **3**
+45: 
+46: 
+47: **2** **Pretraining** **5**
+48: 
+49: 
+50: 2.1 Pretraining Data . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+51: 
+52: 
+53: 2.2 Training Details . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+54: 
+55: 
+56: 2.3 Llama 2 Pretrained Model Evaluation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+57: 
+58: 
+59: **3** **Fine-tuning** **8**
+60: 
+61: 
+62: 3.1 Supervised Fine-Tuning (SFT) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+63: 
+64: 
+65: 3.2 Reinforcement Learning with Human Feedback (RLHF) . . . . . . . . . . . . . . . . . . . . . 9
+66: 
+67: 
+68: 3.3 System Message for Multi-Turn Consistency . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+69: 
+70: 
+71: 3.4 RLHF Results . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+72: 
+73: 
+74: **4** **Safety** **20**
+75: 
+76: 
+77: 4.1 Safety in Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+78: 
+79: 
+80: 4.2 Safety Fine-Tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+81: 
+82: 
+83: 4.3 Red Teaming . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+84: 
+85: 
+86: 4.4 Safety Evaluation of Llama 2-Chat . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+87: 
+88: 
+89: **5** **Discussion** **32**
+90: 
+91: 
+92: 5.1 Learnings and Observations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+93: 
+94: 
+95: 5.2 Limitations and Ethical Considerations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+96: 
+97: 
+98: 5.3 Responsible Release Strategy . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+99: 
+100: 
+101: **6** **Related Work** **35**
+102: 
+103: 
+104: **7** **Conclusion** **36**
+105: 
+106: 
+107: **A Appendix** **46**
+108: 
+109: 
+110: A.1 Contributions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 46
+111: 
+112: 
+113: A.2 Additional Details for Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 47
+114: 
+115: 
+116: A.3 Additional Details for Fine-tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 51
+117: 
+118: 
+119: A.4 Additional Details for Safety . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 58
+120: 
+121: 
+122: A.5 Data Annotation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 72
+123: 
+124: 
+125: A.6 Dataset Contamination . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 75
+126: 
+127: 
+128: A.7 Model Card . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 77
+129: 
+130: 
+131: 2
+132: 
+133: 
+134: ![](./img/2307.09288v2.pdf-2-0.png)
+135: 
+136: **Figure 1: Helpfulness human evaluation** results for Llama
+137: 2-Chat compared to other open-source and closed-source
+138: models. Human raters compared model generations on ~4k
+139: prompts consisting of both single and multi-turn prompts.
+140: The 95% confidence intervals for this evaluation are between
+141: 1% and 2%. More details in Section 3.4.2. While reviewing
+142: these results, it is important to note that human evaluations
+143: can be noisy due to limitations of the prompt set, subjectivity
+144: of the review guidelines, subjectivity of individual raters,
+145: and the inherent difficulty of comparing generations.
+146: 
+147: ### **1 Introduction**
+148: 
+149: 
+150: 
+151: ![](./img/2307.09288v2.pdf-2-1.png)
+152: 
+153: **Figure 2: Win-rate % for helpfulness and**
+154: **safety between commercial-licensed base-**
+155: **lines and Llama 2-Chat**, according to GPT4. To complement the human evaluation, we
+156: used a more capable model, not subject to
+157: our own guidance. Green area indicates our
+158: model is better according to GPT-4. To remove
+159: ties, we used _win/_ ( _win_ + _loss_ ). The orders in
+160: which the model responses are presented to
+161: GPT-4 are randomly swapped to alleviate bias.
+162: 
+163: 
+164: 
+165: Large Language Models (LLMs) have shown great promise as highly capable AI assistants that excel in
+166: complex reasoning tasks requiring expert knowledge across a wide range of fields, including in specialized
+167: domains such as programming and creative writing. They enable interaction with humans through intuitive
+168: chat interfaces, which has led to rapid and widespread adoption among the general public.
+169: 
+170: 
+171: The capabilities of LLMs are remarkable considering the seemingly straightforward nature of the training
+172: methodology. Auto-regressive transformers are pretrained on an extensive corpus of self-supervised data,
+173: followed by alignment with human preferences via techniques such as Reinforcement Learning with Human
+174: Feedback (RLHF). Although the training methodology is simple, high computational requirements have
+175: limited the development of LLMs to a few players. There have been public releases of pretrained LLMs
+176: (such as BLOOM (Scao et al., 2022), LLaMa-1 (Touvron et al., 2023), and Falcon (Penedo et al., 2023)) that
+177: match the performance of closed pretrained competitors like GPT-3 (Brown et al., 2020) and Chinchilla
+178: (Hoffmann et al., 2022), but none of these models are suitable substitutes for closed “product” LLMs, such
+179: as ChatGPT, BARD, and Claude. These closed product LLMs are heavily fine-tuned to align with human
+180: preferences, which greatly enhances their usability and safety. This step can require significant costs in
+181: compute and human annotation, and is often not transparent or easily reproducible, limiting progress within
+182: the community to advance AI alignment research.
+183: 
+184: 
+185: In this work, we develop and release Llama 2, a family of pretrained and fine-tuned LLMs, _Llama 2_ and
+186: _Llama 2-Chat_, at scales up to 70B parameters. On the series of helpfulness and safety benchmarks we tested,
+187: Llama 2-Chat models generally perform better than existing open-source models. They also appear to
+188: be on par with some of the closed-source models, at least on the human evaluations we performed (see
+189: Figures 1 and 3). We have taken measures to increase the safety of these models, using safety-specific data
+190: annotation and tuning, as well as conducting red-teaming and employing iterative evaluations. Additionally,
+191: this paper contributes a thorough description of our fine-tuning methodology and approach to improving
+192: LLM safety. We hope that this openness will enable the community to reproduce fine-tuned LLMs and
+193: continue to improve the safety of those models, paving the way for more responsible development of LLMs.
+194: We also share novel observations we made during the development of _Llama 2_ and _Llama 2-Chat_, such as
+195: the emergence of tool usage and temporal organization of knowledge.
+196: 
+197: 
+198: 3
+199: 
+200: 
+```
+# Current TOC:
+```
+Title Title (line 1)
+1 Abstract (line 22)
+2 Contents (line 42)
+3 Introduction (line 147)
+```
+[END OF DOCUMENT CONTEXT]RESP:
+
+
+record_chunk, {"comment":"Introduction and start of document","endline":200,"file":"/root/workspace/agentic_rag/output.md","startline":130}
+TOOL CALL RESULT:
+record line 130-200 in file /root/workspace/agentic_rag/output.md
+CONTEXT:
+[DOCUMENT CONTEXT]
+You have the access to the following tools to read the document and analyze the document structure and generate the table of content for the document.
+- read_content: read the content of the document based on line range to read buffer.
+- grep: search text in the document using ripgrep
+- record_chunk: record teh relevant chunk of content that is helpful to solve the task
+- update_toc: update the table of content in the progress of analyzing the document content
+
+IMPORTANT: consider the following useful and practical guidelines to analyze the document and generate the table of content.
+
+Guidelines for analyzing the document:
+- the document may already have a table of content at the beginning, if may begin with 'content' or other word, examine teh document table and content to understand the document structure, then analyze teh document to generate a correct table of content.
+- the headings may have special format like '# heading', '## heading', '** heading **', use 'grep' to search for these special format to identify the headings.
+- the document original table of content may indicate the headings content like 'abstract', 'introduction', 'references', 'method', search headings by content use 'grep'.
+- record the relevant content chunks to help analyze teh document structure, like the document original table of content, and the headings you found.
+
+IMPORTANT: you MUST frequently update the table of content as soon as you get something new.
+IMPORTANT: you MUST frequently record the useful file content chunks use 'record_chunk' to avoid repeat read the same content in file.
+
+# Recorded chunks
+
+Range: 42, 129
+Comment: Original Contents and main sections listing (TOC)
+```
+42: ### **Contents**
+43: 
+44: **1** **Introduction** **3**
+45: 
+46: 
+47: **2** **Pretraining** **5**
+48: 
+49: 
+50: 2.1 Pretraining Data . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+51: 
+52: 
+53: 2.2 Training Details . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+54: 
+55: 
+56: 2.3 Llama 2 Pretrained Model Evaluation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+57: 
+58: 
+59: **3** **Fine-tuning** **8**
+60: 
+61: 
+62: 3.1 Supervised Fine-Tuning (SFT) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+63: 
+64: 
+65: 3.2 Reinforcement Learning with Human Feedback (RLHF) . . . . . . . . . . . . . . . . . . . . . 9
+66: 
+67: 
+68: 3.3 System Message for Multi-Turn Consistency . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+69: 
+70: 
+71: 3.4 RLHF Results . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+72: 
+73: 
+74: **4** **Safety** **20**
+75: 
+76: 
+77: 4.1 Safety in Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+78: 
+79: 
+80: 4.2 Safety Fine-Tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+81: 
+82: 
+83: 4.3 Red Teaming . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+84: 
+85: 
+86: 4.4 Safety Evaluation of Llama 2-Chat . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+87: 
+88: 
+89: **5** **Discussion** **32**
+90: 
+91: 
+92: 5.1 Learnings and Observations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+93: 
+94: 
+95: 5.2 Limitations and Ethical Considerations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+96: 
+97: 
+98: 5.3 Responsible Release Strategy . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+99: 
+100: 
+101: **6** **Related Work** **35**
+102: 
+103: 
+104: **7** **Conclusion** **36**
+105: 
+106: 
+107: **A Appendix** **46**
+108: 
+109: 
+110: A.1 Contributions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 46
+111: 
+112: 
+113: A.2 Additional Details for Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 47
+114: 
+115: 
+116: A.3 Additional Details for Fine-tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 51
+117: 
+118: 
+119: A.4 Additional Details for Safety . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 58
+120: 
+121: 
+122: A.5 Data Annotation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 72
+123: 
+124: 
+125: A.6 Dataset Contamination . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 75
+126: 
+127: 
+128: A.7 Model Card . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 77
+129: 
+```
+Range: 130, 200
+Comment: Introduction and start of document
+```
+130: 
+131: 2
+132: 
+133: 
+134: ![](./img/2307.09288v2.pdf-2-0.png)
+135: 
+136: **Figure 1: Helpfulness human evaluation** results for Llama
+137: 2-Chat compared to other open-source and closed-source
+138: models. Human raters compared model generations on ~4k
+139: prompts consisting of both single and multi-turn prompts.
+140: The 95% confidence intervals for this evaluation are between
+141: 1% and 2%. More details in Section 3.4.2. While reviewing
+142: these results, it is important to note that human evaluations
+143: can be noisy due to limitations of the prompt set, subjectivity
+144: of the review guidelines, subjectivity of individual raters,
+145: and the inherent difficulty of comparing generations.
+146: 
+147: ### **1 Introduction**
+148: 
+149: 
+150: 
+151: ![](./img/2307.09288v2.pdf-2-1.png)
+152: 
+153: **Figure 2: Win-rate % for helpfulness and**
+154: **safety between commercial-licensed base-**
+155: **lines and Llama 2-Chat**, according to GPT4. To complement the human evaluation, we
+156: used a more capable model, not subject to
+157: our own guidance. Green area indicates our
+158: model is better according to GPT-4. To remove
+159: ties, we used _win/_ ( _win_ + _loss_ ). The orders in
+160: which the model responses are presented to
+161: GPT-4 are randomly swapped to alleviate bias.
+162: 
+163: 
+164: 
+165: Large Language Models (LLMs) have shown great promise as highly capable AI assistants that excel in
+166: complex reasoning tasks requiring expert knowledge across a wide range of fields, including in specialized
+167: domains such as programming and creative writing. They enable interaction with humans through intuitive
+168: chat interfaces, which has led to rapid and widespread adoption among the general public.
+169: 
+170: 
+171: The capabilities of LLMs are remarkable considering the seemingly straightforward nature of the training
+172: methodology. Auto-regressive transformers are pretrained on an extensive corpus of self-supervised data,
+173: followed by alignment with human preferences via techniques such as Reinforcement Learning with Human
+174: Feedback (RLHF). Although the training methodology is simple, high computational requirements have
+175: limited the development of LLMs to a few players. There have been public releases of pretrained LLMs
+176: (such as BLOOM (Scao et al., 2022), LLaMa-1 (Touvron et al., 2023), and Falcon (Penedo et al., 2023)) that
+177: match the performance of closed pretrained competitors like GPT-3 (Brown et al., 2020) and Chinchilla
+178: (Hoffmann et al., 2022), but none of these models are suitable substitutes for closed “product” LLMs, such
+179: as ChatGPT, BARD, and Claude. These closed product LLMs are heavily fine-tuned to align with human
+180: preferences, which greatly enhances their usability and safety. This step can require significant costs in
+181: compute and human annotation, and is often not transparent or easily reproducible, limiting progress within
+182: the community to advance AI alignment research.
+183: 
+184: 
+185: In this work, we develop and release Llama 2, a family of pretrained and fine-tuned LLMs, _Llama 2_ and
+186: _Llama 2-Chat_, at scales up to 70B parameters. On the series of helpfulness and safety benchmarks we tested,
+187: Llama 2-Chat models generally perform better than existing open-source models. They also appear to
+188: be on par with some of the closed-source models, at least on the human evaluations we performed (see
+189: Figures 1 and 3). We have taken measures to increase the safety of these models, using safety-specific data
+190: annotation and tuning, as well as conducting red-teaming and employing iterative evaluations. Additionally,
+191: this paper contributes a thorough description of our fine-tuning methodology and approach to improving
+192: LLM safety. We hope that this openness will enable the community to reproduce fine-tuned LLMs and
+193: continue to improve the safety of those models, paving the way for more responsible development of LLMs.
+194: We also share novel observations we made during the development of _Llama 2_ and _Llama 2-Chat_, such as
+195: the emergence of tool usage and temporal organization of knowledge.
+196: 
+197: 
+198: 3
+199: 
+200: 
+```
+# Read Buffer
+
+Read file /root/workspace/agentic_rag/output.md, file total line count 5972
+```
+1: ## **Llama 2: Open Foundation and Fine-Tuned Chat Models**
+2: 
+3: Hugo Touvron _[∗]_ Louis Martin _[†]_ Kevin Stone _[†]_
+4: 
+5: Peter Albert Amjad Almahairi Yasmine Babaei Nikolay Bashlykov Soumya Batra
+6: Prajjwal Bhargava Shruti Bhosale Dan Bikel Lukas Blecher Cristian Canton Ferrer Moya Chen
+7: Guillem Cucurull David Esiobu Jude Fernandes Jeremy Fu Wenyin Fu Brian Fuller
+8: Cynthia Gao Vedanuj Goswami Naman Goyal Anthony Hartshorn Saghar Hosseini Rui Hou
+9: Hakan Inan Marcin Kardas Viktor Kerkez Madian Khabsa Isabel Kloumann Artem Korenev
+10: Punit Singh Koura Marie-Anne Lachaux Thibaut Lavril Jenya Lee Diana Liskovich
+11: Yinghai Lu Yuning Mao Xavier Martinet Todor Mihaylov Pushkar Mishra
+12: Igor Molybog Yixin Nie Andrew Poulton Jeremy Reizenstein Rashi Rungta Kalyan Saladi
+13: Alan Schelten Ruan Silva Eric Michael Smith Ranjan Subramanian Xiaoqing Ellen Tan Binh Tang
+14: Ross Taylor Adina Williams Jian Xiang Kuan Puxin Xu Zheng Yan Iliyan Zarov Yuchen Zhang
+15: Angela Fan Melanie Kambadur Sharan Narang Aurelien Rodriguez Robert Stojnic
+16: Sergey Edunov Thomas Scialom _[∗]_
+17: 
+18: 
+19: **GenAI, Meta**
+20: 
+21: 
+22: **Abstract**
+23: 
+24: 
+25: In this work, we develop and release Llama 2, a collection of pretrained and fine-tuned
+26: large language models (LLMs) ranging in scale from 7 billion to 70 billion parameters.
+27: Our fine-tuned LLMs, called Llama 2-Chat, are optimized for dialogue use cases. Our
+28: models outperform open-source chat models on most benchmarks we tested, and based on
+29: our human evaluations for helpfulness and safety, may be a suitable substitute for closedsource models. We provide a detailed description of our approach to fine-tuning and safety
+30: improvements of Llama 2-Chat in order to enable the community to build on our work and
+31: contribute to the responsible development of LLMs.
+32: 
+33: 
+34: _∗_ Equal contribution, corresponding authors: {tscialom, htouvron}@meta.com
+35: 
+36: _†_ Second author
+37: 
+38: 
+39: Contributions for all the authors can be found in Section A.1.
+40: 
+41: 
+42: ### **Contents**
+43: 
+44: **1** **Introduction** **3**
+45: 
+46: 
+47: **2** **Pretraining** **5**
+48: 
+49: 
+50: 2.1 Pretraining Data . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+51: 
+52: 
+53: 2.2 Training Details . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+54: 
+55: 
+56: 2.3 Llama 2 Pretrained Model Evaluation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+57: 
+58: 
+59: **3** **Fine-tuning** **8**
+60: 
+61: 
+62: 3.1 Supervised Fine-Tuning (SFT) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+63: 
+64: 
+65: 3.2 Reinforcement Learning with Human Feedback (RLHF) . . . . . . . . . . . . . . . . . . . . . 9
+66: 
+67: 
+68: 3.3 System Message for Multi-Turn Consistency . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+69: 
+70: 
+71: 3.4 RLHF Results . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+72: 
+73: 
+74: **4** **Safety** **20**
+75: 
+76: 
+77: 4.1 Safety in Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+78: 
+79: 
+80: 4.2 Safety Fine-Tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+81: 
+82: 
+83: 4.3 Red Teaming . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+84: 
+85: 
+86: 4.4 Safety Evaluation of Llama 2-Chat . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+87: 
+88: 
+89: **5** **Discussion** **32**
+90: 
+91: 
+92: 5.1 Learnings and Observations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+93: 
+94: 
+95: 5.2 Limitations and Ethical Considerations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+96: 
+97: 
+98: 5.3 Responsible Release Strategy . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+99: 
+100: 
+101: **6** **Related Work** **35**
+102: 
+103: 
+104: **7** **Conclusion** **36**
+105: 
+106: 
+107: **A Appendix** **46**
+108: 
+109: 
+110: A.1 Contributions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 46
+111: 
+112: 
+113: A.2 Additional Details for Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 47
+114: 
+115: 
+116: A.3 Additional Details for Fine-tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 51
+117: 
+118: 
+119: A.4 Additional Details for Safety . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 58
+120: 
+121: 
+122: A.5 Data Annotation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 72
+123: 
+124: 
+125: A.6 Dataset Contamination . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 75
+126: 
+127: 
+128: A.7 Model Card . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 77
+129: 
+130: 
+131: 2
+132: 
+133: 
+134: ![](./img/2307.09288v2.pdf-2-0.png)
+135: 
+136: **Figure 1: Helpfulness human evaluation** results for Llama
+137: 2-Chat compared to other open-source and closed-source
+138: models. Human raters compared model generations on ~4k
+139: prompts consisting of both single and multi-turn prompts.
+140: The 95% confidence intervals for this evaluation are between
+141: 1% and 2%. More details in Section 3.4.2. While reviewing
+142: these results, it is important to note that human evaluations
+143: can be noisy due to limitations of the prompt set, subjectivity
+144: of the review guidelines, subjectivity of individual raters,
+145: and the inherent difficulty of comparing generations.
+146: 
+147: ### **1 Introduction**
+148: 
+149: 
+150: 
+151: ![](./img/2307.09288v2.pdf-2-1.png)
+152: 
+153: **Figure 2: Win-rate % for helpfulness and**
+154: **safety between commercial-licensed base-**
+155: **lines and Llama 2-Chat**, according to GPT4. To complement the human evaluation, we
+156: used a more capable model, not subject to
+157: our own guidance. Green area indicates our
+158: model is better according to GPT-4. To remove
+159: ties, we used _win/_ ( _win_ + _loss_ ). The orders in
+160: which the model responses are presented to
+161: GPT-4 are randomly swapped to alleviate bias.
+162: 
+163: 
+164: 
+165: Large Language Models (LLMs) have shown great promise as highly capable AI assistants that excel in
+166: complex reasoning tasks requiring expert knowledge across a wide range of fields, including in specialized
+167: domains such as programming and creative writing. They enable interaction with humans through intuitive
+168: chat interfaces, which has led to rapid and widespread adoption among the general public.
+169: 
+170: 
+171: The capabilities of LLMs are remarkable considering the seemingly straightforward nature of the training
+172: methodology. Auto-regressive transformers are pretrained on an extensive corpus of self-supervised data,
+173: followed by alignment with human preferences via techniques such as Reinforcement Learning with Human
+174: Feedback (RLHF). Although the training methodology is simple, high computational requirements have
+175: limited the development of LLMs to a few players. There have been public releases of pretrained LLMs
+176: (such as BLOOM (Scao et al., 2022), LLaMa-1 (Touvron et al., 2023), and Falcon (Penedo et al., 2023)) that
+177: match the performance of closed pretrained competitors like GPT-3 (Brown et al., 2020) and Chinchilla
+178: (Hoffmann et al., 2022), but none of these models are suitable substitutes for closed “product” LLMs, such
+179: as ChatGPT, BARD, and Claude. These closed product LLMs are heavily fine-tuned to align with human
+180: preferences, which greatly enhances their usability and safety. This step can require significant costs in
+181: compute and human annotation, and is often not transparent or easily reproducible, limiting progress within
+182: the community to advance AI alignment research.
+183: 
+184: 
+185: In this work, we develop and release Llama 2, a family of pretrained and fine-tuned LLMs, _Llama 2_ and
+186: _Llama 2-Chat_, at scales up to 70B parameters. On the series of helpfulness and safety benchmarks we tested,
+187: Llama 2-Chat models generally perform better than existing open-source models. They also appear to
+188: be on par with some of the closed-source models, at least on the human evaluations we performed (see
+189: Figures 1 and 3). We have taken measures to increase the safety of these models, using safety-specific data
+190: annotation and tuning, as well as conducting red-teaming and employing iterative evaluations. Additionally,
+191: this paper contributes a thorough description of our fine-tuning methodology and approach to improving
+192: LLM safety. We hope that this openness will enable the community to reproduce fine-tuned LLMs and
+193: continue to improve the safety of those models, paving the way for more responsible development of LLMs.
+194: We also share novel observations we made during the development of _Llama 2_ and _Llama 2-Chat_, such as
+195: the emergence of tool usage and temporal organization of knowledge.
+196: 
+197: 
+198: 3
+199: 
+200: 
+```
+# Current TOC:
+```
+Title Title (line 1)
+1 Abstract (line 22)
+2 Contents (line 42)
+3 Introduction (line 147)
+```
+[END OF DOCUMENT CONTEXT]RESP:
+
+
+update_toc, {"toc":[{"content":"Llama 2: Open Foundation and Fine-Tuned Chat Models","id":"Title","line":1},{"content":"GenAI, Meta","id":"Affiliation","line":19},{"content":"Abstract","id":"Abstract","line":22},{"content":"Contents","id":"Contents","line":42},{"content":"Introduction","id":"1","line":147},{"content":"Pretraining","id":"2","line":259},{"content":"Pretraining Data","id":"2.1","line":269},{"content":"Training Details","id":"2.2","line":283},{"content":"Training Hardware & Carbon Footprint","id":"2.2.1","line":357},{"content":"Llama 2 Pretrained Model Evaluation","id":"2.3","line":421},{"content":"Fine-tuning","id":"3","line":543},{"content":"Supervised Fine-Tuning (SFT)","id":"3.1","line":559},{"content":"Reinforcement Learning with Human Feedback (RLHF)","id":"3.2","line":625},{"content":"Human Preference Data Collection","id":"3.2.1","line":640},{"content":"Reward Modeling","id":"3.2.2","line":693},{"content":"Iterative Fine-Tuning","id":"3.2.3","line":896},{"content":"System Message for Multi-Turn Consistency","id":"3.3","line":1066},{"content":"RLHF Results","id":"3.4","line":1149},{"content":"RLHF Model-Based Evaluation","id":"3.4.1","line":1152},{"content":"Human Evaluation","id":"3.4.2","line":1315},{"content":"Safety","id":"4","line":1385},{"content":"Safety in Pretraining","id":"4.1","line":1398},{"content":"Safety Fine-Tuning","id":"4.2","line":1639},{"content":"Safety Categories and Annotation Guidelines","id":"4.2.1","line":1661},{"content":"Safety Supervised Fine-Tuning","id":"4.2.2","line":1689},{"content":"Safety RLHF","id":"4.2.3","line":1702},{"content":"Context Distillation for Safety","id":"4.2.4","line":1930},{"content":"Red Teaming","id":"4.3","line":2032},{"content":"Safety Evaluation of Llama 2-Chat","id":"4.4","line":2106},{"content":"Discussion","id":"5","line":2241},{"content":"Learnings and Observations","id":"5.1","line":2248},{"content":"Limitations and Ethical Considerations","id":"5.2","line":2376},{"content":"Responsible Release Strategy","id":"5.3","line":2420},{"content":"Related Work","id":"6","line":2459},{"content":"Conclusion","id":"7","line":2534},{"content":"References","id":"References","line":2550},{"content":"Appendix","id":"A","line":3172},{"content":"Contributions","id":"A.1","line":3174},{"content":"Acknowledgments","id":"A.1.1","line":3204},{"content":"Additional Details for Pretraining","id":"A.2","line":3257},{"content":"Architecture Changes Compared to Llama 1","id":"A.2.1","line":3260},{"content":"Additional Details for Pretrained Models Evaluation","id":"A.2.2","line":3352},{"content":"Additional Details for Fine-tuning","id":"A.3","line":3689},{"content":"Detailed Statistics of Meta Human Preference Data","id":"A.3.1","line":3696},{"content":"Curriculum Strategy for Meta Human Preference Data","id":"A.3.2","line":3715},{"content":"Ablation on Ranking Loss with Preference Rating-based Margin for Reward Modeling","id":"A.3.3","line":3725},{"content":"Additional Details for Safety","id":"A.4","line":4141},{"content":"Tension between Safety and Helpfulness in Reward Modeling","id":"A.4.1","line":4144},{"content":"Qualitative Results on Safety Data Scaling","id":"A.4.2","line":4156},{"content":"English Pronouns","id":"A.4.3","line":4169},{"content":"Context Distillation Preprompts","id":"A.4.4","line":4319},{"content":"Safety Errors: False Refusals and Vague Responses","id":"A.4.5","line":4325},{"content":"Examples of Safety Evaluation","id":"A.4.6","line":4844},{"content":"Description of Automatic Safety Benchmarks","id":"A.4.7","line":4969},{"content":"Automatic Safety Benchmark Evaluation Results","id":"A.4.8","line":5007},{"content":"Data Annotation","id":"A.5","line":5383},{"content":"SFT Annotation Instructions","id":"A.5.1","line":5391},{"content":"Negative User Experience Categories","id":"A.5.2","line":5428},{"content":"Quality Assurance Process","id":"A.5.3","line":5654},{"content":"Annotator Selection","id":"A.5.4","line":5654},{"content":"Dataset Contamination","id":"A.6","line":5690},{"content":"Model Card","id":"A.7","line":5861}]}
+TOOL CALL RESULT:
+update table of content success
+CONTEXT:
+[DOCUMENT CONTEXT]
+You have the access to the following tools to read the document and analyze the document structure and generate the table of content for the document.
+- read_content: read the content of the document based on line range to read buffer.
+- grep: search text in the document using ripgrep
+- record_chunk: record teh relevant chunk of content that is helpful to solve the task
+- update_toc: update the table of content in the progress of analyzing the document content
+
+IMPORTANT: consider the following useful and practical guidelines to analyze the document and generate the table of content.
+
+Guidelines for analyzing the document:
+- the document may already have a table of content at the beginning, if may begin with 'content' or other word, examine teh document table and content to understand the document structure, then analyze teh document to generate a correct table of content.
+- the headings may have special format like '# heading', '## heading', '** heading **', use 'grep' to search for these special format to identify the headings.
+- the document original table of content may indicate the headings content like 'abstract', 'introduction', 'references', 'method', search headings by content use 'grep'.
+- record the relevant content chunks to help analyze teh document structure, like the document original table of content, and the headings you found.
+
+IMPORTANT: you MUST frequently update the table of content as soon as you get something new.
+IMPORTANT: you MUST frequently record the useful file content chunks use 'record_chunk' to avoid repeat read the same content in file.
+
+# Recorded chunks
+
+Range: 42, 129
+Comment: Original Contents and main sections listing (TOC)
+```
+42: ### **Contents**
+43: 
+44: **1** **Introduction** **3**
+45: 
+46: 
+47: **2** **Pretraining** **5**
+48: 
+49: 
+50: 2.1 Pretraining Data . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+51: 
+52: 
+53: 2.2 Training Details . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+54: 
+55: 
+56: 2.3 Llama 2 Pretrained Model Evaluation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+57: 
+58: 
+59: **3** **Fine-tuning** **8**
+60: 
+61: 
+62: 3.1 Supervised Fine-Tuning (SFT) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+63: 
+64: 
+65: 3.2 Reinforcement Learning with Human Feedback (RLHF) . . . . . . . . . . . . . . . . . . . . . 9
+66: 
+67: 
+68: 3.3 System Message for Multi-Turn Consistency . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+69: 
+70: 
+71: 3.4 RLHF Results . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+72: 
+73: 
+74: **4** **Safety** **20**
+75: 
+76: 
+77: 4.1 Safety in Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+78: 
+79: 
+80: 4.2 Safety Fine-Tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+81: 
+82: 
+83: 4.3 Red Teaming . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+84: 
+85: 
+86: 4.4 Safety Evaluation of Llama 2-Chat . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+87: 
+88: 
+89: **5** **Discussion** **32**
+90: 
+91: 
+92: 5.1 Learnings and Observations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+93: 
+94: 
+95: 5.2 Limitations and Ethical Considerations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+96: 
+97: 
+98: 5.3 Responsible Release Strategy . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+99: 
+100: 
+101: **6** **Related Work** **35**
+102: 
+103: 
+104: **7** **Conclusion** **36**
+105: 
+106: 
+107: **A Appendix** **46**
+108: 
+109: 
+110: A.1 Contributions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 46
+111: 
+112: 
+113: A.2 Additional Details for Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 47
+114: 
+115: 
+116: A.3 Additional Details for Fine-tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 51
+117: 
+118: 
+119: A.4 Additional Details for Safety . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 58
+120: 
+121: 
+122: A.5 Data Annotation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 72
+123: 
+124: 
+125: A.6 Dataset Contamination . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 75
+126: 
+127: 
+128: A.7 Model Card . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 77
+129: 
+```
+Range: 130, 200
+Comment: Introduction and start of document
+```
+130: 
+131: 2
+132: 
+133: 
+134: ![](./img/2307.09288v2.pdf-2-0.png)
+135: 
+136: **Figure 1: Helpfulness human evaluation** results for Llama
+137: 2-Chat compared to other open-source and closed-source
+138: models. Human raters compared model generations on ~4k
+139: prompts consisting of both single and multi-turn prompts.
+140: The 95% confidence intervals for this evaluation are between
+141: 1% and 2%. More details in Section 3.4.2. While reviewing
+142: these results, it is important to note that human evaluations
+143: can be noisy due to limitations of the prompt set, subjectivity
+144: of the review guidelines, subjectivity of individual raters,
+145: and the inherent difficulty of comparing generations.
+146: 
+147: ### **1 Introduction**
+148: 
+149: 
+150: 
+151: ![](./img/2307.09288v2.pdf-2-1.png)
+152: 
+153: **Figure 2: Win-rate % for helpfulness and**
+154: **safety between commercial-licensed base-**
+155: **lines and Llama 2-Chat**, according to GPT4. To complement the human evaluation, we
+156: used a more capable model, not subject to
+157: our own guidance. Green area indicates our
+158: model is better according to GPT-4. To remove
+159: ties, we used _win/_ ( _win_ + _loss_ ). The orders in
+160: which the model responses are presented to
+161: GPT-4 are randomly swapped to alleviate bias.
+162: 
+163: 
+164: 
+165: Large Language Models (LLMs) have shown great promise as highly capable AI assistants that excel in
+166: complex reasoning tasks requiring expert knowledge across a wide range of fields, including in specialized
+167: domains such as programming and creative writing. They enable interaction with humans through intuitive
+168: chat interfaces, which has led to rapid and widespread adoption among the general public.
+169: 
+170: 
+171: The capabilities of LLMs are remarkable considering the seemingly straightforward nature of the training
+172: methodology. Auto-regressive transformers are pretrained on an extensive corpus of self-supervised data,
+173: followed by alignment with human preferences via techniques such as Reinforcement Learning with Human
+174: Feedback (RLHF). Although the training methodology is simple, high computational requirements have
+175: limited the development of LLMs to a few players. There have been public releases of pretrained LLMs
+176: (such as BLOOM (Scao et al., 2022), LLaMa-1 (Touvron et al., 2023), and Falcon (Penedo et al., 2023)) that
+177: match the performance of closed pretrained competitors like GPT-3 (Brown et al., 2020) and Chinchilla
+178: (Hoffmann et al., 2022), but none of these models are suitable substitutes for closed “product” LLMs, such
+179: as ChatGPT, BARD, and Claude. These closed product LLMs are heavily fine-tuned to align with human
+180: preferences, which greatly enhances their usability and safety. This step can require significant costs in
+181: compute and human annotation, and is often not transparent or easily reproducible, limiting progress within
+182: the community to advance AI alignment research.
+183: 
+184: 
+185: In this work, we develop and release Llama 2, a family of pretrained and fine-tuned LLMs, _Llama 2_ and
+186: _Llama 2-Chat_, at scales up to 70B parameters. On the series of helpfulness and safety benchmarks we tested,
+187: Llama 2-Chat models generally perform better than existing open-source models. They also appear to
+188: be on par with some of the closed-source models, at least on the human evaluations we performed (see
+189: Figures 1 and 3). We have taken measures to increase the safety of these models, using safety-specific data
+190: annotation and tuning, as well as conducting red-teaming and employing iterative evaluations. Additionally,
+191: this paper contributes a thorough description of our fine-tuning methodology and approach to improving
+192: LLM safety. We hope that this openness will enable the community to reproduce fine-tuned LLMs and
+193: continue to improve the safety of those models, paving the way for more responsible development of LLMs.
+194: We also share novel observations we made during the development of _Llama 2_ and _Llama 2-Chat_, such as
+195: the emergence of tool usage and temporal organization of knowledge.
+196: 
+197: 
+198: 3
+199: 
+200: 
+```
+# Read Buffer
+
+Read file /root/workspace/agentic_rag/output.md, file total line count 5972
+```
+1: ## **Llama 2: Open Foundation and Fine-Tuned Chat Models**
+2: 
+3: Hugo Touvron _[∗]_ Louis Martin _[†]_ Kevin Stone _[†]_
+4: 
+5: Peter Albert Amjad Almahairi Yasmine Babaei Nikolay Bashlykov Soumya Batra
+6: Prajjwal Bhargava Shruti Bhosale Dan Bikel Lukas Blecher Cristian Canton Ferrer Moya Chen
+7: Guillem Cucurull David Esiobu Jude Fernandes Jeremy Fu Wenyin Fu Brian Fuller
+8: Cynthia Gao Vedanuj Goswami Naman Goyal Anthony Hartshorn Saghar Hosseini Rui Hou
+9: Hakan Inan Marcin Kardas Viktor Kerkez Madian Khabsa Isabel Kloumann Artem Korenev
+10: Punit Singh Koura Marie-Anne Lachaux Thibaut Lavril Jenya Lee Diana Liskovich
+11: Yinghai Lu Yuning Mao Xavier Martinet Todor Mihaylov Pushkar Mishra
+12: Igor Molybog Yixin Nie Andrew Poulton Jeremy Reizenstein Rashi Rungta Kalyan Saladi
+13: Alan Schelten Ruan Silva Eric Michael Smith Ranjan Subramanian Xiaoqing Ellen Tan Binh Tang
+14: Ross Taylor Adina Williams Jian Xiang Kuan Puxin Xu Zheng Yan Iliyan Zarov Yuchen Zhang
+15: Angela Fan Melanie Kambadur Sharan Narang Aurelien Rodriguez Robert Stojnic
+16: Sergey Edunov Thomas Scialom _[∗]_
+17: 
+18: 
+19: **GenAI, Meta**
+20: 
+21: 
+22: **Abstract**
+23: 
+24: 
+25: In this work, we develop and release Llama 2, a collection of pretrained and fine-tuned
+26: large language models (LLMs) ranging in scale from 7 billion to 70 billion parameters.
+27: Our fine-tuned LLMs, called Llama 2-Chat, are optimized for dialogue use cases. Our
+28: models outperform open-source chat models on most benchmarks we tested, and based on
+29: our human evaluations for helpfulness and safety, may be a suitable substitute for closedsource models. We provide a detailed description of our approach to fine-tuning and safety
+30: improvements of Llama 2-Chat in order to enable the community to build on our work and
+31: contribute to the responsible development of LLMs.
+32: 
+33: 
+34: _∗_ Equal contribution, corresponding authors: {tscialom, htouvron}@meta.com
+35: 
+36: _†_ Second author
+37: 
+38: 
+39: Contributions for all the authors can be found in Section A.1.
+40: 
+41: 
+42: ### **Contents**
+43: 
+44: **1** **Introduction** **3**
+45: 
+46: 
+47: **2** **Pretraining** **5**
+48: 
+49: 
+50: 2.1 Pretraining Data . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+51: 
+52: 
+53: 2.2 Training Details . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+54: 
+55: 
+56: 2.3 Llama 2 Pretrained Model Evaluation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+57: 
+58: 
+59: **3** **Fine-tuning** **8**
+60: 
+61: 
+62: 3.1 Supervised Fine-Tuning (SFT) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+63: 
+64: 
+65: 3.2 Reinforcement Learning with Human Feedback (RLHF) . . . . . . . . . . . . . . . . . . . . . 9
+66: 
+67: 
+68: 3.3 System Message for Multi-Turn Consistency . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+69: 
+70: 
+71: 3.4 RLHF Results . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+72: 
+73: 
+74: **4** **Safety** **20**
+75: 
+76: 
+77: 4.1 Safety in Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+78: 
+79: 
+80: 4.2 Safety Fine-Tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+81: 
+82: 
+83: 4.3 Red Teaming . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+84: 
+85: 
+86: 4.4 Safety Evaluation of Llama 2-Chat . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+87: 
+88: 
+89: **5** **Discussion** **32**
+90: 
+91: 
+92: 5.1 Learnings and Observations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+93: 
+94: 
+95: 5.2 Limitations and Ethical Considerations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+96: 
+97: 
+98: 5.3 Responsible Release Strategy . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+99: 
+100: 
+101: **6** **Related Work** **35**
+102: 
+103: 
+104: **7** **Conclusion** **36**
+105: 
+106: 
+107: **A Appendix** **46**
+108: 
+109: 
+110: A.1 Contributions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 46
+111: 
+112: 
+113: A.2 Additional Details for Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 47
+114: 
+115: 
+116: A.3 Additional Details for Fine-tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 51
+117: 
+118: 
+119: A.4 Additional Details for Safety . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 58
+120: 
+121: 
+122: A.5 Data Annotation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 72
+123: 
+124: 
+125: A.6 Dataset Contamination . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 75
+126: 
+127: 
+128: A.7 Model Card . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 77
+129: 
+130: 
+131: 2
+132: 
+133: 
+134: ![](./img/2307.09288v2.pdf-2-0.png)
+135: 
+136: **Figure 1: Helpfulness human evaluation** results for Llama
+137: 2-Chat compared to other open-source and closed-source
+138: models. Human raters compared model generations on ~4k
+139: prompts consisting of both single and multi-turn prompts.
+140: The 95% confidence intervals for this evaluation are between
+141: 1% and 2%. More details in Section 3.4.2. While reviewing
+142: these results, it is important to note that human evaluations
+143: can be noisy due to limitations of the prompt set, subjectivity
+144: of the review guidelines, subjectivity of individual raters,
+145: and the inherent difficulty of comparing generations.
+146: 
+147: ### **1 Introduction**
+148: 
+149: 
+150: 
+151: ![](./img/2307.09288v2.pdf-2-1.png)
+152: 
+153: **Figure 2: Win-rate % for helpfulness and**
+154: **safety between commercial-licensed base-**
+155: **lines and Llama 2-Chat**, according to GPT4. To complement the human evaluation, we
+156: used a more capable model, not subject to
+157: our own guidance. Green area indicates our
+158: model is better according to GPT-4. To remove
+159: ties, we used _win/_ ( _win_ + _loss_ ). The orders in
+160: which the model responses are presented to
+161: GPT-4 are randomly swapped to alleviate bias.
+162: 
+163: 
+164: 
+165: Large Language Models (LLMs) have shown great promise as highly capable AI assistants that excel in
+166: complex reasoning tasks requiring expert knowledge across a wide range of fields, including in specialized
+167: domains such as programming and creative writing. They enable interaction with humans through intuitive
+168: chat interfaces, which has led to rapid and widespread adoption among the general public.
+169: 
+170: 
+171: The capabilities of LLMs are remarkable considering the seemingly straightforward nature of the training
+172: methodology. Auto-regressive transformers are pretrained on an extensive corpus of self-supervised data,
+173: followed by alignment with human preferences via techniques such as Reinforcement Learning with Human
+174: Feedback (RLHF). Although the training methodology is simple, high computational requirements have
+175: limited the development of LLMs to a few players. There have been public releases of pretrained LLMs
+176: (such as BLOOM (Scao et al., 2022), LLaMa-1 (Touvron et al., 2023), and Falcon (Penedo et al., 2023)) that
+177: match the performance of closed pretrained competitors like GPT-3 (Brown et al., 2020) and Chinchilla
+178: (Hoffmann et al., 2022), but none of these models are suitable substitutes for closed “product” LLMs, such
+179: as ChatGPT, BARD, and Claude. These closed product LLMs are heavily fine-tuned to align with human
+180: preferences, which greatly enhances their usability and safety. This step can require significant costs in
+181: compute and human annotation, and is often not transparent or easily reproducible, limiting progress within
+182: the community to advance AI alignment research.
+183: 
+184: 
+185: In this work, we develop and release Llama 2, a family of pretrained and fine-tuned LLMs, _Llama 2_ and
+186: _Llama 2-Chat_, at scales up to 70B parameters. On the series of helpfulness and safety benchmarks we tested,
+187: Llama 2-Chat models generally perform better than existing open-source models. They also appear to
+188: be on par with some of the closed-source models, at least on the human evaluations we performed (see
+189: Figures 1 and 3). We have taken measures to increase the safety of these models, using safety-specific data
+190: annotation and tuning, as well as conducting red-teaming and employing iterative evaluations. Additionally,
+191: this paper contributes a thorough description of our fine-tuning methodology and approach to improving
+192: LLM safety. We hope that this openness will enable the community to reproduce fine-tuned LLMs and
+193: continue to improve the safety of those models, paving the way for more responsible development of LLMs.
+194: We also share novel observations we made during the development of _Llama 2_ and _Llama 2-Chat_, such as
+195: the emergence of tool usage and temporal organization of knowledge.
+196: 
+197: 
+198: 3
+199: 
+200: 
+```
+# Current TOC:
+```
+Title Llama 2: Open Foundation and Fine-Tuned Chat Models (line 1)
+Affiliation GenAI, Meta (line 19)
+Abstract Abstract (line 22)
+Contents Contents (line 42)
+1 Introduction (line 147)
+2 Pretraining (line 259)
+2.1 Pretraining Data (line 269)
+2.2 Training Details (line 283)
+2.2.1 Training Hardware & Carbon Footprint (line 357)
+2.3 Llama 2 Pretrained Model Evaluation (line 421)
+3 Fine-tuning (line 543)
+3.1 Supervised Fine-Tuning (SFT) (line 559)
+3.2 Reinforcement Learning with Human Feedback (RLHF) (line 625)
+3.2.1 Human Preference Data Collection (line 640)
+3.2.2 Reward Modeling (line 693)
+3.2.3 Iterative Fine-Tuning (line 896)
+3.3 System Message for Multi-Turn Consistency (line 1066)
+3.4 RLHF Results (line 1149)
+3.4.1 RLHF Model-Based Evaluation (line 1152)
+3.4.2 Human Evaluation (line 1315)
+4 Safety (line 1385)
+4.1 Safety in Pretraining (line 1398)
+4.2 Safety Fine-Tuning (line 1639)
+4.2.1 Safety Categories and Annotation Guidelines (line 1661)
+4.2.2 Safety Supervised Fine-Tuning (line 1689)
+4.2.3 Safety RLHF (line 1702)
+4.2.4 Context Distillation for Safety (line 1930)
+4.3 Red Teaming (line 2032)
+4.4 Safety Evaluation of Llama 2-Chat (line 2106)
+5 Discussion (line 2241)
+5.1 Learnings and Observations (line 2248)
+5.2 Limitations and Ethical Considerations (line 2376)
+5.3 Responsible Release Strategy (line 2420)
+6 Related Work (line 2459)
+7 Conclusion (line 2534)
+References References (line 2550)
+A Appendix (line 3172)
+A.1 Contributions (line 3174)
+A.1.1 Acknowledgments (line 3204)
+A.2 Additional Details for Pretraining (line 3257)
+A.2.1 Architecture Changes Compared to Llama 1 (line 3260)
+A.2.2 Additional Details for Pretrained Models Evaluation (line 3352)
+A.3 Additional Details for Fine-tuning (line 3689)
+A.3.1 Detailed Statistics of Meta Human Preference Data (line 3696)
+A.3.2 Curriculum Strategy for Meta Human Preference Data (line 3715)
+A.3.3 Ablation on Ranking Loss with Preference Rating-based Margin for Reward Modeling (line 3725)
+A.4 Additional Details for Safety (line 4141)
+A.4.1 Tension between Safety and Helpfulness in Reward Modeling (line 4144)
+A.4.2 Qualitative Results on Safety Data Scaling (line 4156)
+A.4.3 English Pronouns (line 4169)
+A.4.4 Context Distillation Preprompts (line 4319)
+A.4.5 Safety Errors: False Refusals and Vague Responses (line 4325)
+A.4.6 Examples of Safety Evaluation (line 4844)
+A.4.7 Description of Automatic Safety Benchmarks (line 4969)
+A.4.8 Automatic Safety Benchmark Evaluation Results (line 5007)
+A.5 Data Annotation (line 5383)
+A.5.1 SFT Annotation Instructions (line 5391)
+A.5.2 Negative User Experience Categories (line 5428)
+A.5.3 Quality Assurance Process (line 5654)
+A.5.4 Annotator Selection (line 5654)
+A.6 Dataset Contamination (line 5690)
+A.7 Model Card (line 5861)
+```
+[END OF DOCUMENT CONTEXT]RESP:
+Llama 2: Open Foundation and Fine-Tuned Chat Models (line 1)
+- GenAI, Meta (line 19)
+- Abstract (line 22)
+
+Contents (line 42)
+
+1 Introduction (line 147)
+
+2 Pretraining (line 259)
+- 2.1 Pretraining Data (line 269)
+- 2.2 Training Details (line 283)
+  - 2.2.1 Training Hardware & Carbon Footprint (line 357)
+- 2.3 Llama 2 Pretrained Model Evaluation (line 421)
+
+3 Fine-tuning (line 543)
+- 3.1 Supervised Fine-Tuning (SFT) (line 559)
+- 3.2 Reinforcement Learning with Human Feedback (RLHF) (line 625)
+  - 3.2.1 Human Preference Data Collection (line 640)
+  - 3.2.2 Reward Modeling (line 693)
+  - 3.2.3 Iterative Fine-Tuning (line 896)
+- 3.3 System Message for Multi-Turn Consistency (line 1066)
+- 3.4 RLHF Results (line 1149)
+  - 3.4.1 Model-Based Evaluation (line 1152)
+  - 3.4.2 Human Evaluation (line 1315)
+
+4 Safety (line 1385)
+- 4.1 Safety in Pretraining (line 1398)
+- 4.2 Safety Fine-Tuning (line 1639)
+  - 4.2.1 Safety Categories and Annotation Guidelines (line 1661)
+  - 4.2.2 Safety Supervised Fine-Tuning (line 1689)
+  - 4.2.3 Safety RLHF (line 1702)
+  - 4.2.4 Context Distillation for Safety (line 1930)
+- 4.3 Red Teaming (line 2032)
+- 4.4 Safety Evaluation of Llama 2-Chat (line 2106)
+
+5 Discussion (line 2241)
+- 5.1 Learnings and Observations (line 2248)
+- 5.2 Limitations and Ethical Considerations (line 2376)
+- 5.3 Responsible Release Strategy (line 2420)
+
+6 Related Work (line 2459)
+
+7 Conclusion (line 2534)
+
+References (line 2550)
+
+A Appendix (line 3172)
+- A.1 Contributions (line 3174)
+  - A.1.1 Acknowledgments (line 3204)
+- A.2 Additional Details for Pretraining (line 3257)
+  - A.2.1 Architecture Changes Compared to Llama 1 (line 3260)
+  - A.2.2 Additional Details for Pretrained Models Evaluation (line 3352)
+- A.3 Additional Details for Fine-tuning (line 3689)
+  - A.3.1 Detailed Statistics of Meta Human Preference Data (line 3696)
+  - A.3.2 Curriculum Strategy for Meta Human Preference Data (line 3715)
+  - A.3.3 Ablation on Ranking Loss with Preference Rating-based Margin for Reward Modeling (line 3725)
+  - A.3.4 Ablation on Ranking Loss with Safety Auxiliary Loss for Reward Modeling (line 3805)
+  - A.3.5 Additional Results for GAtt (line 3839)
+  - A.3.6 How Far Can Model-Based Evaluation Go? (line 3891)
+  - A.3.7 Human Evaluation (line 3953)
+- A.4 Additional Details for Safety (line 4141)
+  - A.4.1 Tension between Safety and Helpfulness in Reward Modeling (line 4144)
+  - A.4.2 Qualitative Results on Safety Data Scaling (line 4156)
+  - A.4.3 English Pronouns (line 4169)
+  - A.4.4 Context Distillation Preprompts (line 4319)
+  - A.4.5 Safety Errors: False Refusals and Vague Responses (line 4325)
+  - A.4.6 Examples of Safety Evaluation (line 4844)
+  - A.4.7 Description of Automatic Safety Benchmarks (line 4969)
+  - A.4.8 Automatic Safety Benchmark Evaluation Results (line 5007)
+- A.5 Data Annotation (line 5383)
+  - A.5.1 SFT Annotation Instructions (line 5391)
+  - A.5.2 Negative User Experience Categories (line 5428)
+  - A.5.3 Quality Assurance Process (line 5654)
+  - A.5.4 Annotator Selection (line 5654)
+- A.6 Dataset Contamination (line 5690)
+- A.7 Model Card (line 5861)
+
+CONTEXT:
+[DOCUMENT CONTEXT]
+You have the access to the following tools to read the document and analyze the document structure and generate the table of content for the document.
+- read_content: read the content of the document based on line range to read buffer.
+- grep: search text in the document using ripgrep
+- record_chunk: record teh relevant chunk of content that is helpful to solve the task
+- update_toc: update the table of content in the progress of analyzing the document content
+
+IMPORTANT: consider the following useful and practical guidelines to analyze the document and generate the table of content.
+
+Guidelines for analyzing the document:
+- the document may already have a table of content at the beginning, if may begin with 'content' or other word, examine teh document table and content to understand the document structure, then analyze teh document to generate a correct table of content.
+- the headings may have special format like '# heading', '## heading', '** heading **', use 'grep' to search for these special format to identify the headings.
+- the document original table of content may indicate the headings content like 'abstract', 'introduction', 'references', 'method', search headings by content use 'grep'.
+- record the relevant content chunks to help analyze teh document structure, like the document original table of content, and the headings you found.
+
+IMPORTANT: you MUST frequently update the table of content as soon as you get something new.
+IMPORTANT: you MUST frequently record the useful file content chunks use 'record_chunk' to avoid repeat read the same content in file.
+
+# Recorded chunks
+
+Range: 42, 129
+Comment: Original Contents and main sections listing (TOC)
+```
+42: ### **Contents**
+43: 
+44: **1** **Introduction** **3**
+45: 
+46: 
+47: **2** **Pretraining** **5**
+48: 
+49: 
+50: 2.1 Pretraining Data . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+51: 
+52: 
+53: 2.2 Training Details . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+54: 
+55: 
+56: 2.3 Llama 2 Pretrained Model Evaluation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+57: 
+58: 
+59: **3** **Fine-tuning** **8**
+60: 
+61: 
+62: 3.1 Supervised Fine-Tuning (SFT) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+63: 
+64: 
+65: 3.2 Reinforcement Learning with Human Feedback (RLHF) . . . . . . . . . . . . . . . . . . . . . 9
+66: 
+67: 
+68: 3.3 System Message for Multi-Turn Consistency . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+69: 
+70: 
+71: 3.4 RLHF Results . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+72: 
+73: 
+74: **4** **Safety** **20**
+75: 
+76: 
+77: 4.1 Safety in Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+78: 
+79: 
+80: 4.2 Safety Fine-Tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+81: 
+82: 
+83: 4.3 Red Teaming . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+84: 
+85: 
+86: 4.4 Safety Evaluation of Llama 2-Chat . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+87: 
+88: 
+89: **5** **Discussion** **32**
+90: 
+91: 
+92: 5.1 Learnings and Observations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+93: 
+94: 
+95: 5.2 Limitations and Ethical Considerations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+96: 
+97: 
+98: 5.3 Responsible Release Strategy . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+99: 
+100: 
+101: **6** **Related Work** **35**
+102: 
+103: 
+104: **7** **Conclusion** **36**
+105: 
+106: 
+107: **A Appendix** **46**
+108: 
+109: 
+110: A.1 Contributions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 46
+111: 
+112: 
+113: A.2 Additional Details for Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 47
+114: 
+115: 
+116: A.3 Additional Details for Fine-tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 51
+117: 
+118: 
+119: A.4 Additional Details for Safety . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 58
+120: 
+121: 
+122: A.5 Data Annotation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 72
+123: 
+124: 
+125: A.6 Dataset Contamination . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 75
+126: 
+127: 
+128: A.7 Model Card . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 77
+129: 
+```
+Range: 130, 200
+Comment: Introduction and start of document
+```
+130: 
+131: 2
+132: 
+133: 
+134: ![](./img/2307.09288v2.pdf-2-0.png)
+135: 
+136: **Figure 1: Helpfulness human evaluation** results for Llama
+137: 2-Chat compared to other open-source and closed-source
+138: models. Human raters compared model generations on ~4k
+139: prompts consisting of both single and multi-turn prompts.
+140: The 95% confidence intervals for this evaluation are between
+141: 1% and 2%. More details in Section 3.4.2. While reviewing
+142: these results, it is important to note that human evaluations
+143: can be noisy due to limitations of the prompt set, subjectivity
+144: of the review guidelines, subjectivity of individual raters,
+145: and the inherent difficulty of comparing generations.
+146: 
+147: ### **1 Introduction**
+148: 
+149: 
+150: 
+151: ![](./img/2307.09288v2.pdf-2-1.png)
+152: 
+153: **Figure 2: Win-rate % for helpfulness and**
+154: **safety between commercial-licensed base-**
+155: **lines and Llama 2-Chat**, according to GPT4. To complement the human evaluation, we
+156: used a more capable model, not subject to
+157: our own guidance. Green area indicates our
+158: model is better according to GPT-4. To remove
+159: ties, we used _win/_ ( _win_ + _loss_ ). The orders in
+160: which the model responses are presented to
+161: GPT-4 are randomly swapped to alleviate bias.
+162: 
+163: 
+164: 
+165: Large Language Models (LLMs) have shown great promise as highly capable AI assistants that excel in
+166: complex reasoning tasks requiring expert knowledge across a wide range of fields, including in specialized
+167: domains such as programming and creative writing. They enable interaction with humans through intuitive
+168: chat interfaces, which has led to rapid and widespread adoption among the general public.
+169: 
+170: 
+171: The capabilities of LLMs are remarkable considering the seemingly straightforward nature of the training
+172: methodology. Auto-regressive transformers are pretrained on an extensive corpus of self-supervised data,
+173: followed by alignment with human preferences via techniques such as Reinforcement Learning with Human
+174: Feedback (RLHF). Although the training methodology is simple, high computational requirements have
+175: limited the development of LLMs to a few players. There have been public releases of pretrained LLMs
+176: (such as BLOOM (Scao et al., 2022), LLaMa-1 (Touvron et al., 2023), and Falcon (Penedo et al., 2023)) that
+177: match the performance of closed pretrained competitors like GPT-3 (Brown et al., 2020) and Chinchilla
+178: (Hoffmann et al., 2022), but none of these models are suitable substitutes for closed “product” LLMs, such
+179: as ChatGPT, BARD, and Claude. These closed product LLMs are heavily fine-tuned to align with human
+180: preferences, which greatly enhances their usability and safety. This step can require significant costs in
+181: compute and human annotation, and is often not transparent or easily reproducible, limiting progress within
+182: the community to advance AI alignment research.
+183: 
+184: 
+185: In this work, we develop and release Llama 2, a family of pretrained and fine-tuned LLMs, _Llama 2_ and
+186: _Llama 2-Chat_, at scales up to 70B parameters. On the series of helpfulness and safety benchmarks we tested,
+187: Llama 2-Chat models generally perform better than existing open-source models. They also appear to
+188: be on par with some of the closed-source models, at least on the human evaluations we performed (see
+189: Figures 1 and 3). We have taken measures to increase the safety of these models, using safety-specific data
+190: annotation and tuning, as well as conducting red-teaming and employing iterative evaluations. Additionally,
+191: this paper contributes a thorough description of our fine-tuning methodology and approach to improving
+192: LLM safety. We hope that this openness will enable the community to reproduce fine-tuned LLMs and
+193: continue to improve the safety of those models, paving the way for more responsible development of LLMs.
+194: We also share novel observations we made during the development of _Llama 2_ and _Llama 2-Chat_, such as
+195: the emergence of tool usage and temporal organization of knowledge.
+196: 
+197: 
+198: 3
+199: 
+200: 
+```
+# Read Buffer
+
+Read file /root/workspace/agentic_rag/output.md, file total line count 5972
+```
+1: ## **Llama 2: Open Foundation and Fine-Tuned Chat Models**
+2: 
+3: Hugo Touvron _[∗]_ Louis Martin _[†]_ Kevin Stone _[†]_
+4: 
+5: Peter Albert Amjad Almahairi Yasmine Babaei Nikolay Bashlykov Soumya Batra
+6: Prajjwal Bhargava Shruti Bhosale Dan Bikel Lukas Blecher Cristian Canton Ferrer Moya Chen
+7: Guillem Cucurull David Esiobu Jude Fernandes Jeremy Fu Wenyin Fu Brian Fuller
+8: Cynthia Gao Vedanuj Goswami Naman Goyal Anthony Hartshorn Saghar Hosseini Rui Hou
+9: Hakan Inan Marcin Kardas Viktor Kerkez Madian Khabsa Isabel Kloumann Artem Korenev
+10: Punit Singh Koura Marie-Anne Lachaux Thibaut Lavril Jenya Lee Diana Liskovich
+11: Yinghai Lu Yuning Mao Xavier Martinet Todor Mihaylov Pushkar Mishra
+12: Igor Molybog Yixin Nie Andrew Poulton Jeremy Reizenstein Rashi Rungta Kalyan Saladi
+13: Alan Schelten Ruan Silva Eric Michael Smith Ranjan Subramanian Xiaoqing Ellen Tan Binh Tang
+14: Ross Taylor Adina Williams Jian Xiang Kuan Puxin Xu Zheng Yan Iliyan Zarov Yuchen Zhang
+15: Angela Fan Melanie Kambadur Sharan Narang Aurelien Rodriguez Robert Stojnic
+16: Sergey Edunov Thomas Scialom _[∗]_
+17: 
+18: 
+19: **GenAI, Meta**
+20: 
+21: 
+22: **Abstract**
+23: 
+24: 
+25: In this work, we develop and release Llama 2, a collection of pretrained and fine-tuned
+26: large language models (LLMs) ranging in scale from 7 billion to 70 billion parameters.
+27: Our fine-tuned LLMs, called Llama 2-Chat, are optimized for dialogue use cases. Our
+28: models outperform open-source chat models on most benchmarks we tested, and based on
+29: our human evaluations for helpfulness and safety, may be a suitable substitute for closedsource models. We provide a detailed description of our approach to fine-tuning and safety
+30: improvements of Llama 2-Chat in order to enable the community to build on our work and
+31: contribute to the responsible development of LLMs.
+32: 
+33: 
+34: _∗_ Equal contribution, corresponding authors: {tscialom, htouvron}@meta.com
+35: 
+36: _†_ Second author
+37: 
+38: 
+39: Contributions for all the authors can be found in Section A.1.
+40: 
+41: 
+42: ### **Contents**
+43: 
+44: **1** **Introduction** **3**
+45: 
+46: 
+47: **2** **Pretraining** **5**
+48: 
+49: 
+50: 2.1 Pretraining Data . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+51: 
+52: 
+53: 2.2 Training Details . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+54: 
+55: 
+56: 2.3 Llama 2 Pretrained Model Evaluation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+57: 
+58: 
+59: **3** **Fine-tuning** **8**
+60: 
+61: 
+62: 3.1 Supervised Fine-Tuning (SFT) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+63: 
+64: 
+65: 3.2 Reinforcement Learning with Human Feedback (RLHF) . . . . . . . . . . . . . . . . . . . . . 9
+66: 
+67: 
+68: 3.3 System Message for Multi-Turn Consistency . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+69: 
+70: 
+71: 3.4 RLHF Results . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+72: 
+73: 
+74: **4** **Safety** **20**
+75: 
+76: 
+77: 4.1 Safety in Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+78: 
+79: 
+80: 4.2 Safety Fine-Tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+81: 
+82: 
+83: 4.3 Red Teaming . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+84: 
+85: 
+86: 4.4 Safety Evaluation of Llama 2-Chat . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+87: 
+88: 
+89: **5** **Discussion** **32**
+90: 
+91: 
+92: 5.1 Learnings and Observations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+93: 
+94: 
+95: 5.2 Limitations and Ethical Considerations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+96: 
+97: 
+98: 5.3 Responsible Release Strategy . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+99: 
+100: 
+101: **6** **Related Work** **35**
+102: 
+103: 
+104: **7** **Conclusion** **36**
+105: 
+106: 
+107: **A Appendix** **46**
+108: 
+109: 
+110: A.1 Contributions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 46
+111: 
+112: 
+113: A.2 Additional Details for Pretraining . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 47
+114: 
+115: 
+116: A.3 Additional Details for Fine-tuning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 51
+117: 
+118: 
+119: A.4 Additional Details for Safety . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 58
+120: 
+121: 
+122: A.5 Data Annotation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 72
+123: 
+124: 
+125: A.6 Dataset Contamination . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 75
+126: 
+127: 
+128: A.7 Model Card . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 77
+129: 
+130: 
+131: 2
+132: 
+133: 
+134: ![](./img/2307.09288v2.pdf-2-0.png)
+135: 
+136: **Figure 1: Helpfulness human evaluation** results for Llama
+137: 2-Chat compared to other open-source and closed-source
+138: models. Human raters compared model generations on ~4k
+139: prompts consisting of both single and multi-turn prompts.
+140: The 95% confidence intervals for this evaluation are between
+141: 1% and 2%. More details in Section 3.4.2. While reviewing
+142: these results, it is important to note that human evaluations
+143: can be noisy due to limitations of the prompt set, subjectivity
+144: of the review guidelines, subjectivity of individual raters,
+145: and the inherent difficulty of comparing generations.
+146: 
+147: ### **1 Introduction**
+148: 
+149: 
+150: 
+151: ![](./img/2307.09288v2.pdf-2-1.png)
+152: 
+153: **Figure 2: Win-rate % for helpfulness and**
+154: **safety between commercial-licensed base-**
+155: **lines and Llama 2-Chat**, according to GPT4. To complement the human evaluation, we
+156: used a more capable model, not subject to
+157: our own guidance. Green area indicates our
+158: model is better according to GPT-4. To remove
+159: ties, we used _win/_ ( _win_ + _loss_ ). The orders in
+160: which the model responses are presented to
+161: GPT-4 are randomly swapped to alleviate bias.
+162: 
+163: 
+164: 
+165: Large Language Models (LLMs) have shown great promise as highly capable AI assistants that excel in
+166: complex reasoning tasks requiring expert knowledge across a wide range of fields, including in specialized
+167: domains such as programming and creative writing. They enable interaction with humans through intuitive
+168: chat interfaces, which has led to rapid and widespread adoption among the general public.
+169: 
+170: 
+171: The capabilities of LLMs are remarkable considering the seemingly straightforward nature of the training
+172: methodology. Auto-regressive transformers are pretrained on an extensive corpus of self-supervised data,
+173: followed by alignment with human preferences via techniques such as Reinforcement Learning with Human
+174: Feedback (RLHF). Although the training methodology is simple, high computational requirements have
+175: limited the development of LLMs to a few players. There have been public releases of pretrained LLMs
+176: (such as BLOOM (Scao et al., 2022), LLaMa-1 (Touvron et al., 2023), and Falcon (Penedo et al., 2023)) that
+177: match the performance of closed pretrained competitors like GPT-3 (Brown et al., 2020) and Chinchilla
+178: (Hoffmann et al., 2022), but none of these models are suitable substitutes for closed “product” LLMs, such
+179: as ChatGPT, BARD, and Claude. These closed product LLMs are heavily fine-tuned to align with human
+180: preferences, which greatly enhances their usability and safety. This step can require significant costs in
+181: compute and human annotation, and is often not transparent or easily reproducible, limiting progress within
+182: the community to advance AI alignment research.
+183: 
+184: 
+185: In this work, we develop and release Llama 2, a family of pretrained and fine-tuned LLMs, _Llama 2_ and
+186: _Llama 2-Chat_, at scales up to 70B parameters. On the series of helpfulness and safety benchmarks we tested,
+187: Llama 2-Chat models generally perform better than existing open-source models. They also appear to
+188: be on par with some of the closed-source models, at least on the human evaluations we performed (see
+189: Figures 1 and 3). We have taken measures to increase the safety of these models, using safety-specific data
+190: annotation and tuning, as well as conducting red-teaming and employing iterative evaluations. Additionally,
+191: this paper contributes a thorough description of our fine-tuning methodology and approach to improving
+192: LLM safety. We hope that this openness will enable the community to reproduce fine-tuned LLMs and
+193: continue to improve the safety of those models, paving the way for more responsible development of LLMs.
+194: We also share novel observations we made during the development of _Llama 2_ and _Llama 2-Chat_, such as
+195: the emergence of tool usage and temporal organization of knowledge.
+196: 
+197: 
+198: 3
+199: 
+200: 
+```
+# Current TOC:
+```
+Title Llama 2: Open Foundation and Fine-Tuned Chat Models (line 1)
+Affiliation GenAI, Meta (line 19)
+Abstract Abstract (line 22)
+Contents Contents (line 42)
+1 Introduction (line 147)
+2 Pretraining (line 259)
+2.1 Pretraining Data (line 269)
+2.2 Training Details (line 283)
+2.2.1 Training Hardware & Carbon Footprint (line 357)
+2.3 Llama 2 Pretrained Model Evaluation (line 421)
+3 Fine-tuning (line 543)
+3.1 Supervised Fine-Tuning (SFT) (line 559)
+3.2 Reinforcement Learning with Human Feedback (RLHF) (line 625)
+3.2.1 Human Preference Data Collection (line 640)
+3.2.2 Reward Modeling (line 693)
+3.2.3 Iterative Fine-Tuning (line 896)
+3.3 System Message for Multi-Turn Consistency (line 1066)
+3.4 RLHF Results (line 1149)
+3.4.1 RLHF Model-Based Evaluation (line 1152)
+3.4.2 Human Evaluation (line 1315)
+4 Safety (line 1385)
+4.1 Safety in Pretraining (line 1398)
+4.2 Safety Fine-Tuning (line 1639)
+4.2.1 Safety Categories and Annotation Guidelines (line 1661)
+4.2.2 Safety Supervised Fine-Tuning (line 1689)
+4.2.3 Safety RLHF (line 1702)
+4.2.4 Context Distillation for Safety (line 1930)
+4.3 Red Teaming (line 2032)
+4.4 Safety Evaluation of Llama 2-Chat (line 2106)
+5 Discussion (line 2241)
+5.1 Learnings and Observations (line 2248)
+5.2 Limitations and Ethical Considerations (line 2376)
+5.3 Responsible Release Strategy (line 2420)
+6 Related Work (line 2459)
+7 Conclusion (line 2534)
+References References (line 2550)
+A Appendix (line 3172)
+A.1 Contributions (line 3174)
+A.1.1 Acknowledgments (line 3204)
+A.2 Additional Details for Pretraining (line 3257)
+A.2.1 Architecture Changes Compared to Llama 1 (line 3260)
+A.2.2 Additional Details for Pretrained Models Evaluation (line 3352)
+A.3 Additional Details for Fine-tuning (line 3689)
+A.3.1 Detailed Statistics of Meta Human Preference Data (line 3696)
+A.3.2 Curriculum Strategy for Meta Human Preference Data (line 3715)
+A.3.3 Ablation on Ranking Loss with Preference Rating-based Margin for Reward Modeling (line 3725)
+A.4 Additional Details for Safety (line 4141)
+A.4.1 Tension between Safety and Helpfulness in Reward Modeling (line 4144)
+A.4.2 Qualitative Results on Safety Data Scaling (line 4156)
+A.4.3 English Pronouns (line 4169)
+A.4.4 Context Distillation Preprompts (line 4319)
+A.4.5 Safety Errors: False Refusals and Vague Responses (line 4325)
+A.4.6 Examples of Safety Evaluation (line 4844)
+A.4.7 Description of Automatic Safety Benchmarks (line 4969)
+A.4.8 Automatic Safety Benchmark Evaluation Results (line 5007)
+A.5 Data Annotation (line 5383)
+A.5.1 SFT Annotation Instructions (line 5391)
+A.5.2 Negative User Experience Categories (line 5428)
+A.5.3 Quality Assurance Process (line 5654)
+A.5.4 Annotator Selection (line 5654)
+A.6 Dataset Contamination (line 5690)
+A.7 Model Card (line 5861)
+```
+[END OF DOCUMENT CONTEXT]
