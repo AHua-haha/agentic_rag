@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"llm_dev/agent"
+	_ "llm_dev/utils"
 	"os"
 )
 
@@ -11,8 +12,14 @@ var sss string
 
 func main() {
 
-	model := agent.NewModel("http://192.168.65.2:4000", "sk-1234")
-	agent := agent.NewBaseAgent("/root/workspace/llm_dev", *model)
+	agent.InitVectorDB()
+	defer agent.CloseVectorDB()
+
+	model := agent.NewModel("http://172.17.0.1:4000", "sk-1234")
+	agent := agent.RagAgent{
+		BaseAgent: agent.NewBaseAgent("", *model),
+	}
+	agent.SetSysprompt()
 	for {
 		reader := bufio.NewScanner(os.Stdin)
 		fmt.Print("User Prompt> ")

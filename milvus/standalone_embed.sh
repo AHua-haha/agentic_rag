@@ -40,7 +40,7 @@ EOF
         exit 1
     fi
     
-    docker run -d \
+    sudo docker run -d \
         --name milvus-standalone \
         --security-opt seccomp:unconfined \
         -e ETCD_USE_EMBED=true \
