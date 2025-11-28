@@ -9,28 +9,13 @@ import (
 	"io"
 	ctx "llm_dev/context"
 	"llm_dev/model"
+	"llm_dev/utils"
 	"os"
 	"strings"
 
 	"github.com/rs/zerolog/log"
 	"github.com/sashabaranov/go-openai"
 )
-
-type Model struct {
-	*openai.Client
-	apikey  string
-	baseUrl string
-}
-
-func NewModel(baseurl string, apikey string) *Model {
-	cfg := openai.DefaultConfig(apikey)
-	cfg.BaseURL = baseurl
-	return &Model{
-		Client:  openai.NewClientWithConfig(cfg),
-		apikey:  apikey,
-		baseUrl: baseurl,
-	}
-}
 
 type AgentContext struct {
 	userPrompt    string
@@ -125,11 +110,11 @@ func (ctx *AgentContext) registerTool(tools []model.ToolDef) {
 }
 
 type BaseAgent struct {
-	model Model
+	model utils.Model
 	root  string
 }
 
-func NewBaseAgent(codebase string, model Model) BaseAgent {
+func NewBaseAgent(codebase string, model utils.Model) BaseAgent {
 
 	agent := BaseAgent{
 		model: model,

@@ -1,12 +1,13 @@
 package agent
 
 import (
+	"llm_dev/utils"
 	"testing"
 )
 
 func TestReplaceAgent(t *testing.T) {
 	t.Run("test replace agent", func(t *testing.T) {
-		model := NewModel("http://192.168.65.2:4000", "sk-1234")
+		model := utils.NewModel("http://192.168.65.2:4000", "sk-1234")
 		repAgent := ReplaceAgent{
 			BaseAgent: NewBaseAgent("", *model),
 		}

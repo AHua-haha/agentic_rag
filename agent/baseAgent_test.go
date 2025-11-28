@@ -2,6 +2,7 @@ package agent
 
 import (
 	"fmt"
+	"llm_dev/utils"
 	"testing"
 )
 
@@ -17,7 +18,7 @@ func TestBaseAgent_genRequest(t *testing.T) {
 		// 	Db:       database.GetDBClient().Database("llm_dev"),
 		// }
 		// op.ExtractDefs()
-		model := NewModel("http://192.168.65.2:4000", "sk-1234")
+		model := utils.NewModel("http://192.168.65.2:4000", "sk-1234")
 		agent := NewBaseAgent("/root/workspace/llm_dev", *model)
 		for {
 			var userPrompt string

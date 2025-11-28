@@ -1,4 +1,4 @@
-package agent
+package utils
 
 import (
 	"context"
@@ -13,6 +13,22 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/sashabaranov/go-openai"
 )
+
+type Model struct {
+	*openai.Client
+	apikey  string
+	baseUrl string
+}
+
+func NewModel(baseurl string, apikey string) *Model {
+	cfg := openai.DefaultConfig(apikey)
+	cfg.BaseURL = baseurl
+	return &Model{
+		Client:  openai.NewClientWithConfig(cfg),
+		apikey:  apikey,
+		baseUrl: baseurl,
+	}
+}
 
 type TextChunk struct {
 	Headings []string
@@ -52,7 +68,7 @@ func ProcessFile() {
 func embedText(text []string) [][]float32 {
 	base_url := "https://openrouter.ai/api/v1"
 
-	model := NewModel(base_url, "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")
+	model := NewModel(base_url, "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")
 	resp, err := model.CreateEmbeddings(context.TODO(), openai.EmbeddingRequestStrings{
 		Model:          "openai/text-embedding-3-small",
 		Input:          text,
@@ -253,7 +269,7 @@ func (mgr *BuildTextVectorMgr) insert() {
 	}
 }
 
-func (mgr *BuildTextVectorMgr) semanticSearch(query string, topk int, heading ...string) []TextChunk {
+func (mgr *BuildTextVectorMgr) SemanticSearch(query string, topk int, heading ...string) []TextChunk {
 	embed := embedText([]string{query})
 	resultSets, err := g_client.Search(context.TODO(), milvusclient.NewSearchOption(
 		"my_collection", // collectionName
@@ -316,7 +332,7 @@ func (mgr *BuildTextVectorMgr) lexicalSearch(query string, topk int) []TextChunk
 	return res
 }
 
-func (mgr *BuildTextVectorMgr) querySeq(seqs []int) []TextChunk {
+func (mgr *BuildTextVectorMgr) QuerySeq(seqs []int) []TextChunk {
 	seqsStr, _ := json.Marshal(seqs)
 	fileter := fmt.Sprintf("seq in %s", seqsStr)
 	resultSet, err := g_client.Query(context.TODO(), milvusclient.NewQueryOption("my_collection").

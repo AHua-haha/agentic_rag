@@ -1,4 +1,4 @@
-package agent
+package utils
 
 import (
 	"fmt"
@@ -58,7 +58,7 @@ func TestBuildMgr(t *testing.T) {
 	t.Run("test build text vetor mgr", func(t *testing.T) {
 		// TODO: construct the receiver type.
 		var mgr BuildTextVectorMgr
-		mgr.semanticSearch("what is rlhf", 10)
+		mgr.SemanticSearch("what is rlhf", 10)
 	})
 }
 
@@ -68,7 +68,7 @@ func TestQuerSeq(t *testing.T) {
 	t.Run("test query seq", func(t *testing.T) {
 		// TODO: construct the receiver type.
 		var mgr BuildTextVectorMgr
-		got := mgr.querySeq([]int{2, 33, 3, 5})
+		got := mgr.QuerySeq([]int{2, 33, 3, 5})
 		fmt.Printf("len(got): %v\n", len(got))
 		for _, text := range got {
 			fmt.Printf("text.Seq: %v\n", text.Seq)
