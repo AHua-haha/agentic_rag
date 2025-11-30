@@ -18,6 +18,8 @@ import (
 )
 
 type AgentContext struct {
+	model         string
+	sysprompt     string
 	userPrompt    string
 	history       []openai.ChatCompletionMessage
 	finished      bool
@@ -42,7 +44,7 @@ func NewAgentContext(userprompt string, ctxMgr ...ctx.ContextMgr) *AgentContext 
 }
 func (ctx *AgentContext) genRequest(sysPrompt string) openai.ChatCompletionRequest {
 	req := openai.ChatCompletionRequest{
-		Model:  "openrouter/openai/gpt-5-mini",
+		Model:  ctx.model,
 		Stream: true,
 	}
 
@@ -58,7 +60,10 @@ func (ctx *AgentContext) genRequest(sysPrompt string) openai.ChatCompletionReque
 		Role:    "user",
 		Content: ctx.userPrompt,
 	}
-	req.Messages = append(req.Messages, sysmsg, usermsg)
+	req.Messages = append(req.Messages, sysmsg)
+	if ctx.userPrompt != "" {
+		req.Messages = append(req.Messages, usermsg)
+	}
 	req.Messages = append(req.Messages, ctx.history...)
 	for _, tool := range ctx.toolHandlerMap {
 		req.Tools = append(req.Tools, openai.Tool{
