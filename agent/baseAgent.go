@@ -176,6 +176,7 @@ func (agent *BaseAgent) handleResponse(stream *openai.ChatCompletionStream, ctx 
 		}
 		aggregate.addChunk(d)
 	}
+	fmt.Printf("finishReason: %s\n", finishReason)
 	fmt.Print("END OF RESP\n\n")
 	if !errors.Is(err, io.EOF) {
 		ctx.finished = true

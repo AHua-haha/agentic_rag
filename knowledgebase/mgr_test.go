@@ -28,6 +28,6 @@ func TestSummaryPrompt(t *testing.T) {
 		llmAgent := agent.SimpleAgent{
 			BaseAgent: agent.NewBaseAgent("", *model),
 		}
-		llmAgent.NewUserTask(p, "anthropic/claude-haiku-4.5")
+		llmAgent.NewUserTask(p, "anthropic/claude-haiku-4.5", nil)
 	})
 }

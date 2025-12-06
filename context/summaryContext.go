@@ -18,7 +18,7 @@ var docToc = openai.FunctionDefinition{
 	Name:   "doc_toc",
 	Strict: true,
 	Description: `
-Mark the section range and section name.
+Record the table of content of the document.
 `,
 	Parameters: jsonschema.Definition{
 		Type:                 jsonschema.Object,
@@ -45,7 +45,7 @@ Mark the section range and section name.
 						},
 						"end": {
 							Type:        jsonschema.Number,
-							Description: "the end paragraph id of the section",
+							Description: "the end paragraph id of the section, use -1 if you can not identify the end",
 						},
 					},
 					Required: []string{"level", "name", "start", "end"},
@@ -168,9 +168,14 @@ type Summary struct {
 }
 
 type Section struct {
-	Name       string
-	SubSection []string
-	ChunkRange [2]int
+	Name  string
+	Level int
+	Start int
+	End   int
+}
+
+func (sec *Section) toString() string {
+	return fmt.Sprintf("%s %s (start: %d, end: %d)", strings.Repeat("  ", sec.Level), sec.Name, sec.Start, sec.End)
 }
 
 type SummaryCtxMgr struct {
@@ -178,13 +183,13 @@ type SummaryCtxMgr struct {
 	chunks   []string
 	docStack []Summary
 
-	sectionTree map[string]Section
+	docToc []Section
+
+	lastEnd int
 }
 
 func NewSummaryMgr(file string) SummaryCtxMgr {
-	mgr := SummaryCtxMgr{
-		sectionTree: map[string]Section{},
-	}
+	mgr := SummaryCtxMgr{}
 	mgr.loadFile(file)
 	mgr.loadChunks(5)
 	return mgr
@@ -196,58 +201,68 @@ The index is the summary of the content in the document, and the values is the a
 `
 
 var sectionTreesysPrompt = `
-You are a document processing agent, your job is to read the document and understand the document structure.
-And use the tool to mark each section.
+You are a expert document processing agent, your job is to read the document and understand the document structure.
+And use the tool to record the table of content of the document.
 `
 
-func (ctx *SummaryCtxMgr) GetSysPrompt() string {
-	return sectionTreesysPrompt
+func (mgr *SummaryCtxMgr) Next() (string, string, []model.ToolDef, bool) {
+
+	return sectionTreePrompt, mgr.userPrompt(), []model.ToolDef{mgr.tocTool()}, mgr.lastEnd == len(mgr.chunks)
 }
 
-func (mgr *SummaryCtxMgr) WriteContext(buf *bytes.Buffer) {
-	buf.WriteString(sectionTreePrompt)
-	buf.WriteString("<DOCUMENT>\n")
-	for _, chunk := range mgr.docStack {
-		id := chunk.ChunkRange
-		if id[0] == id[1] {
-			buf.WriteString(fmt.Sprintf("[%d]:", id[0]))
-		} else {
-			buf.WriteString(fmt.Sprintf("[%d-%d]:", id[0], id[1]))
-		}
-		buf.WriteString(chunk.Content)
-		buf.WriteString("\n\n")
+func (mgr *SummaryCtxMgr) content(builder *strings.Builder) {
+	maxIdx := -1
+	for _, sec := range mgr.docToc {
+		maxIdx = max(maxIdx, sec.End)
 	}
-	buf.WriteString(fmt.Sprintf("=== %d paragraphs remaining ===\n", len(mgr.chunks)-mgr.chunkIdx))
-	buf.WriteString("</DOCUMENT>\n")
+	startIdx := maxIdx + 1
+	for _, sec := range mgr.docToc {
+		builder.WriteString(sec.toString())
+		builder.WriteByte('\n')
+	}
+	end := min(len(mgr.chunks), startIdx+20)
+	mgr.lastEnd = end
+	for i := startIdx; i < end; i++ {
+		builder.WriteString(fmt.Sprintf("[%d]: ", i))
+		builder.WriteString(mgr.chunks[i])
+		builder.WriteByte('\n')
+	}
+}
+func (mgr *SummaryCtxMgr) userPrompt() string {
+	var builder strings.Builder
+	builder.WriteString(`
+The document shows the partial table of contents and the remaining contents of the document.
+Read the table of content and the remaining contents thoroughly, conplete the table of contents of the document. Record it with the tool.
+
+IMPORTANT: understand the section hierarchy and make sure the level of section is correct.
+IMPORTANT: generate the table of content solely based on the document contents.
+IMPORTANT: this only shows part of the document, NEVER guess the table of contents if you are not sure.
+IMPORTANT: if you can not identify the end of some section, record the end of the section with -1, change it when you can identify the section end.
+
+`)
+	builder.WriteString("<DOCUMENT>\n")
+	mgr.content(&builder)
+	builder.WriteString("</DOCUMENT>\n")
+	return builder.String()
 }
 
-func (mgr *SummaryCtxMgr) markSection(name string, s, e int) string {
-	if _, exist := mgr.sectionTree[name]; exist {
-		return fmt.Sprintf("section '%s' already exist", name)
-	}
-	mgr.sectionTree[name] = Section{
-		Name:       name,
-		ChunkRange: [2]int{s, e},
-	}
-	length := len(mgr.docStack)
-	stack_s, stack_e := -1, -1
-	for i := length - 1; i >= 0; i-- {
-		if mgr.docStack[i].ChunkRange[0] == s {
-			stack_s = i
+func (mgr *SummaryCtxMgr) recordToc(toc []Section) string {
+	for _, sec := range toc {
+		if sec.End == -1 {
+			continue
 		}
-		if mgr.docStack[i].ChunkRange[1] == e {
-			stack_e = i
+		if sec.Start > sec.End {
+			return fmt.Sprintf("section %s range %d-%d is not valid", sec.Name, sec.Start, sec.End)
+		}
+		if sec.End > len(mgr.chunks) {
+			return fmt.Sprintf("section %s range %d is not valid, exceed the total paragraphs", sec.Name, sec.End)
+		}
+		if sec.Start > len(mgr.chunks) {
+			return fmt.Sprintf("section %s range %d is not valid, exceed the total paragraphs", sec.Name, sec.Start)
 		}
 	}
-	if stack_s == -1 || stack_e == -1 || stack_s > stack_e {
-		return fmt.Sprint("do not match paragraphs range %d-%d", s, e)
-	}
-	groupSummary := Summary{Content: fmt.Sprintf("Section: %s\n", name), ChunkRange: [2]int{stack_s, stack_e}}
-	newStack := mgr.docStack[:stack_s]
-	newStack = append(newStack, groupSummary)
-	newStack = append(newStack, mgr.docStack[stack_e+1:]...)
-	mgr.docStack = newStack
-	return fmt.Sprintf("create section '%s' success", name)
+	mgr.docToc = toc
+	return "record document toc success"
 }
 
 func (mgr *SummaryCtxMgr) summary(s, e string, content string) string {
@@ -299,40 +314,21 @@ func (mgr *SummaryCtxMgr) loadFile(file string) {
 	mgr.chunks = re.Split(string(data), -1)
 }
 
-func (mgr *SummaryCtxMgr) sectionTreeTool() []model.ToolDef {
-
-	markHandler := func(argsStr string) (string, error) {
+func (mgr *SummaryCtxMgr) tocTool() model.ToolDef {
+	handler := func(argsStr string) (string, error) {
 		args := struct {
-			Start int
-			End   int
-			Name  string
+			Toc []Section
 		}{}
 		err := json.Unmarshal([]byte(argsStr), &args)
 		if err != nil {
 			return "", err
 		}
-		return mgr.markSection(args.Name, args.Start, args.End), nil
+		return mgr.recordToc(args.Toc), nil
 	}
-	loadHandler := func(argsStr string) (string, error) {
-		args := struct {
-			Number int
-		}{}
-		err := json.Unmarshal([]byte(argsStr), &args)
-		if err != nil {
-			return "", err
-		}
-		return mgr.loadChunks(args.Number), nil
-	}
-	res := []model.ToolDef{
-		{FunctionDefinition: markSection, Handler: markHandler},
-		{FunctionDefinition: loadNext, Handler: loadHandler},
-	}
-	return res
+	return model.ToolDef{FunctionDefinition: docToc, Handler: handler}
 }
-
-func (mgr *SummaryCtxMgr) summarizeTool() []model.ToolDef {
-
-	summarizeHandler := func(argsStr string) (string, error) {
+func (mgr *SummaryCtxMgr) summaryTool() model.ToolDef {
+	handler := func(argsStr string) (string, error) {
 		args := struct {
 			Start   string
 			End     string
@@ -344,7 +340,10 @@ func (mgr *SummaryCtxMgr) summarizeTool() []model.ToolDef {
 		}
 		return mgr.summary(args.Start, args.End, args.Content), nil
 	}
-	loadHandler := func(argsStr string) (string, error) {
+	return model.ToolDef{FunctionDefinition: summarize, Handler: handler}
+}
+func (mgr *SummaryCtxMgr) loadTool() model.ToolDef {
+	handler := func(argsStr string) (string, error) {
 		args := struct {
 			Number int
 		}{}
@@ -354,13 +353,12 @@ func (mgr *SummaryCtxMgr) summarizeTool() []model.ToolDef {
 		}
 		return mgr.loadChunks(args.Number), nil
 	}
-	res := []model.ToolDef{
-		{FunctionDefinition: summarize, Handler: summarizeHandler},
-		{FunctionDefinition: loadNext, Handler: loadHandler},
-	}
-	return res
+	return model.ToolDef{FunctionDefinition: loadNext, Handler: handler}
 }
 
 func (mgr *SummaryCtxMgr) GetToolDef() []model.ToolDef {
-	return mgr.sectionTreeTool()
+	return nil
+}
+
+func (mgr *SummaryCtxMgr) WriteContext(buf *bytes.Buffer) {
 }

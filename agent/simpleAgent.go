@@ -11,10 +11,10 @@ type SimpleAgent struct {
 	BaseAgent
 }
 
-func (agent *SimpleAgent) NewUserTask(sysprmpt string, model_name string, tool model.ToolDef) {
+func (agent *SimpleAgent) NewUserTask(sysprmpt string, model_name string, tool []model.ToolDef) {
 	agentCtx := NewAgentContext("")
 	agentCtx.model = model_name
-	agentCtx.registerTool([]model.ToolDef{tool})
+	agentCtx.registerTool(tool)
 	for {
 		req := agentCtx.genRequest(replaceSysPrompt)
 		stream, err := agent.model.CreateChatCompletionStream(context.TODO(), req)

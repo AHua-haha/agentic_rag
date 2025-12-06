@@ -3,9 +3,7 @@ package knowledgebase
 import (
 	"encoding/json"
 	"fmt"
-	"llm_dev/agent"
 	"llm_dev/model"
-	"llm_dev/utils"
 	"os"
 	"regexp"
 	"strings"
@@ -164,9 +162,9 @@ IMPORTANT: refer each section in this format: section ** <name> **.
 
 func (mgr *DocMgr) genSummary(section *DocSection) {
 
-	model := utils.NewModel("https://openrouter.ai/api/v1", "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")
-	llmAgent := agent.SimpleAgent{
-		BaseAgent: agent.NewBaseAgent("", *model),
-	}
-	llmAgent.NewUserTask("", "")
+	// model := utils.NewModel("https://openrouter.ai/api/v1", "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")
+	// llmAgent := agent.SimpleAgent{
+	// 	BaseAgent: agent.NewBaseAgent("", *model),
+	// }
+	// llmAgent.NewUserTask("", "")
 }
