@@ -162,6 +162,17 @@ IMPORTANT: DO NOT output any of your reasoning or explaination, just use the too
 
 `
 
+type Node struct {
+	idx        int
+	summary    string
+	summarized bool
+
+	isHeading bool
+	level     int
+	start     int
+	end       int
+}
+
 type Summary struct {
 	Content    string
 	ChunkRange [2]int
@@ -183,6 +194,8 @@ type SummaryCtxMgr struct {
 	chunks   []string
 	docStack []Summary
 
+	docNode []Node
+
 	docToc []Section
 
 	lastEnd int
@@ -191,8 +204,57 @@ type SummaryCtxMgr struct {
 func NewSummaryMgr(file string) SummaryCtxMgr {
 	mgr := SummaryCtxMgr{}
 	mgr.loadFile(file)
-	mgr.loadChunks(5)
 	return mgr
+}
+
+func getHeadingLevel(s string) int {
+	// Trim leading whitespace
+	s = strings.TrimSpace(s)
+
+	// Regular expression to match Markdown headings (one or more '#' followed by a space)
+	re := regexp.MustCompile(`^#{1,6} `)
+	if re.MatchString(s) {
+		// Count the number of `#` characters at the beginning
+		level := strings.Count(s, "#")
+		return level
+	}
+	return 0 // return 0 if it's not a heading
+}
+
+func (mgr *SummaryCtxMgr) genNode() {
+	mgr.docNode = make([]Node, len(mgr.chunks))
+	headings := []*Node{}
+	for i, chunk := range mgr.chunks {
+		level := getHeadingLevel(chunk)
+		if level == 0 {
+			mgr.docNode[i] = Node{
+				idx:        i,
+				summarized: false,
+			}
+		} else {
+			mgr.docNode[i] = Node{
+				idx:        i,
+				summarized: false,
+
+				isHeading: true,
+				level:     level,
+				start:     i,
+			}
+			p := len(headings) - 1
+			for ; p >= 0; p-- {
+				if headings[p].level >= level {
+					headings[p].end = i - 1
+				} else {
+					break
+				}
+			}
+			headings = headings[:p+1]
+			headings = append(headings, &mgr.docNode[i])
+		}
+	}
+	for _, node := range headings {
+		node.end = len(mgr.chunks) - 1
+	}
 }
 
 var sysprompt = `
@@ -266,28 +328,7 @@ func (mgr *SummaryCtxMgr) recordToc(toc []Section) string {
 }
 
 func (mgr *SummaryCtxMgr) summary(s, e string, content string) string {
-	length := len(mgr.docStack)
-	stack_s, stack_e := -1, -1
-	p_s, p_e := 0, 0
-	for i := length - 1; i >= 0; i-- {
-		if strings.HasPrefix(mgr.docStack[i].Content, s) {
-			stack_s = i
-			p_s = mgr.docStack[i].ChunkRange[0]
-		}
-		if strings.HasPrefix(mgr.docStack[i].Content, e) {
-			stack_e = i
-			p_e = mgr.docStack[i].ChunkRange[1]
-		}
-	}
-	if stack_s == -1 || stack_e == -1 || stack_s > stack_e {
-		return fmt.Sprint("do not match paragraphs range %d-%d", s, e)
-	}
-	groupSummary := Summary{Content: content, ChunkRange: [2]int{p_s, p_e}}
-	newStack := mgr.docStack[:stack_s]
-	newStack = append(newStack, groupSummary)
-	newStack = append(newStack, mgr.docStack[stack_e+1:]...)
-	mgr.docStack = newStack
-	return fmt.Sprintf("summarize paragraph range %d-%d", s, e)
+	return ""
 }
 
 func (mgr *SummaryCtxMgr) loadChunks(num int) string {
