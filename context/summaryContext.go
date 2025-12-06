@@ -7,6 +7,7 @@ import (
 	"llm_dev/model"
 	"os"
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/rs/zerolog/log"
@@ -15,44 +16,37 @@ import (
 )
 
 var docToc = openai.FunctionDefinition{
-	Name:   "doc_toc",
+	Name:   "record_section_info",
 	Strict: true,
 	Description: `
-Record the table of content of the document.
+Identify and record the section hierarchy of the document.
+You must record the section level and range.
+
+IMPORTANT: NEVER record the section infomation if you do not see the end of the section.
+IMPORTANT: make sure the section level is consistency.
 `,
 	Parameters: jsonschema.Definition{
 		Type:                 jsonschema.Object,
 		AdditionalProperties: false,
 		Properties: map[string]jsonschema.Definition{
-			"toc": {
-				Type:        jsonschema.Array,
-				Description: "the table of content of the document, each item represent one section",
-				Items: &jsonschema.Definition{
-					Type:                 jsonschema.Object,
-					AdditionalProperties: false,
-					Properties: map[string]jsonschema.Definition{
-						"level": {
-							Type:        jsonschema.Number,
-							Description: "the level of the section, start from 0",
-						},
-						"name": {
-							Type:        jsonschema.String,
-							Description: "the name of the section",
-						},
-						"start": {
-							Type:        jsonschema.Number,
-							Description: "the start paragraph id of the section",
-						},
-						"end": {
-							Type:        jsonschema.Number,
-							Description: "the end paragraph id of the section, use -1 if you can not identify the end",
-						},
-					},
-					Required: []string{"level", "name", "start", "end"},
-				},
+			"level": {
+				Type:        jsonschema.Number,
+				Description: "the level of the section, start from 1",
+			},
+			"name": {
+				Type:        jsonschema.String,
+				Description: "the name of the section",
+			},
+			"start": {
+				Type:        jsonschema.Number,
+				Description: "the start paragraph id of the section",
+			},
+			"end": {
+				Type:        jsonschema.Number,
+				Description: "the end paragraph id of the section",
 			},
 		},
-		Required: []string{"toc"},
+		Required: []string{"level", "name", "start", "end"},
 	},
 }
 var markSection = openai.FunctionDefinition{
@@ -263,72 +257,93 @@ The index is the summary of the content in the document, and the values is the a
 `
 
 var sectionTreesysPrompt = `
-You are a expert document processing agent, your job is to read the document and understand the document structure.
-And use the tool to record the table of content of the document.
+You are a expert document processing agent, your job is to read the document and understand the document hierarchy.
+Identify each section range and hierarchy. Use tool to record the section infomation.
+
+IMPORTANT: DO NOT output any of your reasoning or explaination, just use the tools.
+IMPORTANT: NEVER record the section information if the section are not fully shown in the document excerpt.
 `
 
 func (mgr *SummaryCtxMgr) Next() (string, string, []model.ToolDef, bool) {
 
-	return sectionTreePrompt, mgr.userPrompt(), []model.ToolDef{mgr.tocTool()}, mgr.lastEnd == len(mgr.chunks)
+	return sectionTreesysPrompt, mgr.userPrompt(), []model.ToolDef{mgr.tocTool()}, mgr.lastEnd == len(mgr.chunks)
 }
 
-func (mgr *SummaryCtxMgr) content(builder *strings.Builder) {
-	maxIdx := -1
-	for _, sec := range mgr.docToc {
-		maxIdx = max(maxIdx, sec.End)
+func (mgr *SummaryCtxMgr) content(builder *strings.Builder, window int) {
+	foldedSection := []*Section{}
+	size := len(mgr.docToc)
+	for i := 0; i < size; {
+		ptr := &mgr.docToc[i]
+		foldedSection = append(foldedSection, ptr)
+		i++
+		for i < size && mgr.docToc[i].Start <= ptr.End {
+			i++
+		}
 	}
-	startIdx := maxIdx + 1
-	for _, sec := range mgr.docToc {
-		builder.WriteString(sec.toString())
-		builder.WriteByte('\n')
+	start := 0
+	for _, sec := range foldedSection {
+		for i := start; i < sec.Start; i++ {
+			fmt.Fprintf(builder, "[%d]: %s\n", i, mgr.chunks[i])
+		}
+		fmt.Fprintf(builder, "[%d-%d]: section: %s (level %d) <FOLDED>\n\n", sec.Start, sec.End, sec.Name, sec.Level)
+		start = sec.End + 1
 	}
-	end := min(len(mgr.chunks), startIdx+20)
-	mgr.lastEnd = end
-	for i := startIdx; i < end; i++ {
-		builder.WriteString(fmt.Sprintf("[%d]: ", i))
-		builder.WriteString(mgr.chunks[i])
-		builder.WriteByte('\n')
+	end := min(start+window, len(mgr.chunks))
+	for i := start; i < end; i++ {
+		fmt.Fprintf(builder, "[%d]: %s\n", i, mgr.chunks[i])
 	}
+	fmt.Fprintf(builder, "\n** %d paragraphs remaining **\n", len(mgr.chunks)-end)
 }
 func (mgr *SummaryCtxMgr) userPrompt() string {
 	var builder strings.Builder
 	builder.WriteString(`
-The document shows the partial table of contents and the remaining contents of the document.
-Read the table of content and the remaining contents thoroughly, conplete the table of contents of the document. Record it with the tool.
+Read the following document split to chunks, identify the section range and hierarchy of the document, use tool to record it.
 
-IMPORTANT: understand the section hierarchy and make sure the level of section is correct.
-IMPORTANT: generate the table of content solely based on the document contents.
-IMPORTANT: this only shows part of the document, NEVER guess the table of contents if you are not sure.
-IMPORTANT: if you can not identify the end of some section, record the end of the section with -1, change it when you can identify the section end.
+The section with ** <FOLDED> ** is the previously recorded section folded.
 
+IMPORTANT: DO NOT record the already folded section with ** <FOLDED> **
+IMPORTANT: make sure the section level and range is consistency.
+IMPORTANT: this only shows part of the document, NEVER record the section infomation if the section end is not shown.
 `)
 	builder.WriteString("<DOCUMENT>\n")
-	mgr.content(&builder)
+	mgr.content(&builder, 25)
 	builder.WriteString("</DOCUMENT>\n")
+	builder.WriteString(`
+IMPORTANT: NEVER record the section information if the section are not fully shown in the document excerpt.
+`)
 	return builder.String()
 }
 
-func (mgr *SummaryCtxMgr) recordToc(toc []Section) string {
-	for _, sec := range toc {
-		if sec.End == -1 {
+func (mgr *SummaryCtxMgr) addSection(toc Section) string {
+	for _, item := range mgr.docToc {
+		if toc.Start < item.Start && toc.End >= item.End {
 			continue
 		}
-		if sec.Start > sec.End {
-			return fmt.Sprintf("section %s range %d-%d is not valid", sec.Name, sec.Start, sec.End)
+		if toc.Start > item.Start && toc.End <= item.End {
+			continue
 		}
-		if sec.End > len(mgr.chunks) {
-			return fmt.Sprintf("section %s range %d is not valid, exceed the total paragraphs", sec.Name, sec.End)
+		if toc.Start > item.End || toc.End < item.Start {
+			continue
 		}
-		if sec.Start > len(mgr.chunks) {
-			return fmt.Sprintf("section %s range %d is not valid, exceed the total paragraphs", sec.Name, sec.Start)
-		}
+		return fmt.Sprintf("section range is invalid, section %s and %s range is overlap", toc.Name, item.Name)
 	}
-	mgr.docToc = toc
-	return "record document toc success"
+	mgr.docToc = append(mgr.docToc, toc)
+	sort.Slice(mgr.docToc, func(i, j int) bool {
+		return mgr.docToc[i].Start < mgr.docToc[j].Start
+	})
+	return "add section success"
 }
 
-func (mgr *SummaryCtxMgr) summary(s, e string, content string) string {
-	return ""
+func (mgr *SummaryCtxMgr) summary(idx int, content string) string {
+	if idx >= len(mgr.docNode) {
+		return fmt.Sprintf("index %d out of range [0, %d]", idx, len(mgr.docNode)-1)
+	}
+	if mgr.docNode[idx].summarized {
+		return fmt.Sprintf("index %d have been summarized already", idx)
+	}
+	mgr.docNode[idx].summarized = true
+	mgr.docNode[idx].summary = content
+	return fmt.Sprintf("summarize index %d success", idx)
 }
 
 func (mgr *SummaryCtxMgr) loadChunks(num int) string {
@@ -358,13 +373,22 @@ func (mgr *SummaryCtxMgr) loadFile(file string) {
 func (mgr *SummaryCtxMgr) tocTool() model.ToolDef {
 	handler := func(argsStr string) (string, error) {
 		args := struct {
-			Toc []Section
+			Level int
+			Name  string
+			Start int
+			End   int
 		}{}
 		err := json.Unmarshal([]byte(argsStr), &args)
 		if err != nil {
 			return "", err
 		}
-		return mgr.recordToc(args.Toc), nil
+
+		return mgr.addSection(Section{
+			Level: args.Level,
+			Name:  args.Name,
+			Start: args.Start,
+			End:   args.End,
+		}), nil
 	}
 	return model.ToolDef{FunctionDefinition: docToc, Handler: handler}
 }
@@ -379,7 +403,7 @@ func (mgr *SummaryCtxMgr) summaryTool() model.ToolDef {
 		if err != nil {
 			return "", err
 		}
-		return mgr.summary(args.Start, args.End, args.Content), nil
+		return "", nil
 	}
 	return model.ToolDef{FunctionDefinition: summarize, Handler: handler}
 }
