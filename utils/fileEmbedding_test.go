@@ -13,7 +13,7 @@ func TestProcessFile(t *testing.T) {
 
 func Test_embedText(t *testing.T) {
 	t.Run("test embedding", func(t *testing.T) {
-		got := embedText([]string{""})
+		got := EmbedText([]string{""})
 		for _, emb := range got {
 			fmt.Printf("%v\n", len(emb))
 		}

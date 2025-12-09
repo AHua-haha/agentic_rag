@@ -65,7 +65,7 @@ func ProcessFile() {
 
 }
 
-func embedText(text []string) [][]float32 {
+func EmbedText(text []string) [][]float32 {
 	base_url := "https://openrouter.ai/api/v1"
 
 	model := NewModel(base_url, "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")
@@ -98,6 +98,12 @@ func InitVectorDB() {
 	}
 	g_client = client
 	log.Info().Any("address", milvusAddr).Msg("create milvus client")
+}
+func GetVectorDBClient() *milvusclient.Client {
+	if g_client == nil {
+		log.Fatal().Msg("vector db client not init")
+	}
+	return g_client
 }
 
 func CloseVectorDB() {
@@ -174,7 +180,7 @@ func createCollection() {
 }
 
 func insertText(text []string) error {
-	embeddings := embedText(text)
+	embeddings := EmbedText(text)
 	if len(embeddings) != len(text) {
 		return fmt.Errorf("embedding len not match text len")
 	}
@@ -250,7 +256,7 @@ func (mgr *BuildTextVectorMgr) insert() {
 			seqCol = append(seqCol, int64(idx+i))
 		}
 		col := column.NewColumnVarCharArray("headings", headingsCol)
-		embedCol = embedText(textCol)
+		embedCol = EmbedText(textCol)
 		_, err := g_client.Insert(context.TODO(), milvusclient.NewColumnBasedInsertOption("my_collection").
 			WithVarcharColumn("text", textCol).
 			WithFloatVectorColumn("text_dense", 1536, embedCol).
@@ -270,7 +276,7 @@ func (mgr *BuildTextVectorMgr) insert() {
 }
 
 func (mgr *BuildTextVectorMgr) SemanticSearch(query string, topk int, heading ...string) []TextChunk {
-	embed := embedText([]string{query})
+	embed := EmbedText([]string{query})
 	resultSets, err := g_client.Search(context.TODO(), milvusclient.NewSearchOption(
 		"my_collection", // collectionName
 		topk,
@@ -356,4 +362,27 @@ func (mgr *BuildTextVectorMgr) QuerySeq(seqs []int) []TextChunk {
 		})
 	}
 	return res
+}
+
+func ColumnFromSlice[T any](name string, data []T) (column.Column, error) {
+	switch any(data).(type) {
+	case []int8:
+		return column.NewColumnInt8(name, any(data).([]int8)), nil
+	case []int16:
+		return column.NewColumnInt16(name, any(data).([]int16)), nil
+	case []int32:
+		return column.NewColumnInt32(name, any(data).([]int32)), nil
+	case []int64:
+		return column.NewColumnInt64(name, any(data).([]int64)), nil
+	case []float32:
+		return column.NewColumnFloat(name, any(data).([]float32)), nil
+	case []float64:
+		return column.NewColumnDouble(name, any(data).([]float64)), nil
+	case []string:
+		return column.NewColumnVarChar(name, any(data).([]string)), nil
+	case [][]string:
+		return column.NewColumnVarCharArray(name, any(data).([][]string)), nil
+	default:
+		return nil, fmt.Errorf("unsupported column type %T", data)
+	}
 }

@@ -13,7 +13,7 @@ type SummarizeAgent struct {
 }
 
 func (agent *SummarizeAgent) genToc(model_name string, file string) {
-	mgr := ctx.NewSummaryMgr(file)
+	mgr := ctx.NewChunkCtxMgr(file)
 	for {
 		sys, user, tool, finished := mgr.Next()
 		if finished {
@@ -24,7 +24,7 @@ func (agent *SummarizeAgent) genToc(model_name string, file string) {
 		file.WriteString(user)
 		file.WriteString("\n")
 		file.Close()
-		agentCtx := NewAgentContext(user, &mgr)
+		agentCtx := NewAgentContext(user)
 		agentCtx.model = model_name
 		agentCtx.registerTool(tool)
 		var e error

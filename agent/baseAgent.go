@@ -169,14 +169,15 @@ func (agent *BaseAgent) handleResponse(stream *openai.ChatCompletionStream, ctx 
 			err = e
 			break
 		}
-		finishReason = res.Choices[0].FinishReason
+		if res.Choices[0].FinishReason != "" {
+			finishReason = res.Choices[0].FinishReason
+		}
 		d := res.Choices[0].Delta
 		if d.Content != "" {
 			fmt.Print(d.Content)
 		}
 		aggregate.addChunk(d)
 	}
-	fmt.Printf("finishReason: %s\n", finishReason)
 	fmt.Print("END OF RESP\n\n")
 	if !errors.Is(err, io.EOF) {
 		ctx.finished = true
