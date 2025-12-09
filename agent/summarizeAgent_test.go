@@ -1,7 +1,9 @@
 package agent
 
 import (
+	"fmt"
 	"llm_dev/utils"
+	"os"
 	"testing"
 )
 
@@ -13,6 +15,18 @@ func TestSummary(t *testing.T) {
 		agent := SummarizeAgent{
 			BaseAgent: NewBaseAgent("", *model),
 		}
-		agent.genToc("openai/gpt-5-mini", "/root/workspace/agentic_rag/MinerU_2307.09288v2__20251127030211.md")
+		agent.genToc("anthropic/claude-haiku-4.5", "/root/workspace/agentic_rag/MinerU_2307.09288v2__20251127030211.md")
+	})
+}
+
+func TestDoc(t *testing.T) {
+	t.Run("test doc", func(t *testing.T) {
+		data, _ := os.ReadFile("/root/workspace/agentic_rag/MinerU_2307.09288v2__20251127030211.md")
+		fmt.Printf("chunk:\n")
+		fmt.Printf("%s\n", data[0:892])
+		fmt.Printf("chunk:\n")
+		fmt.Printf("%s\n", data[893:1547])
+		fmt.Printf("chunk:\n")
+		fmt.Printf("%s\n", data[1548:2384])
 	})
 }

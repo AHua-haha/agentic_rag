@@ -252,8 +252,8 @@ func (mgr *SummaryCtxMgr) genNode() {
 }
 
 var sysprompt = `
-You are a helpful document processing agent, you job is to build index for the content of the document for quick look up when searching in the document.
-The index is the summary of the content in the document, and the values is the actual paragraphs in the document.
+You are a document-chunking agent. Your task is to split the provided document into
+semantically coherent chunks.
 `
 
 var sectionTreesysPrompt = `
@@ -266,7 +266,7 @@ IMPORTANT: NEVER record the section information if the section are not fully sho
 
 func (mgr *SummaryCtxMgr) Next() (string, string, []model.ToolDef, bool) {
 
-	return sectionTreesysPrompt, mgr.userPrompt(), []model.ToolDef{mgr.tocTool()}, mgr.lastEnd == len(mgr.chunks)
+	return sysprompt, mgr.userPrompt(), []model.ToolDef{}, mgr.lastEnd == len(mgr.chunks)
 }
 
 func (mgr *SummaryCtxMgr) content(builder *strings.Builder, window int) {
@@ -297,20 +297,31 @@ func (mgr *SummaryCtxMgr) content(builder *strings.Builder, window int) {
 func (mgr *SummaryCtxMgr) userPrompt() string {
 	var builder strings.Builder
 	builder.WriteString(`
-Read the following document split to chunks, identify the section range and hierarchy of the document, use tool to record it.
+Rules for chunking:
+1. A chunk must represent a coherent idea, topic, or subtopic.
+2. Do NOT split in the middle of a sentence or logical argument.
+3. Prefer splitting at headings, subheadings, major paragraph breaks, or topic shifts.
+4. Ideal chunk size: 300-600 words (or ~500-1200 tokens).
+5. If a section is very long, split it into multiple coherent sub-chunks.
+6. Preserve the original order of the text.
 
-The section with ** <FOLDED> ** is the previously recorded section folded.
+Output format:
+id: 22
+start char index: 345
+end char index: 399
 
-IMPORTANT: DO NOT record the already folded section with ** <FOLDED> **
-IMPORTANT: make sure the section level and range is consistency.
-IMPORTANT: this only shows part of the document, NEVER record the section infomation if the section end is not shown.
+id: 23
+start char index: 450
+end char index: 550
+
+Now chunk the following document:
+
+
 `)
+	data, _ := os.ReadFile("/root/workspace/agentic_rag/MinerU_2307.09288v2__20251127030211.md")
 	builder.WriteString("<DOCUMENT>\n")
-	mgr.content(&builder, 25)
+	builder.Write(data[:5000])
 	builder.WriteString("</DOCUMENT>\n")
-	builder.WriteString(`
-IMPORTANT: NEVER record the section information if the section are not fully shown in the document excerpt.
-`)
 	return builder.String()
 }
 
