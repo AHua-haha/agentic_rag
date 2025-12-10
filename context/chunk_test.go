@@ -41,7 +41,7 @@ func TestDBMgr(t *testing.T) {
 			return
 		}
 		ctxMgr := NewChunkCtxMgr("/root/workspace/agentic_rag/MinerU_2307.09288v2__20251127030211.md")
-		cols, err := ctxMgr.genCols()
+		cols, err := ctxMgr.GenCols()
 		if err != nil {
 			fmt.Printf("err: %v\n", err)
 			return

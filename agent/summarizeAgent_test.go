@@ -15,7 +15,7 @@ func TestSummary(t *testing.T) {
 		agent := SummarizeAgent{
 			BaseAgent: NewBaseAgent("", *model),
 		}
-		agent.genToc("anthropic/claude-haiku-4.5", "/root/workspace/agentic_rag/MinerU_2307.09288v2__20251127030211.md")
+		agent.genSummary("anthropic/claude-haiku-4.5", "/root/workspace/agentic_rag/MinerU_2307.09288v2__20251127030211.md")
 	})
 }
 

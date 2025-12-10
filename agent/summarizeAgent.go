@@ -3,6 +3,7 @@ package agent
 import (
 	"context"
 	ctx "llm_dev/context"
+	"llm_dev/utils"
 	"os"
 
 	"github.com/rs/zerolog/log"
@@ -12,7 +13,7 @@ type SummarizeAgent struct {
 	BaseAgent
 }
 
-func (agent *SummarizeAgent) genToc(model_name string, file string) {
+func (agent *SummarizeAgent) genSummary(model_name string, file string) {
 	mgr := ctx.NewChunkCtxMgr(file)
 	for {
 		sys, user, tool, finished := mgr.Next()
@@ -46,4 +47,21 @@ func (agent *SummarizeAgent) genToc(model_name string, file string) {
 			break
 		}
 	}
+	db, err := utils.NewDBMgr()
+	if err != nil {
+		log.Error().Err(err).Msg("create db mgr failed")
+		return
+	}
+	defer db.Close()
+	cols, err := mgr.GenCols()
+	if err != nil {
+		log.Error().Err(err).Msg("generate cols for parts summary failed")
+		return
+	}
+	err = db.Insert(cols)
+	if err != nil {
+		log.Error().Err(err).Msg("insert columns into db failed")
+		return
+	}
+	log.Info().Msg("generate summary and insert into db success")
 }

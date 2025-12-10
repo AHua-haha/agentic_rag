@@ -153,16 +153,28 @@ func NewChunkCtxMgr(file string) ChunkCtxMgr {
 	}
 }
 
-func (mgr *ChunkCtxMgr) genCols() ([]column.Column, error) {
-	size := 5
+func (mgr *ChunkCtxMgr) GenCols() ([]column.Column, error) {
+	parts := []*Part{}
+	for i := range mgr.op.parts {
+		if mgr.op.parts[i].Summarized {
+			parts = append(parts, &mgr.op.parts[i])
+		}
+	}
+
+	size := len(parts)
 	headingsCol := make([][]string, size)
 	textCol := make([]string, size)
 	summaryCol := make([]bool, size)
-	for i := range size {
-		part := &mgr.op.parts[i]
+	subsectonCol := make([][]string, size)
+	for i, part := range parts {
 		headingsCol[i] = part.Headings
-		textCol[i] = part.Heading
+		textCol[i] = part.Summary
 		summaryCol[i] = true
+		subSection := []string{}
+		for _, c := range part.Child {
+			subSection = append(subSection, c.Heading)
+		}
+		subsectonCol[i] = subSection
 	}
 	embedCol, err := utils.EmbedText(textCol)
 	if err != nil {
@@ -174,6 +186,7 @@ func (mgr *ChunkCtxMgr) genCols() ([]column.Column, error) {
 	res = append(res, utils.ColumnFromSlice("text", textCol))
 	res = append(res, column.NewColumnFloatVector("text_dense", 1536, embedCol))
 	res = append(res, utils.ColumnFromSlice("summary", summaryCol))
+	res = append(res, utils.ColumnFromSlice("sub_section", subsectonCol))
 	return res, nil
 }
 
