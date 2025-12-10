@@ -2,9 +2,7 @@ package utils
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"os"
 
 	"github.com/milvus-io/milvus/client/v2/column"
 	"github.com/milvus-io/milvus/client/v2/entity"
@@ -30,169 +28,31 @@ func NewModel(baseurl string, apikey string) *Model {
 	}
 }
 
-type TextChunk struct {
-	Headings []string
-	Content  string
-	Seq      int
-}
-
-func ProcessFile() {
-	data, err := os.ReadFile("/root/workspace/agentic_rag/chunk.json")
-	if err != nil {
-		log.Error().Err(err).Msg("read file failed")
-		return
-	}
-
-	var filechunks []TextChunk
-	err = json.Unmarshal(data, &filechunks)
-	if err != nil {
-		log.Error().Err(err).Msg("parse json failed")
-		return
-	}
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	milvusAddr := "localhost:19530"
-	client, err := milvusclient.New(ctx, &milvusclient.ClientConfig{
-		Address: milvusAddr,
-	})
-	if err != nil {
-		fmt.Println(err.Error())
-		// handle error
-	}
-	defer client.Close(ctx)
-
-}
-
-func EmbedText(text []string) [][]float32 {
+func EmbedText(text []string) ([][]float32, error) {
 	base_url := "https://openrouter.ai/api/v1"
 
-	model := NewModel(base_url, "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")
+	model := NewModel(base_url, "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")
 	resp, err := model.CreateEmbeddings(context.TODO(), openai.EmbeddingRequestStrings{
 		Model:          "openai/text-embedding-3-small",
 		Input:          text,
 		EncodingFormat: openai.EmbeddingEncodingFormatFloat,
 	})
 	if err != nil {
-		log.Error().Err(err).Msg("create embedding failed")
-		return nil
+		return nil, err
 	}
-	var res [][]float32
+	res := make([][]float32, 0, len(resp.Data))
 	for _, emb := range resp.Data {
 		res = append(res, emb.Embedding)
 	}
-	return res
-}
-
-var g_client *milvusclient.Client
-
-func InitVectorDB() {
-	milvusAddr := "172.17.0.1:19530"
-	client, err := milvusclient.New(context.TODO(), &milvusclient.ClientConfig{
-		Address: milvusAddr,
-	})
-	if err != nil {
-		log.Error().Err(err).Msg("create client failed")
-		return
+	if len(res) != len(text) {
+		return nil, fmt.Errorf("embedding result length %d not correct", len(res))
 	}
-	g_client = client
-	log.Info().Any("address", milvusAddr).Msg("create milvus client")
-}
-func GetVectorDBClient() *milvusclient.Client {
-	if g_client == nil {
-		log.Fatal().Msg("vector db client not init")
-	}
-	return g_client
-}
-
-func CloseVectorDB() {
-	if g_client == nil {
-		return
-	}
-	g_client.Close(context.TODO())
-	log.Info().Msg("close milvus client")
-}
-
-func createCollection() {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	exist, err := g_client.HasCollection(ctx, milvusclient.NewDescribeCollectionOption("my_collection"))
-	if err != nil {
-		log.Error().Err(err).Msg("check collection exist failed")
-		return
-	}
-	if exist {
-		log.Error().Msg("collection exist")
-		return
-	}
-	function := entity.NewFunction().
-		WithName("text_bm25_emb").
-		WithInputFields("text").
-		WithOutputFields("text_sparse").
-		WithType(entity.FunctionTypeBM25)
-
-	schema := entity.NewSchema()
-
-	schema.WithField(entity.NewField().
-		WithName("id").
-		WithDataType(entity.FieldTypeInt64).
-		WithIsPrimaryKey(true).
-		WithIsAutoID(true),
-	).WithField(entity.NewField().
-		WithName("text").
-		WithDataType(entity.FieldTypeVarChar).
-		WithEnableAnalyzer(true).
-		WithMaxLength(1000),
-	).WithField(entity.NewField().
-		WithName("text_dense").
-		WithDataType(entity.FieldTypeFloatVector).
-		WithDim(1536),
-	).WithField(entity.NewField().
-		WithName("text_sparse").
-		WithDataType(entity.FieldTypeSparseVector),
-	).WithField(entity.NewField().
-		WithName("seq").
-		WithDataType(entity.FieldTypeInt64),
-	).WithField(entity.NewField().
-		WithName("headings").
-		WithDataType(entity.FieldTypeArray).
-		WithElementType(entity.FieldTypeVarChar).
-		WithMaxCapacity(10).
-		WithMaxLength(200),
-	).WithFunction(function).WithDynamicFieldEnabled(true)
-
-	indexOption1 := milvusclient.NewCreateIndexOption("my_collection", "text_dense",
-		index.NewAutoIndex(index.MetricType(entity.IP)))
-	indexOption2 := milvusclient.NewCreateIndexOption("my_collection", "text_sparse",
-		index.NewSparseInvertedIndex(entity.BM25, 0.2))
-
-	err = g_client.CreateCollection(ctx,
-		milvusclient.NewCreateCollectionOption("my_collection", schema).
-			WithIndexOptions(indexOption1, indexOption2))
-
-	if err != nil {
-		log.Error().Err(err).Msg("create collection failed")
-		return
-	}
-
-}
-
-func insertText(text []string) error {
-	embeddings := EmbedText(text)
-	if len(embeddings) != len(text) {
-		return fmt.Errorf("embedding len not match text len")
-	}
-	_, err := g_client.Insert(context.TODO(), milvusclient.NewColumnBasedInsertOption("my_collection").
-		WithVarcharColumn("text", text).
-		WithFloatVectorColumn("text_dense", 1536, embeddings),
-	)
-	return err
+	return res, nil
 }
 
 func search() {
 
+	var g_client *milvusclient.Client
 	annSearchParams := index.NewCustomAnnParam()
 	annSearchParams.WithExtraParam("drop_ratio_search", 0.2)
 	resultSets, err := g_client.Search(context.TODO(), milvusclient.NewSearchOption(
@@ -219,170 +79,113 @@ func search() {
 	}
 }
 
-type BuildTextVectorMgr struct {
-	texts []TextChunk
-}
-
-func (mgr *BuildTextVectorMgr) readText(path string) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		log.Error().Err(err).Msg("read file failed")
-		return
-	}
-
-	var filechunks []TextChunk
-	err = json.Unmarshal(data, &filechunks)
-	if err != nil {
-		log.Error().Err(err).Msg("parse json failed")
-		return
-	}
-	mgr.texts = filechunks
-}
-
-func (mgr *BuildTextVectorMgr) insert() {
-	idx := 0
-	step := 30
-	size := len(mgr.texts)
-	for {
-		end := min(idx+step, size)
-		part := mgr.texts[idx:end]
-		var seqCol []int64
-		var textCol []string
-		var embedCol [][]float32
-		var headingsCol [][]string
-		for i, text := range part {
-			textCol = append(textCol, text.Content)
-			headingsCol = append(headingsCol, text.Headings)
-			seqCol = append(seqCol, int64(idx+i))
-		}
-		col := column.NewColumnVarCharArray("headings", headingsCol)
-		embedCol = EmbedText(textCol)
-		_, err := g_client.Insert(context.TODO(), milvusclient.NewColumnBasedInsertOption("my_collection").
-			WithVarcharColumn("text", textCol).
-			WithFloatVectorColumn("text_dense", 1536, embedCol).
-			WithInt64Column("seq", seqCol).
-			WithColumns(col),
-		)
-		if err != nil {
-			log.Error().Err(err).Msg("insert text failed")
-		} else {
-			log.Info().Any("size", len(textCol)).Msg("insert text success")
-		}
-		idx = end
-		if idx >= size {
-			break
-		}
-	}
-}
-
-func (mgr *BuildTextVectorMgr) SemanticSearch(query string, topk int, heading ...string) []TextChunk {
-	embed := EmbedText([]string{query})
-	resultSets, err := g_client.Search(context.TODO(), milvusclient.NewSearchOption(
-		"my_collection", // collectionName
-		topk,
-		[]entity.Vector{entity.FloatVector(embed[0])},
-	).WithConsistencyLevel(entity.ClStrong).
-		WithANNSField("text_dense").
-		WithOutputFields("text", "seq", "headings"))
-	if err != nil {
-		log.Error().Err(err).Msg("execute search request failed")
-		return nil
-	}
-	if len(resultSets) != 1 {
-		return nil
-	}
-	resultSet := resultSets[0]
-	seqCol := resultSet.GetColumn("seq").(*column.ColumnInt64)
-	textCol := resultSet.GetColumn("text").(*column.ColumnVarChar)
-	headingsCol := resultSet.GetColumn("headings").(*column.ColumnVarCharArray)
-	size := len(seqCol.Data())
-	res := make([]TextChunk, 0, size)
-	for i := range size {
-		res = append(res, TextChunk{
-			Seq:      int(seqCol.Data()[i]),
-			Headings: headingsCol.Data()[i],
-			Content:  textCol.Data()[i],
-		})
-	}
-	return res
-}
-
-func (mgr *BuildTextVectorMgr) lexicalSearch(query string, topk int) []TextChunk {
-	resultSets, err := g_client.Search(context.TODO(), milvusclient.NewSearchOption(
-		"my_collection", // collectionName
-		topk,
-		[]entity.Vector{entity.Text(query)},
-	).WithConsistencyLevel(entity.ClStrong).
-		WithANNSField("text_sparse").
-		WithOutputFields("text", "seq", "headings"))
-	if err != nil {
-		log.Error().Err(err).Msg("execute search request failed")
-		return nil
-	}
-	if len(resultSets) != 1 {
-		return nil
-	}
-	resultSet := resultSets[0]
-	seqCol := resultSet.GetColumn("seq").(*column.ColumnInt64)
-	textCol := resultSet.GetColumn("text").(*column.ColumnVarChar)
-	headingsCol := resultSet.GetColumn("headings").(*column.ColumnVarCharArray)
-	size := len(seqCol.Data())
-	res := make([]TextChunk, 0, size)
-	for i := range size {
-		res = append(res, TextChunk{
-			Seq:      int(seqCol.Data()[i]),
-			Headings: headingsCol.Data()[i],
-			Content:  textCol.Data()[i],
-		})
-	}
-	return res
-}
-
-func (mgr *BuildTextVectorMgr) QuerySeq(seqs []int) []TextChunk {
-	seqsStr, _ := json.Marshal(seqs)
-	fileter := fmt.Sprintf("seq in %s", seqsStr)
-	resultSet, err := g_client.Query(context.TODO(), milvusclient.NewQueryOption("my_collection").
-		WithFilter(fileter).
-		WithOutputFields("text", "seq", "headings"))
-	if err != nil {
-		log.Error().Err(err).Msg("execute query request failed")
-		return nil
-	}
-	fmt.Printf("resultSet.Len(): %v\n", resultSet.Len())
-	seqCol := resultSet.GetColumn("seq").(*column.ColumnInt64)
-	textCol := resultSet.GetColumn("text").(*column.ColumnVarChar)
-	headingsCol := resultSet.GetColumn("headings").(*column.ColumnVarCharArray)
-	size := len(seqCol.Data())
-	res := make([]TextChunk, 0, size)
-	for i := range size {
-		res = append(res, TextChunk{
-			Seq:      int(seqCol.Data()[i]),
-			Headings: headingsCol.Data()[i],
-			Content:  textCol.Data()[i],
-		})
-	}
-	return res
-}
-
-func ColumnFromSlice[T any](name string, data []T) (column.Column, error) {
+func ColumnFromSlice[T any](name string, data []T) column.Column {
 	switch any(data).(type) {
 	case []int8:
-		return column.NewColumnInt8(name, any(data).([]int8)), nil
+		return column.NewColumnInt8(name, any(data).([]int8))
 	case []int16:
-		return column.NewColumnInt16(name, any(data).([]int16)), nil
+		return column.NewColumnInt16(name, any(data).([]int16))
 	case []int32:
-		return column.NewColumnInt32(name, any(data).([]int32)), nil
+		return column.NewColumnInt32(name, any(data).([]int32))
 	case []int64:
-		return column.NewColumnInt64(name, any(data).([]int64)), nil
+		return column.NewColumnInt64(name, any(data).([]int64))
 	case []float32:
-		return column.NewColumnFloat(name, any(data).([]float32)), nil
+		return column.NewColumnFloat(name, any(data).([]float32))
 	case []float64:
-		return column.NewColumnDouble(name, any(data).([]float64)), nil
+		return column.NewColumnDouble(name, any(data).([]float64))
 	case []string:
-		return column.NewColumnVarChar(name, any(data).([]string)), nil
+		return column.NewColumnVarChar(name, any(data).([]string))
 	case [][]string:
-		return column.NewColumnVarCharArray(name, any(data).([][]string)), nil
+		return column.NewColumnVarCharArray(name, any(data).([][]string))
+	case [][]float32:
+		return column.NewColumnFloatArray(name, any(data).([][]float32))
+	case []bool:
+		return column.NewColumnBool(name, any(data).([]bool))
 	default:
-		return nil, fmt.Errorf("unsupported column type %T", data)
+		log.Fatal().Msgf("unsupported column type %T", data)
+		return nil
 	}
+}
+
+type DBmgr struct {
+	client *milvusclient.Client
+}
+
+func NewDBMgr() (*DBmgr, error) {
+	milvusAddr := "172.17.0.1:19530"
+	client, err := milvusclient.New(context.TODO(), &milvusclient.ClientConfig{
+		Address: milvusAddr,
+	})
+	if err != nil {
+		return nil, err
+	}
+	log.Info().Any("address", milvusAddr).Msg("create milvus client succes")
+	return &DBmgr{client: client}, nil
+}
+
+func (db *DBmgr) Close() {
+	if db.client != nil {
+		db.client.Close(context.TODO())
+		log.Info().Msg("close milvus client succes")
+	}
+}
+func (db *DBmgr) Insert(cols []column.Column) error {
+	_, err := db.client.Insert(context.TODO(),
+		milvusclient.NewColumnBasedInsertOption("agentic_rag").
+			WithColumns(cols...),
+	)
+	return err
+}
+
+func (db *DBmgr) InitDB() error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	exist, err := db.client.HasCollection(ctx, milvusclient.NewDescribeCollectionOption("agentic_rag"))
+	if err != nil {
+		return err
+	}
+	if exist {
+		return nil
+	}
+	function := entity.NewFunction().
+		WithName("text_bm25_emb").
+		WithInputFields("text").
+		WithOutputFields("text_sparse").
+		WithType(entity.FunctionTypeBM25)
+
+	schema := entity.NewSchema().WithDynamicFieldEnabled(true)
+
+	schema.WithField(entity.NewField().
+		WithName("id").
+		WithDataType(entity.FieldTypeInt64).
+		WithIsPrimaryKey(true).
+		WithIsAutoID(true),
+	).WithField(entity.NewField().
+		WithName("text").
+		WithDataType(entity.FieldTypeVarChar).
+		WithEnableAnalyzer(true).
+		WithMaxLength(1000),
+	).WithField(entity.NewField().
+		WithName("text_dense").
+		WithDataType(entity.FieldTypeFloatVector).
+		WithDim(1536),
+	).WithField(entity.NewField().
+		WithName("text_sparse").
+		WithDataType(entity.FieldTypeSparseVector),
+	).WithFunction(function).WithDynamicFieldEnabled(true)
+
+	indexOption1 := milvusclient.NewCreateIndexOption("agentic_rag", "text_dense",
+		index.NewAutoIndex(index.MetricType(entity.IP)))
+	indexOption2 := milvusclient.NewCreateIndexOption("agentic_rag", "text_sparse",
+		index.NewSparseInvertedIndex(entity.BM25, 0.2))
+
+	err = db.client.CreateCollection(ctx,
+		milvusclient.NewCreateCollectionOption("agentic_rag", schema).
+			WithIndexOptions(indexOption1, indexOption2))
+
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -1,18 +1,15 @@
 package context
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"llm_dev/model"
+	"llm_dev/utils"
 	"os"
 	"regexp"
 	"strings"
 
 	"github.com/milvus-io/milvus/client/v2/column"
-	"github.com/milvus-io/milvus/client/v2/entity"
-	"github.com/milvus-io/milvus/client/v2/index"
-	"github.com/milvus-io/milvus/client/v2/milvusclient"
 	"github.com/rs/zerolog/log"
 	"github.com/sashabaranov/go-openai"
 	"github.com/sashabaranov/go-openai/jsonschema"
@@ -24,6 +21,8 @@ type Part struct {
 	Content string
 	Child   []*Part
 	Next    int
+
+	Headings []string
 
 	Summary    string
 	Summarized bool
@@ -86,6 +85,12 @@ func (op *FileChunkOps) buildTree() {
 		}
 		part.Next = j
 	}
+	headings := make([]string, 6)
+	for i := range op.parts {
+		part := &op.parts[i]
+		headings[part.Level-1] = part.Heading
+		part.Headings = append(part.Headings, headings[:part.Level]...)
+	}
 }
 
 func (op *FileChunkOps) chunk() {
@@ -147,6 +152,31 @@ func NewChunkCtxMgr(file string) ChunkCtxMgr {
 		op: op,
 	}
 }
+
+func (mgr *ChunkCtxMgr) genCols() ([]column.Column, error) {
+	size := 5
+	headingsCol := make([][]string, size)
+	textCol := make([]string, size)
+	summaryCol := make([]bool, size)
+	for i := range size {
+		part := &mgr.op.parts[i]
+		headingsCol[i] = part.Headings
+		textCol[i] = part.Heading
+		summaryCol[i] = true
+	}
+	embedCol, err := utils.EmbedText(textCol)
+	if err != nil {
+		return nil, err
+	}
+
+	res := []column.Column{}
+	res = append(res, utils.ColumnFromSlice("headings", headingsCol))
+	res = append(res, utils.ColumnFromSlice("text", textCol))
+	res = append(res, column.NewColumnFloatVector("text_dense", 1536, embedCol))
+	res = append(res, utils.ColumnFromSlice("summary", summaryCol))
+	return res, nil
+}
+
 func (mgr *ChunkCtxMgr) done() bool {
 	for i := range mgr.op.parts {
 		if !mgr.op.parts[i].Summarized {
@@ -273,68 +303,4 @@ Summarize the specified section in the document
 		return mgr.op.summary(args.Id, args.Content), nil
 	}
 	return model.ToolDef{FunctionDefinition: def, Handler: handler}
-}
-
-type DBmgr struct {
-	client *milvusclient.Client
-}
-
-func (db *DBmgr) genCols(parts []Part) []column.Column {
-	return nil
-}
-func (db *DBmgr) insertParts(parts []Part) {
-}
-
-func (db *DBmgr) initDB() {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	exist, err := db.client.HasCollection(ctx, milvusclient.NewDescribeCollectionOption("my_collection"))
-	if err != nil {
-		log.Error().Err(err).Msg("check collection exist failed")
-		return
-	}
-	if exist {
-		return
-	}
-	function := entity.NewFunction().
-		WithName("text_bm25_emb").
-		WithInputFields("text").
-		WithOutputFields("text_sparse").
-		WithType(entity.FunctionTypeBM25)
-
-	schema := entity.NewSchema()
-
-	schema.WithField(entity.NewField().
-		WithName("id").
-		WithDataType(entity.FieldTypeInt64).
-		WithIsPrimaryKey(true).
-		WithIsAutoID(true),
-	).WithField(entity.NewField().
-		WithName("text").
-		WithDataType(entity.FieldTypeVarChar).
-		WithEnableAnalyzer(true).
-		WithMaxLength(1000),
-	).WithField(entity.NewField().
-		WithName("text_dense").
-		WithDataType(entity.FieldTypeFloatVector).
-		WithDim(1536),
-	).WithField(entity.NewField().
-		WithName("text_sparse").
-		WithDataType(entity.FieldTypeSparseVector),
-	).WithFunction(function).WithDynamicFieldEnabled(true)
-
-	indexOption1 := milvusclient.NewCreateIndexOption("my_collection", "text_dense",
-		index.NewAutoIndex(index.MetricType(entity.IP)))
-	indexOption2 := milvusclient.NewCreateIndexOption("my_collection", "text_sparse",
-		index.NewSparseInvertedIndex(entity.BM25, 0.2))
-
-	err = db.client.CreateCollection(ctx,
-		milvusclient.NewCreateCollectionOption("my_collection", schema).
-			WithIndexOptions(indexOption1, indexOption2))
-
-	if err != nil {
-		log.Error().Err(err).Msg("create collection failed")
-		return
-	}
 }
