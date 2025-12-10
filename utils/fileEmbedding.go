@@ -111,6 +111,9 @@ type DBmgr struct {
 	client *milvusclient.Client
 }
 
+type ResHandler func(result *milvusclient.ResultSet)
+type ResArrayHandler func(results []milvusclient.ResultSet)
+
 func NewDBMgr() (*DBmgr, error) {
 	milvusAddr := "172.17.0.1:19530"
 	client, err := milvusclient.New(context.TODO(), &milvusclient.ClientConfig{
@@ -128,13 +131,6 @@ func (db *DBmgr) Close() {
 		db.client.Close(context.TODO())
 		log.Info().Msg("close milvus client succes")
 	}
-}
-func (db *DBmgr) Insert(cols []column.Column) error {
-	_, err := db.client.Insert(context.TODO(),
-		milvusclient.NewColumnBasedInsertOption("agentic_rag").
-			WithColumns(cols...),
-	)
-	return err
 }
 
 func (db *DBmgr) InitDB() error {
@@ -165,7 +161,7 @@ func (db *DBmgr) InitDB() error {
 		WithName("text").
 		WithDataType(entity.FieldTypeVarChar).
 		WithEnableAnalyzer(true).
-		WithMaxLength(1000),
+		WithMaxLength(3500),
 	).WithField(entity.NewField().
 		WithName("text_dense").
 		WithDataType(entity.FieldTypeFloatVector).
@@ -187,5 +183,43 @@ func (db *DBmgr) InitDB() error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (db *DBmgr) Insert(cols []column.Column) error {
+	_, err := db.client.Insert(context.TODO(),
+		milvusclient.NewColumnBasedInsertOption("agentic_rag").
+			WithColumns(cols...),
+	)
+	return err
+}
+
+func (db *DBmgr) Query(filter string, fields []string, handler ResHandler) error {
+	resultSet, err := db.client.Query(context.TODO(), milvusclient.NewQueryOption("agentic_rag").
+		WithFilter(filter).
+		WithOutputFields(fields...))
+	if err != nil {
+		return err
+	}
+	handler(&resultSet)
+	return nil
+}
+
+func (db *DBmgr) Search(text string, topK int, filter string, fields []string, handler ResArrayHandler) error {
+	embedding, err := EmbedText([]string{text})
+	if err != nil {
+		return err
+	}
+
+	resultSets, err := db.client.Search(context.TODO(), milvusclient.NewSearchOption(
+		"agentic_rag",
+		topK,
+		[]entity.Vector{entity.FloatVector(embedding[0])},
+	).WithFilter(filter).
+		WithOutputFields(fields...))
+	if err != nil {
+		return err
+	}
+	handler(resultSets)
 	return nil
 }
