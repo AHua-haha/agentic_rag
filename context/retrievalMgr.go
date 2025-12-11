@@ -14,9 +14,8 @@ type RetrievalCtxMgr struct {
 	db *utils.DBmgr
 }
 
-func (mgr *RetrievalCtxMgr) query(headings []string) {
-	str, _ := json.Marshal(headings)
-	filter := fmt.Sprintf("headings == %s", str)
+func (mgr *RetrievalCtxMgr) query(headings string) {
+	filter := fmt.Sprintf(`heading == "%s"`, headings)
 	mgr.db.Query(filter, []string{"text"}, func(result *milvusclient.ResultSet) {
 		textCol, ok := result.GetColumn("text").(*column.ColumnVarChar)
 		if !ok {

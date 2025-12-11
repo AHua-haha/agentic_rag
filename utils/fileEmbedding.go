@@ -108,7 +108,7 @@ func ColumnFromSlice[T any](name string, data []T) column.Column {
 }
 
 type DBmgr struct {
-	client *milvusclient.Client
+	Client *milvusclient.Client
 }
 
 type ResHandler func(result *milvusclient.ResultSet)
@@ -123,12 +123,12 @@ func NewDBMgr() (*DBmgr, error) {
 		return nil, err
 	}
 	log.Info().Any("address", milvusAddr).Msg("create milvus client succes")
-	return &DBmgr{client: client}, nil
+	return &DBmgr{Client: client}, nil
 }
 
 func (db *DBmgr) Close() {
-	if db.client != nil {
-		db.client.Close(context.TODO())
+	if db.Client != nil {
+		db.Client.Close(context.TODO())
 		log.Info().Msg("close milvus client succes")
 	}
 }
@@ -137,7 +137,7 @@ func (db *DBmgr) InitDB() error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	exist, err := db.client.HasCollection(ctx, milvusclient.NewDescribeCollectionOption("agentic_rag"))
+	exist, err := db.Client.HasCollection(ctx, milvusclient.NewDescribeCollectionOption("agentic_rag"))
 	if err != nil {
 		return err
 	}
@@ -176,7 +176,7 @@ func (db *DBmgr) InitDB() error {
 	indexOption2 := milvusclient.NewCreateIndexOption("agentic_rag", "text_sparse",
 		index.NewSparseInvertedIndex(entity.BM25, 0.2))
 
-	err = db.client.CreateCollection(ctx,
+	err = db.Client.CreateCollection(ctx,
 		milvusclient.NewCreateCollectionOption("agentic_rag", schema).
 			WithIndexOptions(indexOption1, indexOption2))
 
@@ -187,7 +187,7 @@ func (db *DBmgr) InitDB() error {
 }
 
 func (db *DBmgr) Insert(cols []column.Column) error {
-	_, err := db.client.Insert(context.TODO(),
+	_, err := db.Client.Insert(context.TODO(),
 		milvusclient.NewColumnBasedInsertOption("agentic_rag").
 			WithColumns(cols...),
 	)
@@ -195,9 +195,14 @@ func (db *DBmgr) Insert(cols []column.Column) error {
 }
 
 func (db *DBmgr) Query(filter string, fields []string, handler ResHandler) error {
-	resultSet, err := db.client.Query(context.TODO(), milvusclient.NewQueryOption("agentic_rag").
-		WithFilter(filter).
-		WithOutputFields(fields...))
+	opt := milvusclient.NewQueryOption("agentic_rag")
+	opt.WithOutputFields(fields...)
+	if filter != "" {
+		opt.WithFilter(filter)
+	} else {
+		opt.WithLimit(70)
+	}
+	resultSet, err := db.Client.Query(context.TODO(), opt)
 	if err != nil {
 		return err
 	}
@@ -211,7 +216,7 @@ func (db *DBmgr) Search(text string, topK int, filter string, fields []string, h
 		return err
 	}
 
-	resultSets, err := db.client.Search(context.TODO(), milvusclient.NewSearchOption(
+	resultSets, err := db.Client.Search(context.TODO(), milvusclient.NewSearchOption(
 		"agentic_rag",
 		topK,
 		[]entity.Vector{entity.FloatVector(embedding[0])},
