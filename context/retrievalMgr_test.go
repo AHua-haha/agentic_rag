@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"llm_dev/utils"
+	"os"
 	"testing"
 
 	"github.com/milvus-io/milvus/client/v2/column"
@@ -80,6 +81,60 @@ func TestUpsertField(t *testing.T) {
 			WithPartialUpdate(true))
 		if err != nil {
 			log.Error().Err(err).Msg("")
+			return
+		}
+	})
+}
+
+func TestInsertDocChunk(t *testing.T) {
+	t.Run("test insert doc chunk", func(t *testing.T) {
+		data, _ := os.ReadFile("/root/workspace/agentic_rag/data.json")
+		var doc []struct {
+			Headings []string
+			Chunks   []string
+		}
+		err := json.Unmarshal(data, &doc)
+		if err != nil {
+			log.Error().Err(err).Msg("")
+			return
+		}
+		var textCol []string
+		var headingsCol [][]string
+		var seqCol []int32
+		count := 1
+		for _, c := range doc {
+			for _, text := range c.Chunks {
+				textCol = append(textCol, text)
+				headingsCol = append(headingsCol, c.Headings)
+				seqCol = append(seqCol, int32(count))
+				count++
+			}
+		}
+		fmt.Printf("len(textCol): %v\n", len(textCol))
+		fmt.Printf("len(textCol): %v\n", len(headingsCol))
+		fmt.Printf("len(textCol): %v\n", len(seqCol))
+		embedCol, err := utils.EmbedText(textCol)
+		if err != nil {
+			log.Error().Err(err).Msg("embedding text failed")
+			return
+		}
+
+		cols := []column.Column{
+			utils.ColumnFromSlice("text", textCol),
+			utils.ColumnFromSlice("headings", headingsCol),
+			utils.ColumnFromSlice("sequence", seqCol),
+			column.NewColumnFloatVector("text_dense", 1536, embedCol),
+		}
+
+		db, err := utils.NewDBMgr()
+		if err != nil {
+			log.Error().Err(err).Msg("create db mgr failed")
+			return
+		}
+		defer db.Close()
+		err = db.Insert(cols)
+		if err != nil {
+			log.Error().Err(err).Msg("insert into db error")
 			return
 		}
 	})

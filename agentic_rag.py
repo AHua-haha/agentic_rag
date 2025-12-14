@@ -27,17 +27,21 @@ def chunk(file:str):
     res = []
     for doc in md_header_splits:
         chunks = splitter.split_text(doc.page_content)
-        heading = ""
+        headings = []
         if "h1" in doc.metadata:
             heading = doc.metadata["h1"]
+            headings.append(heading)
         if "h2" in doc.metadata:
             heading = doc.metadata["h2"]
+            headings.append(heading)
         if "h3" in doc.metadata:
             heading = doc.metadata["h3"]
+            headings.append(heading)
         if "h4" in doc.metadata:
             heading = doc.metadata["h4"]
+            headings.append(heading)
         res.append({
-            "heading":heading,
+            "headings":headings,
             "chunks":chunks,
         })
     with open("data.json", "w", encoding="utf-8") as f:

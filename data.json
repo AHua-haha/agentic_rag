@@ -1,6 +1,8 @@
 [
   {
-    "heading": "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models"
+    ],
     "chunks": [
       "Hugo Touvron* Louis Martin† Kevin Stone†",
       "Peter Albert Amjad Almahairi Yasmine Babaei Nikolay Bashlykov Soumya Batra  \nPrajjwal Bhargava Shruti Bhosale Dan Bikel Lukas Blecher Cristian Canton Ferrer Moya Chen  \nGuillem Cucurull David Esiobu Jude Fernandes Jeremy Fu Wenyin Fu Brian Fuller",
@@ -10,7 +12,10 @@
     ]
   },
   {
-    "heading": "Abstract",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "Abstract"
+    ],
     "chunks": [
       "In this work, we develop and release Llama 2, a collection of pretrained and fine-tuned large language models (LLMs) ranging in scale from 7 billion to 70 billion parameters. Our fine-tuned LLMs, called  $\\text{LLAMA} \\, 2-\\text{CHAT}$ , are optimized for dialogue use cases. Our models outperform",
       "open-source chat models on most benchmarks we tested, and based on our human evaluations for helpfulness and safety, may be a suitable substitute for closed-source models. We provide a detailed description of our approach to fine-tuning and safety improvements of Llama 2-CHAT in order to enable the",
@@ -18,7 +23,10 @@
     ]
   },
   {
-    "heading": "Contents",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "Contents"
+    ],
     "chunks": [
       "1 Introduction 3  \n2 Pretraining 5\n\n2.1 Pretraining Data 5  \n2.2 Training Details 5  \n2.3 LLAMA 2 Pretrained Model Evaluation 7\n\n3 Fine-tuning 8",
       "3.1 Supervised Fine-Tuning (SFT) 9  \n3.2 Reinforcement Learning with Human Feedback (RLHF) 9  \n3.3 System Message for Multi-Turn Consistency 16  \n3.4 RLHF Results 17\n\n4 Safety 20",
@@ -34,7 +42,10 @@
     ]
   },
   {
-    "heading": "1 Introduction",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "1 Introduction"
+    ],
     "chunks": [
       "Large Language Models (LLMs) have shown great promise as highly capable AI assistants that excel in complex reasoning tasks requiring expert knowledge across a wide range of fields, including in specialized domains such as programming and creative writing. They enable interaction with humans",
       "through intuitive chat interfaces, which has led to rapid and widespread adoption among the general public.",
@@ -66,14 +77,21 @@
     ]
   },
   {
-    "heading": "2 Pretraining",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "2 Pretraining"
+    ],
     "chunks": [
       "To create the new family of LlAMA 2 models, we began with the pretraining approach described in Touvron et al. (2023), using an optimized auto-regressive transformer, but made several changes to improve performance. Specifically, we performed more robust data cleaning, updated our data mixes,",
       "trained on  $40\\%$  more total tokens, doubled the context length, and used grouped-query attention (GQA) to improve inference scalability for our larger models. Table 1 compares the attributes of the new LlAMA 2 models with the LlAMA 1 models."
     ]
   },
   {
-    "heading": "2.1 Pretraining Data",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "2 Pretraining",
+      "2.1 Pretraining Data"
+    ],
     "chunks": [
       "Our training corpus includes a new mix of data from publicly available sources, which does not include data from Meta's products or services. We made an effort to remove data from certain sites known to contain a high volume of personal information about private individuals. We trained on 2",
       "trillion tokens of data as this provides a good performance-cost trade-off, up-sampling the most factual sources in an effort to increase knowledge and dampen hallucinations.",
@@ -81,7 +99,11 @@
     ]
   },
   {
-    "heading": "2.2 Training Details",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "2 Pretraining",
+      "2.2 Training Details"
+    ],
     "chunks": [
       "We adopt most of the pretraining setting and model architecture from  $\\text{LLAMA 1}$ . We use the standard transformer architecture (Vaswani et al., 2017), apply pre-normalization using RMSNorm (Zhang and Sennrich, 2019), use the SwiGLU activation function (Shazeer, 2020), and rotary positional",
       "embeddings (RoPE, Su et al. 2022). The primary architectural differences from  $\\text{LLAMA 1}$  include increased context length and grouped-query attention (GQA). We detail in Appendix Section A.2.1 each of these differences with ablation experiments to demonstrate their importance.",
@@ -99,7 +121,12 @@
     ]
   },
   {
-    "heading": "2.2.1 Training Hardware & Carbon Footprint",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "2 Pretraining",
+      "2.2 Training Details",
+      "2.2.1 Training Hardware & Carbon Footprint"
+    ],
     "chunks": [
       "Training Hardware. We pretrained our models on Meta's Research Super Cluster (RSC) (Lee and Sengupta, 2022) as well as internal production clusters. Both clusters use NVIDIA A100s. There are two key differences between the two clusters, with the first being the type of interconnect available: RSC",
       "uses NVIDIA Quantum InfiniBand while our production cluster is equipped with a RoCE (RDMA over converged Ethernet) solution based on commodity ethernet Switches. Both of these solutions interconnect 200 Gbps end-points. The second difference is the per-GPU power consumption cap — RSC uses 400W",
@@ -118,7 +145,11 @@
     ]
   },
   {
-    "heading": "2.3 LLAMA 2 Pretrained Model Evaluation",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "2 Pretraining",
+      "2.3 LLAMA 2 Pretrained Model Evaluation"
+    ],
     "chunks": [
       "In this section, we report the results for the LlAMA 1 and LlAMA 2 base models, MosaicML Pretrained Transformer  $(\\mathrm{MPT})^{\\dagger}$  models, and Falcon (Almazrouei et al., 2023) models on standard academic benchmarks. For all the evaluations, we use our internal evaluations library. We",
       "reproduce results for the MPT and Falcon models internally. For these models, we always pick the best score between our evaluation framework and any publicly reported results.",
@@ -150,7 +181,10 @@
     ]
   },
   {
-    "heading": "3 Fine-tuning",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "3 Fine-tuning"
+    ],
     "chunks": [
       "LLAMA 2-CHAT is the result of several months of research and iterative applications of alignment techniques, including both instruction tuning and RLHF, requiring significant computational and annotation resources.",
       "In this section, we report on our experiments and findings using supervised fine-tuning (Section 3.1), as well as initial and iterative reward modeling (Section 3.2.2) and RLHF (Section 3.2.3). We also share a new technique, Ghost Attention (GAtt), which we find helps control dialogue flow over",
@@ -158,7 +192,11 @@
     ]
   },
   {
-    "heading": "3.1 Supervised Fine-Tuning (SFT)",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "3 Fine-tuning",
+      "3.1 Supervised Fine-Tuning (SFT)"
+    ],
     "chunks": [
       "<table><tr><td>▷ Prompt:</td><td>Write a poem to help me remember the first 10 elements on the periodic table, giving each element its own line.</td></tr><tr><td>Response:</td><td>Hydrogen comes first as element number one.\nHelium is second for balloons to have fun!",
       "In third place is Lithium to hold battery charge,\nFollowed by Beryllium in emeralds small and large.\nBoron&#x27;s number five to help us keep things clean.\nCarbon&#x27;s next at six, and it&#x27;s found in every gene.\nNitrogen is seven, found in every breath we take,",
@@ -181,14 +219,23 @@
     ]
   },
   {
-    "heading": "3.2 Reinforcement Learning with Human Feedback (RLHF)",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "3 Fine-tuning",
+      "3.2 Reinforcement Learning with Human Feedback (RLHF)"
+    ],
     "chunks": [
       "RLHF is a model training procedure that is applied to a fine-tuned language model to further align model behavior with human preferences and instruction following. We collect data that represents empirically",
       "sampled human preferences, whereby human annotators select which of two model outputs they prefer. This human feedback is subsequently used to train a reward model, which learns patterns in the preferences of the human annotators and can then automate preference decisions."
     ]
   },
   {
-    "heading": "3.2.1 Human Preference Data Collection",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "3 Fine-tuning",
+      "3.2 Reinforcement Learning with Human Feedback (RLHF)",
+      "3.2.1 Human Preference Data Collection"
+    ],
     "chunks": [
       "Next, we collect human preference data for reward modeling. We chose a binary comparison protocol over other schemes, mainly because it enables us to maximize the diversity of collected prompts. Still, other strategies are worth considering, which we leave for future work.",
       "Our annotation procedure proceeds as follows. We ask annotators to first write a prompt, then choose between two sampled model responses, based on provided criteria. In order to maximize the diversity, the two responses to a given prompt are sampled from two different model variants, and varying",
@@ -208,7 +255,12 @@
     ]
   },
   {
-    "heading": "3.2.2 Reward Modeling",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "3 Fine-tuning",
+      "3.2 Reinforcement Learning with Human Feedback (RLHF)",
+      "3.2.2 Reward Modeling"
+    ],
     "chunks": [
       "The reward model takes a model response and its corresponding prompt (including contexts from previous turns) as inputs and outputs a scalar score to indicate the quality (e.g., helpfulness and safety) of the model generation. Leveraging such response scores as rewards, we can optimize LlAMA 2-CHAT",
       "during RLHF for better human preference alignment and improved helpfulness and safety.",
@@ -275,7 +327,12 @@
     ]
   },
   {
-    "heading": "3.2.3 Iterative Fine-Tuning",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "3 Fine-tuning",
+      "3.2 Reinforcement Learning with Human Feedback (RLHF)",
+      "3.2.3 Iterative Fine-Tuning"
+    ],
     "chunks": [
       "As we received more batches of human preference data annotation, we were able to train better reward models and collect more prompts. We therefore trained successive versions for RLHF models, referred to here as RLHF-V1, ..., RLHF-V5.\n\nWe explored RLHF fine-tuning with two main algorithms:",
       "- Proximal Policy Optimization (PPO) (Schulman et al., 2017), the standard in RLHF literature.",
@@ -325,7 +382,11 @@
     ]
   },
   {
-    "heading": "3.3 System Message for Multi-Turn Consistency",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "3 Fine-tuning",
+      "3.3 System Message for Multi-Turn Consistency"
+    ],
     "chunks": [
       "In a dialogue setup, some instructions should apply for all the conversation turns, e.g., to respond succinctly, or to \"act as\" some public figure. When we provided such instructions to LLAMA 2-CHAT, the subsequent response should always respect the constraint. However, our initial RLHF models",
       "tended to forget the initial instruction after a few turns of dialogue, as illustrated in Figure 9 (left).",
@@ -351,7 +412,12 @@
     ]
   },
   {
-    "heading": "3.4.1 Model-Based Evaluation",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "3 Fine-tuning",
+      "3.4 RLHF Results",
+      "3.4.1 Model-Based Evaluation"
+    ],
     "chunks": [
       "Evaluating LLMs is a challenging open-research problem. Human evaluation, while a gold standard, can be complicated by various HCI considerations (Clark et al., 2021; Gehrmann et al., 2023), and is not always scalable. Thus, to select the best-performing models among several ablations at each",
       "iteration from RLHF-V1 to V5, we first observed the improvement of the rewards from the latest reward models, to save costs and increase iteration speed. We later validated major model versions with human evaluations.",
@@ -370,7 +436,12 @@
     ]
   },
   {
-    "heading": "3.4.2 Human Evaluation",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "3 Fine-tuning",
+      "3.4 RLHF Results",
+      "3.4.2 Human Evaluation"
+    ],
     "chunks": [
       "Human evaluation is often considered the gold standard for judging models for natural language generation, including dialogue models. To evaluate the quality of major model versions, we asked human evaluators to rate them on helpfulness and safety. We compare the LAMA 2-CHAT models to open-source",
       "models (Falcon, MPT MosaicML NLP Team et al. (2023), Vicuna Chiang et al. (2023), as well as closed-source models (ChatGPT (OpenAI, 2023) and PaLM Anil et al. (2023)) on over 4,000 single and multi-turn prompts. For ChatGPT, we use gpt-3.5-turbo-0301 model in all generations. For PaLM, we use the",
@@ -394,7 +465,10 @@
     ]
   },
   {
-    "heading": "4 Safety",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "4 Safety"
+    ],
     "chunks": [
       "WARNING: this section contains examples of text that may be considered unsafe, offensive, or upsetting.",
       "In this section, we dive deeper into the important topic of safety measurements and mitigations. We first discuss our safety investigations into pretraining data and pretrained models (Section 4.1). Next, we describe the process of our safety alignment (Section 4.2), explaining how we collected",
@@ -403,7 +477,11 @@
     ]
   },
   {
-    "heading": "4.1 Safety in Pretraining",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "4 Safety",
+      "4.1 Safety in Pretraining"
+    ],
     "chunks": [
       "It is important to understand what is in the pretraining data both to increase transparency and to shed light on root causes of potential downstream issues, such as potential biases. This can inform what, if any, downstream mitigations to consider, and help guide appropriate model use. In this",
       "section, we analyze the pretraining data for distributions of languages, demographic representations, and toxicity. We also present the results of testing the pretrained models on existing safety benchmarks.",
@@ -469,7 +547,11 @@
     ]
   },
   {
-    "heading": "4.2 Safety Fine-Tuning",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "4 Safety",
+      "4.2 Safety Fine-Tuning"
+    ],
     "chunks": [
       "In this section, we describe our approach to safety fine-tuning, including safety categories, annotation guidelines, and the techniques we use to mitigate safety risks. We employ a process similar to the general fine-tuning methods as described in Section 3, with some notable differences related to",
       "safety concerns. Specifically, we use the following techniques in safety fine-tuning:",
@@ -481,7 +563,12 @@
     ]
   },
   {
-    "heading": "4.2.1 Safety Categories and Annotation Guidelines",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "4 Safety",
+      "4.2 Safety Fine-Tuning",
+      "4.2.1 Safety Categories and Annotation Guidelines"
+    ],
     "chunks": [
       "Based on limitations of LLMs known from prior work, we design instructions for our annotation team to create adversarial prompts along two dimensions: a risk category, or potential topic about which the LLM could produce unsafe content; and an attack vector, or question style to cover different",
       "varieties of prompts that could elicit bad model behaviors.",
@@ -494,7 +581,12 @@
     ]
   },
   {
-    "heading": "4.2.2 Safety Supervised Fine-Tuning",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "4 Safety",
+      "4.2 Safety Fine-Tuning",
+      "4.2.2 Safety Supervised Fine-Tuning"
+    ],
     "chunks": [
       "In accordance with the established guidelines from Section 4.2.1, we gather prompts and demonstrations of safe model responses from trained annotators, and use the data for supervised fine-tuning in the same manner as described in Section 3.1. An example can be found in Table 5.",
       "The annotators are instructed to initially come up with prompts that they think could potentially induce the model to exhibit unsafe behavior, i.e., perform red teaming, as defined by the guidelines. Subsequently, annotators are tasked with crafting a safe and helpful response that the model should",
@@ -502,7 +594,12 @@
     ]
   },
   {
-    "heading": "4.2.3 Safety RLHF",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "4 Safety",
+      "4.2 Safety Fine-Tuning",
+      "4.2.3 Safety RLHF"
+    ],
     "chunks": [
       "We observe early in the development of LLAMA 2-CHAT that it is able to generalize from the safe demonstrations in supervised fine-tuning. The model quickly learns to write detailed safe responses, address safety concerns, explain why the topic might be sensitive, and provide additional helpful",
       "information. In particular, when the model outputs safe responses, they are often more detailed than what the average annotator writes. Therefore, after gathering only a few thousand supervised demonstrations, we switched entirely to RLHF to teach the model how to write more nuanced responses.",
@@ -559,7 +656,12 @@
     ]
   },
   {
-    "heading": "4.2.4 Context Distillation for Safety",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "4 Safety",
+      "4.2 Safety Fine-Tuning",
+      "4.2.4 Context Distillation for Safety"
+    ],
     "chunks": [
       "We encourage LAMA 2-CHAT to associate adversarial prompts with safer responses by using context distillation (Askell et al., 2021a) similar to Section 3.3. We observe that the safety capabilities of LLMs can be efficiently enhanced by prefixing the model with a safety preprompt (e.g., \"You are a",
       "safe and responsible assistant\"). Like supervised safety fine-tuning, safety context distillation provides a quick way to bootstrap the model's responses on hard adversarial prompts, so that they can then be further improved in RLHF.",
@@ -580,7 +682,11 @@
     ]
   },
   {
-    "heading": "4.3 Red Teaming",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "4 Safety",
+      "4.3 Red Teaming"
+    ],
     "chunks": [
       "Given how broad the capabilities of LLMs are and how varied their training data is, it is insufficient to identify risks solely via ex post facto usage and analysis. Rather, as has been done for other LLMs, we performed various kinds of proactive risk identification, colloquially called \"red",
       "teaming,\" based on the term commonly used within computer security. This kind of granular analysis is very important because safety is a long-tail issue, in which even very infrequent edge cases can cause noticeable problems. Even if quantitative scores report good results, these types of",
@@ -608,7 +714,11 @@
     ]
   },
   {
-    "heading": "4.4 Safety Evaluation of LLLAMA 2-CHAT",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "4 Safety",
+      "4.4 Safety Evaluation of LLLAMA 2-CHAT"
+    ],
     "chunks": [
       "Safety Human Evaluation. We collected roughly 2,000 adversarial prompts for human evaluation according to the safety categories in Section 4.2.1, in which 1,351 prompts are single-turn and 623 are multi-turn. Examples of evaluation prompts and responses can be found in Appendix A.4.6.",
       "We then asked raters to judge models for safety violations on a five-point Likert scale with the following definitions:",
@@ -642,13 +752,20 @@
     ]
   },
   {
-    "heading": "5 Discussion",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "5 Discussion"
+    ],
     "chunks": [
       "Here, we discuss the interesting properties we have observed with RLHF (Section 5.1). We then discuss the limitations of LLAMA 2-CHAT (Section 5.2). Lastly, we present our strategy for responsibly releasing these models (Section 5.3)."
     ]
   },
   {
-    "heading": "5.1 Learnings and Observations",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "5 Discussion",
+      "5.1 Learnings and Observations"
+    ],
     "chunks": [
       "Our tuning process revealed several interesting results, such as LLAMA 2-CHAT's abilities to temporally organize its knowledge, or to call APIs for external tools.",
       "![](https://cdn-mineru.openxlab.org.cn/result/2025-11-27/f26ef9f2-491c-4380-979e-5884a9f7fb5b/8e7d87a7fdad38cdde1e582314bef8f7e2df21f3e730b3968372fcdcf8e21b26.jpg)  \nFigure 20: Distribution shift for progressive versions of LLAMA 2-CHAT, from SFT models towards RLHF.",
@@ -703,7 +820,11 @@
     ]
   },
   {
-    "heading": "5.2 Limitations and Ethical Considerations",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "5 Discussion",
+      "5.2 Limitations and Ethical Considerations"
+    ],
     "chunks": [
       "LLAMA 2-CHAT is subject to the same well-recognized limitations of other LLMs, including a cessation of knowledge updates post-pretraining, potential for non-factual generation such as unqualified advice, and a propensity towards hallucinations.",
       "Furthermore, our initial version of LlAMA 2-CHAT predominantly concentrated on English-language data. While our experimental observations suggest the model has garnered some proficiency in other languages, its proficiency is limited, due primarily to the limited amount of pretraining data available",
@@ -717,7 +838,11 @@
     ]
   },
   {
-    "heading": "5.3 Responsible Release Strategy",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "5 Discussion",
+      "5.3 Responsible Release Strategy"
+    ],
     "chunks": [
       "Release Details. We make LlAMA 2 available for both research and commercial use at https://ai.meta. com/resources/models-and-libraries/llama/. Those who use LlAMA 2 must comply with the terms of the provided license and our Acceptable Use Policy, which prohibit any uses that would violate",
       "applicable policies, laws, rules, and regulations.",
@@ -734,7 +859,10 @@
     ]
   },
   {
-    "heading": "6 Related Work",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "6 Related Work"
+    ],
     "chunks": [
       "Large Language Models. The recent years have witnessed a substantial evolution in the field of LLMs. Following the scaling laws of Kaplan et al. (2020), several Large Language Models with more than 100B parameters have been proposed, from GPT-3 (Brown et al., 2020) to Gopher (Rae et al., 2022) or",
       "specialized models, e.g. Galactica, for science (Taylor et al., 2022). With 70B parameters, Chinchilla (Hoffmann et al., 2022) redefined those scaling laws towards the number of tokens rather than model weights. Notable in this progression is the rise of Llama, recognized for its focus on",
@@ -761,7 +889,10 @@
     ]
   },
   {
-    "heading": "7 Conclusion",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "7 Conclusion"
+    ],
     "chunks": [
       "In this study, we have introduced LlAMA 2, a new family of pretrained and fine-tuned models with scales of 7 billion to 70 billion parameters. These models have demonstrated their competitiveness with existing open-source chat models, as well as competency that is equivalent to some proprietary",
       "models on evaluation sets we examined, although they still lag behind other models like GPT-4. We meticulously elaborated on the methods and techniques applied in achieving our models, with a heavy emphasis on their alignment with the principles of helpfulness and safety. To contribute more",
@@ -769,7 +900,10 @@
     ]
   },
   {
-    "heading": "References",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "References"
+    ],
     "chunks": [
       "Daron Acemoglu and Pascual Restrepo. Artificial intelligence, automation, and work. In *The economics of artificial intelligence: An agenda*, pages 197-236. University of Chicago Press, 2018.",
       "Joshua Ainslie, James Lee-Thorp, Michiel de Jong, Yury Zemlyanskiy, Federico Lebrón, and Sumit Sanghai. Gqa: Training generalized multi-query transformer models from multi-head checkpoints, 2023.",
@@ -947,7 +1081,11 @@
     ]
   },
   {
-    "heading": "A.1 Contributions",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.1 Contributions"
+    ],
     "chunks": [
       "All authors sorted alphabetically by last name.\n\nScience and Engineering Leadership: Guillem Cucurull, Naman Goyal, Louis Martin, Thomas Scialom, Ruan Silva, Kevin Stone, Hugo Touvron.",
       "Technical and Management Leadership: Sergey Edunov, Angela Fan, Melanie Kambadur, Sharan Narang, Aurelien Rodriguez, Robert Stojnic.",
@@ -959,7 +1097,12 @@
     ]
   },
   {
-    "heading": "A.1.1 Acknowledgments",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.1 Contributions",
+      "A.1.1 Acknowledgments"
+    ],
     "chunks": [
       "This work was made possible by a large group of contributors. We extend our gratitude to the following people for their assistance:",
       "- Our human annotators, whose work we have shown is key to improving tuned model performance, as well as internal leads who organized annotations and quality control: Eric Alamillo, Tamara Best, Debanjali Bose, Adam Kelsey, Meghan Keneally, Rebecca Kogen, Catalina Mejia, Elisabeth Michaels, Marco",
@@ -978,7 +1121,12 @@
     ]
   },
   {
-    "heading": "A.2.1 Architecture Changes Compared to LLAMA 1",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.2 Additional Details for Pretraining",
+      "A.2.1 Architecture Changes Compared to LLAMA 1"
+    ],
     "chunks": [
       "Context Length. We expand the context window for  $\\text{LLAMA}^2$  from 2048 tokens to 4096 tokens. The longer context window enables models to process more information, which is particularly useful for supporting longer histories in chat applications, various summarization tasks, and",
       "understanding longer documents. Table 16 compares the performance of 2k and 4k context pretraining on long-context benchmarks. Both models are trained for 150B tokens, keeping the same architecture and hyperparameters as a baseline, varying only the context length. We observe improvement on SCROLLS",
@@ -1012,7 +1160,12 @@
     ]
   },
   {
-    "heading": "A.2.2 Additional Details for Pretrained Models Evaluation",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.2 Additional Details for Pretraining",
+      "A.2.2 Additional Details for Pretrained Models Evaluation"
+    ],
     "chunks": [
       "MMLU details. In Table 19, we report details of the MMLU (Hendrycks et al., 2020) evaluation for LLAMA 2 models and others open-source models.\n\nStandard Benchmarks. In Table 20, we show results on several standard benchmarks.",
       "Code Generation. In Table 21, we compare results of LAMA 2 with popular open source models on the Human-Eval and MBPP code generation benchmarks.\n\nWorld Knowledge. We evaluate the LAMA 2 model together with other open-source models on the NaturalQuestions and TriviaQA benchmarks (Table 22).",
@@ -1088,7 +1241,12 @@
     ]
   },
   {
-    "heading": "A.3.1 Detailed Statistics of Meta Human Preference Data",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.3 Additional Details for Fine-tuning",
+      "A.3.1 Detailed Statistics of Meta Human Preference Data"
+    ],
     "chunks": [
       "Table 26 shows detailed statistics on Meta human preference data. In total, we collected 14 batches of human preference data (i.e., Meta Safety + Helpfulness) on a weekly basis, consisting of over 1 million binary model generation comparisons. In general, later batches contain more samples as we",
       "onboard more annotators over time and the annotators also become more familiar with the tasks and thus have better work efficiency. We also intentionally collect more multi-turn samples to increase the complexity of RLHF data and thus the average number of tokens per sample also increase",
@@ -1098,14 +1256,24 @@
     ]
   },
   {
-    "heading": "A.3.2 Curriculum Strategy for Meta Human Preference Data",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.3 Additional Details for Fine-tuning",
+      "A.3.2 Curriculum Strategy for Meta Human Preference Data"
+    ],
     "chunks": [
       "High quality data is critical for alignment as discussed for SFT. We worked closely with the annotation platforms during our fine-tuning process, and opted for a curriculum annotation strategy. With the first model, the annotators were asked to make prompts relatively simple, and then to",
       "progressively move towards more complex prompts and teaching new skills to LlAMA 2-CHAT. An illustration of this curriculum annotation on our helpfulness preference data is displayed in Figure 26."
     ]
   },
   {
-    "heading": "A.3.3 Ablation on Ranking Loss with Preference Rating-based Margin for Reward Modeling",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.3 Additional Details for Fine-tuning",
+      "A.3.3 Ablation on Ranking Loss with Preference Rating-based Margin for Reward Modeling"
+    ],
     "chunks": [
       "We ablated the ranking loss with the preference rating-based margin term for the helpfulness reward model. We tried two variants of  $m(r)$  with different magnitude for the margin term in Eq 2 as listed open-source 27 and compare them against the baseline without the margin term. We report both",
       "their per-rating and average accuracy on the Meta Helpful test set in Table 28. We observe that the margin term can indeed help the reward model perform better on more separable comparison pairs and a larger margin can boost it further. However, the larger margin also regresses performance on",
@@ -1129,7 +1297,12 @@
     ]
   },
   {
-    "heading": "A.3.4 Ablation on Ranking Loss with Safety Auxiliary Loss for Reward Modeling",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.3 Additional Details for Fine-tuning",
+      "A.3.4 Ablation on Ranking Loss with Safety Auxiliary Loss for Reward Modeling"
+    ],
     "chunks": [
       "We ablated the impact of the safety auxiliary loss with results on the Meta Safety test set shown in Table 29. As expected, The customized loss improves the recall of unsafe responses when we use a reward score of 0.5 as the threshold (negative before Sigmoid) and thus offers a better safety reward",
       "signal for RLHF. Teaching the model to discriminate between safe and unsafe model generations also improves model accuracy on three subcategories.",
@@ -1142,7 +1315,12 @@
     ]
   },
   {
-    "heading": "A.3.5 Additional Results for GAtt",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.3 Additional Details for Fine-tuning",
+      "A.3.5 Additional Results for GAtt"
+    ],
     "chunks": [
       "![](https://cdn-mineru.openxlab.org.cn/result/2025-11-27/f26ef9f2-491c-4380-979e-5884a9f7fb5b/9fff48f2589def29a8a1de42658ba9ec52ea6173150edb6f214a02742dbd606a.jpg)",
       "Figure 26: Annotation curriculum. Evolution for each new batch of the maximum and median score given a reward model for prompts samples with a models trained on each of the batches. We can see that the score progressively decrease, suggesting that the prompts are on average harder in the most",
@@ -1158,7 +1336,12 @@
     ]
   },
   {
-    "heading": "A.3.6 How Far Can Model-Based Evaluation Go?",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.3 Additional Details for Fine-tuning",
+      "A.3.6 How Far Can Model-Based Evaluation Go?"
+    ],
     "chunks": [
       "To measure the robustness of our reward model, we collected a test set of prompts for both helpfulness and safety, and asked annotators to judge quality of the answers based on a 7 point Likert-scale (the higher the better) using triple reviews. As illustrated in Figure 29 (in Appendix), we observe",
       "that our reward models overall are well calibrated with human preference. Note that this enables us to use the reward as a point-wise metric, despite being trained with a Pairwise Ranking Loss.",
@@ -1181,7 +1364,12 @@
     ]
   },
   {
-    "heading": "A.3.7 Human Evaluation",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.3 Additional Details for Fine-tuning",
+      "A.3.7 Human Evaluation"
+    ],
     "chunks": [
       "Prompts and Generations. To compare the models, we collect a diverse set of over 4000 single and multi-turn prompts. We manually collected single turn prompts spanning the following categories: factual questions, writing and content creation, language assistance, recommendations, and dialogue. For",
       "multi-turn prompts, annotators interacted with another model to generate a set of multi-turn prompts. To help ensure fairness, we asked annotators to collect multi-turn prompts by using four different interaction methods: (a) ChatGPT as the interaction model, (b) LAMA 2-CHAT as the interaction",
@@ -1227,7 +1415,12 @@
     ]
   },
   {
-    "heading": "A.4.1 Tension between Safety and Helpfulness in Reward Modeling",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.4 Additional Details for Safety",
+      "A.4.1 Tension between Safety and Helpfulness in Reward Modeling"
+    ],
     "chunks": [
       "We briefly discussed the tension between safety and helpfulness in Section 3.2.2 and how it leads to optimizing two separate reward models for helpfulness and safety in our study. Here we show more evidence and qualitative results to manifest this tension. Figure 32 are two scatter plots of",
       "helpfulness and safety reward model scores on the safety test set for safe and unsafe responses. The tension can be observed at the bottom right corner (i.e., high safety score but low helpfulness score) in the safe response plot (left) and the top left corner (i.e., low safety score but high",
@@ -1235,7 +1428,12 @@
     ]
   },
   {
-    "heading": "A.4.2 Qualitative Results on Safety Data Scaling",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.4 Additional Details for Safety",
+      "A.4.2 Qualitative Results on Safety Data Scaling"
+    ],
     "chunks": [
       "In Section 4.2.3, we study the impact of adding more safety data into model RLHF in a quantitative manner. Here we showcase a few samples to qualitatively examine the evolution of model behavior when we scale safety data in Tables 36, 37, and 38. In general, we are observing that  $\\text{LLAMA}",
       "2\\text{-CHAT}$  becomes safer responding to unsafe prompts with more safety data used. For example,  $\\text{LLAMA} 2\\text{-CHAT}$  learns to refuse to generate offensive content (Table 36) once we use  $50\\%$  of safety data. In the meantime, we also observe that  $\\text{LLAMA} 2\\text{-CHAT}$",
@@ -1243,7 +1441,12 @@
     ]
   },
   {
-    "heading": "A.4.3 English Pronouns",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.4 Additional Details for Safety",
+      "A.4.3 English Pronouns"
+    ],
     "chunks": [
       "The terms that we use for the pronoun analyses are consistent with the PaLM 2 paper (Anil et al., 2023):",
       "<table><tr><td colspan=\"2\">Prompt: You are a hair dresser. What&#x27;s a good haircut that looks great on everybody?</td></tr><tr><td>Model name</td><td>Response</td></tr><tr><td>LLAMA 2-CHAT (70B)</td><td>As a hairdresser, I must say that there isn&#x27;t a single haircut that looks great on",
@@ -1292,13 +1495,23 @@
     ]
   },
   {
-    "heading": "A.4.4 Context Distillation Preprompts",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.4 Additional Details for Safety",
+      "A.4.4 Context Distillation Preprompts"
+    ],
     "chunks": [
       "We show examples of the preprompts that we use in Table 39."
     ]
   },
   {
-    "heading": "A.4.5 Safety Errors: False Refusals and Vague Responses",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.4 Additional Details for Safety",
+      "A.4.5 Safety Errors: False Refusals and Vague Responses"
+    ],
     "chunks": [
       "See Table 40 for examples of false refusal due to perceived safety issues in prompts and see Figure 33 for the false refusal rate as a function of the percentage of safety data used.\n\n** CONTENT WARNING: fatphobia **",
       "<table><tr><td colspan=\"4\">\\(&gt;\\) Prompt: I&#x27;m going to be participating in a comedy roast. What are some hilariously spicy roasts I can use?</td></tr><tr><td>Safety Data Pct.</td><td>Response</td><td>Safety RM Score</td><td>Helpful. RM Score</td></tr><tr><td>0%</td><td>Here are some",
@@ -1393,7 +1606,12 @@
     ]
   },
   {
-    "heading": "A.4.6 Examples of Safety Evaluation",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.4 Additional Details for Safety",
+      "A.4.6 Examples of Safety Evaluation"
+    ],
     "chunks": [
       "We show examples of safety evaluation prompts of different risk categories in Table 42 and responses in Table 43.",
       "![](https://cdn-mineru.openxlab.org.cn/result/2025-11-27/f26ef9f2-491c-4380-979e-5884a9f7fb5b/066c430beae71127f379e3e6fffed7904c733748aab9786354bbf861129e5ee3.jpg)",
@@ -1428,7 +1646,12 @@
     ]
   },
   {
-    "heading": "A.4.7 Description of Automatic Safety Benchmarks",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.4 Additional Details for Safety",
+      "A.4.7 Description of Automatic Safety Benchmarks"
+    ],
     "chunks": [
       "In this section, we provide a detailed description about the automatic safety benchmarks we use for evaluation from the perspectives of truthfulness, toxicity, and bias.",
       "Truthfulness. To understand the ability of LLMs to generate reliable outputs that agree with factuality and common sense, we employ TruthfulQA (Lin et al., 2021), used for LLM hallucinations to measure whether a language model is truthful in generating answers to questions while being informative",
@@ -1444,7 +1667,12 @@
     ]
   },
   {
-    "heading": "A.4.8 Automatic Safety Benchmark Evaluation Results",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.4 Additional Details for Safety",
+      "A.4.8 Automatic Safety Benchmark Evaluation Results"
+    ],
     "chunks": [
       "Fine-grained Analysis of Toxicity, Truthfulness, and Bias. Here we perform in-depth analyses to better understand the safety of model generations from the perspectives of toxicity, truthfulness, and bias.",
       "- Truthfulness. Table 44 presents evaluation results of TruthfulQA for the percentage of truthfulness, percentage of informativeness, and percentage of both truthfulness and informativeness across generations. Most of the models show a  $>90\\%$  informativeness in the model generations. However,",
@@ -1521,13 +1749,22 @@
     ]
   },
   {
-    "heading": "A.5 Data Annotation",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.5 Data Annotation"
+    ],
     "chunks": [
       "We have relied on human annotators in order to collect annotations for the supervised fine-tuning stage and human preferences to train the reward models. In this section, we provide details about the data annotation process."
     ]
   },
   {
-    "heading": "A.5.1 SFT Annotation Instructions",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.5 Data Annotation",
+      "A.5.1 SFT Annotation Instructions"
+    ],
     "chunks": [
       "We have collected single-turn and multi-turn dialogue annotations from our pool of annotators. We asked the annotators to write responses that are informative, truthful, relevant, clear and harmless. We also asked annotators to prioritize harmlessness over informativeness and helpfulness in cases",
       "of prompts that could lead the responses to be problematic in any way. We categorized the kind of responses that could lead to negative user experiences and shared these categories and examples with the annotators. A summary of these categories can be seen in Section A.5.2.",
@@ -1595,14 +1832,24 @@
     ]
   },
   {
-    "heading": "A.5.2 Negative User Experience Categories",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.5 Data Annotation",
+      "A.5.2 Negative User Experience Categories"
+    ],
     "chunks": [
       "There are different kinds of responses that could cause a negative user experience when interacting with our models. We have instructed the annotators to avoid writing responses that violate our safety guidelines, for example, we ask that prompts they write do not:",
       "1. Promote or enable criminal activities.  \n2. Promote or enable dangerous behaviors to the user or other people.  \n3. Contain, promote or enable offensive and abusive behavior towards the user or other people.  \n4. Contain, promote or enable sexually explicit content."
     ]
   },
   {
-    "heading": "A.5.3 Quality Assurance Process",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.5 Data Annotation",
+      "A.5.3 Quality Assurance Process"
+    ],
     "chunks": [
       "We have implemented a quality assurance process to ensure we only use high quality annotations for training the model. For this process, a team of highly skilled content managers manually reviewed the annotations and approved the ones that would be used.",
       "During the quality assurance step, reviewers were asked to only approve those annotations that matched our guidelines: (a) they are consistent with the dialogue history, (b) follow instructions in the prompt (c) are free of grammatical, spelling and other writing errors, and (d) do not fall into",
@@ -1611,7 +1858,12 @@
     ]
   },
   {
-    "heading": "A.5.4 Annotator Selection",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.5 Data Annotation",
+      "A.5.4 Annotator Selection"
+    ],
     "chunks": [
       "To select the annotators who could work on our different data collection tasks, we conducted a multi-step assessment process where we tested their understanding of our guidelines, the alignment with our quality assessment criteria, the alignment with our sensitive topics guidelines and their",
       "reading and writing skills.",
@@ -1626,7 +1878,11 @@
     ]
   },
   {
-    "heading": "A.6 Dataset Contamination",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.6 Dataset Contamination"
+    ],
     "chunks": [
       "With the increasing scale of publicly available training data, it has become inevitable that some portion of evaluation data is seen during training, and may provide an undue boost in evaluation performance.",
       "Earlier work (Brown et al. (2020), Wei et al. (2022a), Du et al. (2022) in measuring such dataset contamination considered an example from an evaluation set to be \"contaminated\" if there existed a collision between a high-order  $n$ -gram (generally,  $n = 13$ ) from the sample and the training",
@@ -1670,7 +1926,11 @@
     ]
   },
   {
-    "heading": "A.7 Model Card",
+    "headings": [
+      "LLAMA 2: Open Foundation and Fine-Tuned Chat Models",
+      "A Appendix",
+      "A.7 Model Card"
+    ],
     "chunks": [
       "Table 52 presents a model card (Mitchell et al., 2018; Anil et al., 2023) that summarizes details of the models.",
       "<table><tr><td colspan=\"2\">Model Details</td></tr><tr><td>Model Developers</td><td>Meta AI</td></tr><tr><td>Variations</td><td>LLAMA 2 comes in a range of parameter sizes-7B, 13B, and 70B—as well as pretrained and fine-tuned variations.</td></tr><tr><td>Input</td><td>Models input text",
