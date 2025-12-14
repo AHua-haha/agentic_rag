@@ -140,17 +140,29 @@ func (mgr *RetrievalCtxMgr) metadata(id int) string {
 func (mgr *RetrievalCtxMgr) query(heading string) []ActionRes {
 	filter := fmt.Sprintf(`heading == "%s"`, heading)
 	var matches []ActionRes
-	mgr.db.Query(filter, []string{"text"}, func(result *milvusclient.ResultSet) {
-		textCol, ok := result.GetColumn("text").(*column.ColumnVarChar)
-		if !ok {
+	err := mgr.db.Query(filter, []string{"text", "headings", "heading", "sub_section"}, func(result *milvusclient.ResultSet) {
+		textCol, ok1 := result.GetColumn("text").(*column.ColumnVarChar)
+		headingsCol, ok2 := result.GetColumn("headings").(*column.ColumnVarCharArray)
+		headingCol, ok3 := result.GetColumn("heading").(*column.ColumnVarChar)
+		subSectionCol, ok4 := result.GetColumn("sub_section").(*column.ColumnVarCharArray)
+		if !ok1 || !ok2 || !ok3 || !ok4 {
+			log.Error().Msg("get column as concrete data type failed")
 			return
 		}
-		for _, text := range textCol.Data() {
+		size := textCol.Len()
+		for i := range size {
 			matches = append(matches, &Summary{
-				text: text,
+				text:       textCol.Data()[i],
+				headings:   headingsCol.Data()[i],
+				heading:    headingCol.Data()[i],
+				subSection: subSectionCol.Data()[i],
 			})
 		}
 	})
+	if err != nil {
+		log.Error().Err(err).Msg("execute db query failed")
+		return nil
+	}
 	return matches
 }
 func (mgr *RetrievalCtxMgr) searchSummary(text string) []ActionRes {
@@ -158,21 +170,30 @@ func (mgr *RetrievalCtxMgr) searchSummary(text string) []ActionRes {
 	var matches []ActionRes
 	err := mgr.db.Search(text, 5, filter, []string{"text"}, func(results []milvusclient.ResultSet) {
 		if len(results) != 1 {
+			log.Error().Msg("rresult size is not 1")
 			return
 		}
 		res := &results[0]
-		textCol, ok := res.GetColumn("text").(*column.ColumnVarChar)
-		if !ok {
+		textCol, ok1 := res.GetColumn("text").(*column.ColumnVarChar)
+		headingsCol, ok2 := res.GetColumn("headings").(*column.ColumnVarCharArray)
+		headingCol, ok3 := res.GetColumn("heading").(*column.ColumnVarChar)
+		subSectionCol, ok4 := res.GetColumn("sub_section").(*column.ColumnVarCharArray)
+		if !ok1 || !ok2 || !ok3 || !ok4 {
+			log.Error().Msg("get column as concrete data type failed")
 			return
 		}
-		for _, text := range textCol.Data() {
-			matches = append(matches, &DocChunk{
-				text: text,
+		size := textCol.Len()
+		for i := range size {
+			matches = append(matches, &Summary{
+				text:       textCol.Data()[i],
+				headings:   headingsCol.Data()[i],
+				heading:    headingCol.Data()[i],
+				subSection: subSectionCol.Data()[i],
 			})
 		}
 	})
 	if err != nil {
-		log.Error().Err(err).Msg("")
+		log.Error().Err(err).Msg("execute db Search failed")
 		return nil
 	}
 	return matches
@@ -364,6 +385,7 @@ Search section summary by its heading.
 			Argument: fmt.Sprintf(""),
 			Result:   mgr.query(args.Heading),
 		}
+		mgr.Actions = append(mgr.Actions, action)
 		return "", nil
 	}
 	return model.ToolDef{FunctionDefinition: def, Handler: handler}
@@ -399,6 +421,7 @@ The vector database stores the section summary infomation, you can use vector se
 			Argument: fmt.Sprintf(""),
 			Result:   mgr.searchSummary(args.Query),
 		}
+		mgr.Actions = append(mgr.Actions, action)
 		return "", nil
 	}
 	return model.ToolDef{FunctionDefinition: def, Handler: handler}
@@ -443,6 +466,7 @@ Usage:
 			Argument: fmt.Sprintf(""),
 			Result:   mgr.searchText(args.Query, args.Heading),
 		}
+		mgr.Actions = append(mgr.Actions, action)
 		return "", nil
 	}
 	return model.ToolDef{FunctionDefinition: def, Handler: handler}

@@ -41,7 +41,10 @@ func TestRetrieval_search(t *testing.T) {
 		}
 		// ["# LLAMA 2: Open Foundation and Fine-Tuned Chat Models","## 4 Safety","### 4.2 Safety Fine-Tuning","#### 4.2.2 Safety Supervised Fine-Tuning"]
 		fmt.Printf("hello \n")
-		mgr.search("what does this document mainly talk about?", "")
+		res := mgr.searchSummary("what does this document mainly talk about?")
+		for _, r := range res {
+			fmt.Printf("%v\n", r)
+		}
 	})
 }
 
