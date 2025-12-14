@@ -16,59 +16,42 @@ import (
 
 type Action struct {
 	Argument string
-	Result   []ActionRes
+	Result   []ChunkItem
 }
 
 func (a *Action) toString(builder *strings.Builder) {
 	builder.WriteString(fmt.Sprintf("Action: %s\n", a.Argument))
 	builder.WriteString("Results:\n")
 	for _, res := range a.Result {
-		builder.WriteString(fmt.Sprintf("=== Result %d ===\n", res.Id()))
+		builder.WriteString(fmt.Sprintf("=== Result %d ===\n", res.id))
 		builder.WriteString(res.Content())
 		builder.WriteString("\n")
 	}
 }
 
-type ActionRes interface {
-	Id() int
-	Content() string
-	Metadata() string
+type ChunkItem struct {
+	id   int
+	text string
+	meta []byte
 }
 
-type DocChunk struct {
-	id       int
-	text     string
-	headings []string
-	Seq      int
+func (item *ChunkItem) Content() string {
+	var metaData map[string]any
+	err := json.Unmarshal(item.meta, &metaData)
+	if err != nil {
+		log.Error().Err(err).Msg("parsing chunk metadata failed")
+		return item.text
+	}
+	summary, _ := metaData["summary"].(bool)
+	if summary {
+		heading, _ := metaData["heading"].(string)
+		return fmt.Sprintf("Section ** %s ** summary:\n%s", heading, item.text)
+	} else {
+		return item.text
+	}
 }
-
-func (c *DocChunk) Id() int {
-	return 0
-}
-func (c *DocChunk) Content() string {
-	return ""
-}
-func (c *DocChunk) Metadata() string {
-	return ""
-}
-
-type Summary struct {
-	id         int
-	text       string
-	headings   []string
-	heading    string
-	subSection []string
-}
-
-func (c *Summary) Id() int {
-	return 0
-}
-
-func (s *Summary) Content() string {
-	return ""
-}
-func (c *Summary) Metadata() string {
-	return ""
+func (item *ChunkItem) Metadata() string {
+	return fmt.Sprintf("Metadata for result %d:\n%s\n", item.id, item.meta)
 }
 
 type Thought struct {
@@ -77,14 +60,14 @@ type Thought struct {
 }
 type Observation struct {
 	Statement string
-	Ref       []ActionRes
+	Ref       []ChunkItem
 }
 
 type RetrievalCtxMgr struct {
 	db *utils.DBmgr
 
 	CurrentThought *Thought
-	Results        []ActionRes
+	Results        []*ChunkItem
 	Actions        []Action
 	Thoughts       []Thought
 	Observations   []Observation
@@ -112,12 +95,12 @@ func (mgr *RetrievalCtxMgr) finishThought() string {
 }
 func (mgr *RetrievalCtxMgr) observe(statement string, refs []int) string {
 	size := len(mgr.Results)
-	res := []ActionRes{}
+	res := []ChunkItem{}
 	for _, id := range refs {
 		if id < 0 || id >= size {
 			return ""
 		}
-		res = append(res, mgr.Results[id])
+		res = append(res, *mgr.Results[id])
 	}
 	ob := Observation{
 		Statement: statement,
@@ -127,35 +110,24 @@ func (mgr *RetrievalCtxMgr) observe(statement string, refs []int) string {
 	return ""
 }
 
-func (mgr *RetrievalCtxMgr) metadata(id int) string {
-	if id < 0 || id >= len(mgr.Results) {
-		return fmt.Sprintf("id %d out of bound", id)
-	}
-	var builder strings.Builder
-	fmt.Fprintf(&builder, "Metadat for result %d:\n", id)
-	actionRes := mgr.Results[id]
-	builder.WriteString(actionRes.Metadata())
-	return builder.String()
-}
-func (mgr *RetrievalCtxMgr) query(heading string) []ActionRes {
+func (mgr *RetrievalCtxMgr) query(heading string) []ChunkItem {
 	filter := fmt.Sprintf(`heading == "%s"`, heading)
-	var matches []ActionRes
-	err := mgr.db.Query(filter, []string{"text", "headings", "heading", "sub_section"}, func(result *milvusclient.ResultSet) {
+	var matches []ChunkItem
+	err := mgr.db.Query(filter, []string{"text", "$meta"}, func(result *milvusclient.ResultSet) {
 		textCol, ok1 := result.GetColumn("text").(*column.ColumnVarChar)
-		headingsCol, ok2 := result.GetColumn("headings").(*column.ColumnVarCharArray)
-		headingCol, ok3 := result.GetColumn("heading").(*column.ColumnVarChar)
-		subSectionCol, ok4 := result.GetColumn("sub_section").(*column.ColumnVarCharArray)
-		if !ok1 || !ok2 || !ok3 || !ok4 {
-			log.Error().Msg("get column as concrete data type failed")
+		metaCol, ok2 := result.GetColumn("$meta").(*column.ColumnJSONBytes)
+		if !ok1 || !ok2 {
+			log.Error().Any("text", ok1).Any("$meta", ok2).
+				Msg("get column as concrete data type failed")
 			return
 		}
+		textData := textCol.Data()
+		metaData := metaCol.Data()
 		size := textCol.Len()
 		for i := range size {
-			matches = append(matches, &Summary{
-				text:       textCol.Data()[i],
-				headings:   headingsCol.Data()[i],
-				heading:    headingCol.Data()[i],
-				subSection: subSectionCol.Data()[i],
+			matches = append(matches, ChunkItem{
+				text: textData[i],
+				meta: metaData[i],
 			})
 		}
 	})
@@ -165,30 +137,29 @@ func (mgr *RetrievalCtxMgr) query(heading string) []ActionRes {
 	}
 	return matches
 }
-func (mgr *RetrievalCtxMgr) searchSummary(text string) []ActionRes {
+func (mgr *RetrievalCtxMgr) searchSummary(text string) []ChunkItem {
 	filter := "summary == true"
-	var matches []ActionRes
-	err := mgr.db.Search(text, 5, filter, []string{"text"}, func(results []milvusclient.ResultSet) {
+	var matches []ChunkItem
+	err := mgr.db.Search(text, 5, filter, []string{"text", "$meta"}, func(results []milvusclient.ResultSet) {
 		if len(results) != 1 {
 			log.Error().Msg("rresult size is not 1")
 			return
 		}
 		res := &results[0]
 		textCol, ok1 := res.GetColumn("text").(*column.ColumnVarChar)
-		headingsCol, ok2 := res.GetColumn("headings").(*column.ColumnVarCharArray)
-		headingCol, ok3 := res.GetColumn("heading").(*column.ColumnVarChar)
-		subSectionCol, ok4 := res.GetColumn("sub_section").(*column.ColumnVarCharArray)
-		if !ok1 || !ok2 || !ok3 || !ok4 {
-			log.Error().Msg("get column as concrete data type failed")
+		metaCol, ok2 := res.GetColumn("$meta").(*column.ColumnJSONBytes)
+		if !ok1 || !ok2 {
+			log.Error().Any("text", ok1).Any("$meta", ok2).
+				Msg("get column as concrete data type failed")
 			return
 		}
+		textData := textCol.Data()
+		metaData := metaCol.Data()
 		size := textCol.Len()
 		for i := range size {
-			matches = append(matches, &Summary{
-				text:       textCol.Data()[i],
-				headings:   headingsCol.Data()[i],
-				heading:    headingCol.Data()[i],
-				subSection: subSectionCol.Data()[i],
+			matches = append(matches, ChunkItem{
+				text: textData[i],
+				meta: metaData[i],
 			})
 		}
 	})
@@ -199,27 +170,35 @@ func (mgr *RetrievalCtxMgr) searchSummary(text string) []ActionRes {
 	return matches
 }
 
-func (mgr *RetrievalCtxMgr) searchText(text string, heading string) []ActionRes {
+func (mgr *RetrievalCtxMgr) searchText(text string, heading string) []ChunkItem {
 	filter := fmt.Sprintf(`ARRAY_CONTAINS(headings, "%s")`, heading)
 
-	var matches []ActionRes
-	err := mgr.db.Search(text, 5, filter, []string{"text"}, func(results []milvusclient.ResultSet) {
+	var matches []ChunkItem
+	err := mgr.db.Search(text, 5, filter, []string{"text", "$meta"}, func(results []milvusclient.ResultSet) {
 		if len(results) != 1 {
+			log.Error().Msg("rresult size is not 1")
 			return
 		}
 		res := &results[0]
-		textCol, ok := res.GetColumn("text").(*column.ColumnVarChar)
-		if !ok {
+		textCol, ok1 := res.GetColumn("text").(*column.ColumnVarChar)
+		metaCol, ok2 := res.GetColumn("$meta").(*column.ColumnJSONBytes)
+		if !ok1 || !ok2 {
+			log.Error().Any("text", ok1).Any("$meta", ok2).
+				Msg("get column as concrete data type failed")
 			return
 		}
-		for _, text := range textCol.Data() {
-			matches = append(matches, &DocChunk{
-				text: text,
+		textData := textCol.Data()
+		metaData := metaCol.Data()
+		size := textCol.Len()
+		for i := range size {
+			matches = append(matches, ChunkItem{
+				text: textData[i],
+				meta: metaData[i],
 			})
 		}
 	})
 	if err != nil {
-		log.Error().Err(err).Msg("")
+		log.Error().Err(err).Msg("execute db Search text failed")
 		return nil
 	}
 	return matches
@@ -350,7 +329,10 @@ For a section summary, the metadata include the parent section heading and sub s
 		if err != nil {
 			return "", err
 		}
-		return mgr.metadata(args.Id), nil
+		if args.Id < 0 || args.Id >= len(mgr.Results) {
+			return fmt.Sprintf("id %d out of bound", args.Id), nil
+		}
+		return mgr.Results[args.Id].Metadata(), nil
 	}
 	return model.ToolDef{FunctionDefinition: def, Handler: handler}
 }
@@ -524,6 +506,15 @@ You have access to the following tools:
 - vector_search_summary: using vector search to find relevant content from the seciton summary.
 - vector_search_text: using vector search to find relevant document chunks within some scope.
 `
+
+	for i := range mgr.Actions {
+		for j := range mgr.Actions[i].Result {
+			mgr.Results = append(mgr.Results, &mgr.Actions[i].Result[j])
+		}
+	}
+	for i, res := range mgr.Results {
+		res.id = i
+	}
 	builder.WriteString(instruct)
 	if len(mgr.Thoughts) != 0 {
 		builder.WriteString("# ** Previous Thoughts **\n\n")

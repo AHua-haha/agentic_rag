@@ -43,7 +43,7 @@ func TestRetrieval_search(t *testing.T) {
 		fmt.Printf("hello \n")
 		res := mgr.searchSummary("what does this document mainly talk about?")
 		for _, r := range res {
-			fmt.Printf("%v\n", r)
+			fmt.Printf("%s\n", r.Metadata())
 		}
 	})
 }
