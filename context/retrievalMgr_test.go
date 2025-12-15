@@ -155,3 +155,31 @@ func TestDelete(t *testing.T) {
 		}
 	})
 }
+
+func TestSysprompt(t *testing.T) {
+	t.Run("test delete rows", func(t *testing.T) {
+		db, err := utils.NewDBMgr()
+		if err != nil {
+			log.Error().Err(err).Msg("create db mgr failed")
+			return
+		}
+		defer db.Close()
+		mgr := RetrievalCtxMgr{
+			db: db,
+		}
+		mgr.CurrentThought = &Thought{
+			Content: "do the next things",
+		}
+		res := mgr.searchText("what does this document mainly talk about?", "## Contents")
+		mgr.Actions = append(mgr.Actions, Action{
+			Argument: fmt.Sprintf("vector search doc chunks with query: %s", "no query"),
+			Result:   res,
+		})
+		summaryRes := mgr.searchSummary("what does this document mainly talk about?")
+		mgr.Actions = append(mgr.Actions, Action{
+			Argument: fmt.Sprintf("vector search summary with query: %s", "no query"),
+			Result:   summaryRes,
+		})
+		fmt.Printf("%s\n", mgr.genSysPrompt())
+	})
+}

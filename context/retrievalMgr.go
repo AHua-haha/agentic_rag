@@ -21,12 +21,17 @@ type Action struct {
 
 func (a *Action) toString(builder *strings.Builder) {
 	builder.WriteString(fmt.Sprintf("Action: %s\n", a.Argument))
-	builder.WriteString("Results:\n")
-	for _, res := range a.Result {
-		builder.WriteString(fmt.Sprintf("=== Result %d ===\n", res.id))
-		builder.WriteString(res.Content())
-		builder.WriteString("\n")
+	if len(a.Result) == 0 {
+		builder.WriteString("NO Results\n")
+	} else {
+		builder.WriteString("Results:\n")
+		for _, res := range a.Result {
+			builder.WriteString(fmt.Sprintf("=== Result %d ===\n", res.id))
+			builder.WriteString(res.Content())
+			builder.WriteString("\n")
+		}
 	}
+	builder.WriteString("\n")
 }
 
 type ChunkItem struct {
@@ -401,11 +406,11 @@ The vector database stores the section summary infomation, you can use vector se
 			return "", err
 		}
 		action := Action{
-			Argument: fmt.Sprintf(""),
+			Argument: fmt.Sprintf("vector search summary with query: %s", args.Query),
 			Result:   mgr.searchSummary(args.Query),
 		}
 		mgr.Actions = append(mgr.Actions, action)
-		return "", nil
+		return "run vector search success", nil
 	}
 	return model.ToolDef{FunctionDefinition: def, Handler: handler}
 }
@@ -446,11 +451,11 @@ Usage:
 			return "", err
 		}
 		action := Action{
-			Argument: fmt.Sprintf(""),
+			Argument: fmt.Sprintf("vector search doc chunks with query: %s", args.Query),
 			Result:   mgr.searchText(args.Query, args.Heading),
 		}
 		mgr.Actions = append(mgr.Actions, action)
-		return "", nil
+		return "run vector search success", nil
 	}
 	return model.ToolDef{FunctionDefinition: def, Handler: handler}
 }
@@ -506,6 +511,7 @@ You have access to the following tools:
 - get_summary_by_heading: search section summary by its heading
 - vector_search_summary: using vector search to find relevant content from the seciton summary.
 - vector_search_text: using vector search to find relevant document chunks within some scope.
+
 `
 
 	for i := range mgr.Actions {
@@ -517,6 +523,7 @@ You have access to the following tools:
 		res.id = i
 	}
 	builder.WriteString(instruct)
+	builder.WriteString("### CONTEXT ###\n")
 	if len(mgr.Thoughts) != 0 {
 		builder.WriteString("# ** Previous Thoughts **\n\n")
 		for _, t := range mgr.Thoughts {
