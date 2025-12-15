@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"llm_dev/model"
 	"llm_dev/utils"
+	"strconv"
 	"strings"
 
 	"github.com/milvus-io/milvus/client/v2/column"
@@ -69,10 +70,12 @@ type Observation struct {
 }
 
 type RetrievalCtxMgr struct {
-	db *utils.DBmgr
+	DB *utils.DBmgr
+
+	UserQuery string
 
 	CurrentThought *Thought
-	Results        []*ChunkItem
+	Results        []ChunkItem
 	Actions        []Action
 	Thoughts       []Thought
 	Observations   []Observation
@@ -93,10 +96,10 @@ func (mgr *RetrievalCtxMgr) finishThought() string {
 		return "There is no current thought, can not finish empty thought"
 	}
 	mgr.CurrentThought.Status = "Completed"
-	mgr.Results = nil
-	mgr.Actions = nil
 	mgr.Thoughts = append(mgr.Thoughts, *mgr.CurrentThought)
-	return fmt.Sprintf("Finish current thought: %s", mgr.CurrentThought.Content)
+	mgr.CurrentThought = nil
+	mgr.Actions = nil
+	return "Finish current thought success"
 }
 func (mgr *RetrievalCtxMgr) observe(statement string, refs []int) string {
 	size := len(mgr.Results)
@@ -105,20 +108,20 @@ func (mgr *RetrievalCtxMgr) observe(statement string, refs []int) string {
 		if id < 0 || id >= size {
 			return ""
 		}
-		res = append(res, *mgr.Results[id])
+		res = append(res, mgr.Results[id])
 	}
 	ob := Observation{
 		Statement: statement,
 		Ref:       res,
 	}
 	mgr.Observations = append(mgr.Observations, ob)
-	return ""
+	return "record observation success"
 }
 
 func (mgr *RetrievalCtxMgr) query(heading string) []ChunkItem {
 	filter := fmt.Sprintf(`heading == "%s"`, heading)
 	var matches []ChunkItem
-	err := mgr.db.Query(filter, []string{"text", "$meta"}, func(result *milvusclient.ResultSet) {
+	err := mgr.DB.Query(filter, []string{"text", "$meta"}, func(result *milvusclient.ResultSet) {
 		textCol, ok1 := result.GetColumn("text").(*column.ColumnVarChar)
 		metaCol, ok2 := result.GetColumn("$meta").(*column.ColumnJSONBytes)
 		if !ok1 || !ok2 {
@@ -145,7 +148,7 @@ func (mgr *RetrievalCtxMgr) query(heading string) []ChunkItem {
 func (mgr *RetrievalCtxMgr) searchSummary(text string) []ChunkItem {
 	filter := "summary == true"
 	var matches []ChunkItem
-	err := mgr.db.Search(text, 5, filter, []string{"text", "$meta"}, func(results []milvusclient.ResultSet) {
+	err := mgr.DB.Search(text, 5, filter, []string{"text", "$meta"}, func(results []milvusclient.ResultSet) {
 		if len(results) != 1 {
 			log.Error().Msg("rresult size is not 1")
 			return
@@ -180,7 +183,7 @@ func (mgr *RetrievalCtxMgr) searchText(text string, heading string) []ChunkItem 
 	// filter := "summary IS NULL"
 
 	var matches []ChunkItem
-	err := mgr.db.Search(text, 5, filter, []string{"text", "$meta"}, func(results []milvusclient.ResultSet) {
+	err := mgr.DB.Search(text, 5, filter, []string{"text", "$meta"}, func(results []milvusclient.ResultSet) {
 		if len(results) != 1 {
 			log.Error().Msg("rresult size is not 1")
 			return
@@ -370,11 +373,20 @@ Search section summary by its heading.
 			return "", err
 		}
 		action := Action{
-			Argument: fmt.Sprintf(""),
+			Argument: fmt.Sprintf("get section summary, heading: %s", args.Heading),
 			Result:   mgr.query(args.Heading),
 		}
+		size := len(mgr.Results)
+		for i := range action.Result {
+			action.Result[i].id = size + i
+		}
+		mgr.Results = append(mgr.Results, action.Result...)
 		mgr.Actions = append(mgr.Actions, action)
-		return "", nil
+		if len(action.Result) == 0 {
+			return "can not find summary that matches heading", nil
+		} else {
+			return "find summary matches the heading", nil
+		}
 	}
 	return model.ToolDef{FunctionDefinition: def, Handler: handler}
 }
@@ -409,6 +421,11 @@ The vector database stores the section summary infomation, you can use vector se
 			Argument: fmt.Sprintf("vector search summary with query: %s", args.Query),
 			Result:   mgr.searchSummary(args.Query),
 		}
+		size := len(mgr.Results)
+		for i := range action.Result {
+			action.Result[i].id = size + i
+		}
+		mgr.Results = append(mgr.Results, action.Result...)
 		mgr.Actions = append(mgr.Actions, action)
 		return "run vector search success", nil
 	}
@@ -454,16 +471,34 @@ Usage:
 			Argument: fmt.Sprintf("vector search doc chunks with query: %s", args.Query),
 			Result:   mgr.searchText(args.Query, args.Heading),
 		}
+		size := len(mgr.Results)
+		for i := range action.Result {
+			action.Result[i].id = size + i
+		}
+		mgr.Results = append(mgr.Results, action.Result...)
 		mgr.Actions = append(mgr.Actions, action)
 		return "run vector search success", nil
 	}
 	return model.ToolDef{FunctionDefinition: def, Handler: handler}
 }
+func (mgr *RetrievalCtxMgr) Tools() []model.ToolDef {
+	res := []model.ToolDef{
+		mgr.thoughtTool(),
+		mgr.finishThoughtTool(),
+		mgr.observeTool(),
+		mgr.metadataTool(),
+		mgr.queryTool(),
+		mgr.searchSummaryTool(),
+		mgr.searchTextTool(),
+	}
+	return res
+}
 
-func (mgr *RetrievalCtxMgr) genSysPrompt() string {
+func (mgr *RetrievalCtxMgr) GenSysPrompt() string {
 	var builder strings.Builder
 	instruct := `
-You are an agentic RAG system using the ReAct (Reason + Act) paradigm.
+You are an expert RAG assistant using the ReAct (Reason + Act) paradigm.
+You job is to use tools to search and retrieval relevant context from database to answer user's query.
 
 ### WORKFLOW ###
 
@@ -512,18 +547,17 @@ You have access to the following tools:
 - vector_search_summary: using vector search to find relevant content from the seciton summary.
 - vector_search_text: using vector search to find relevant document chunks within some scope.
 
-`
+NOW read the following context and answer the user's query.
 
-	for i := range mgr.Actions {
-		for j := range mgr.Actions[i].Result {
-			mgr.Results = append(mgr.Results, &mgr.Actions[i].Result[j])
-		}
-	}
-	for i, res := range mgr.Results {
-		res.id = i
-	}
+`
 	builder.WriteString(instruct)
-	builder.WriteString("### CONTEXT ###\n")
+	builder.WriteString("### CONTEXT ###\n\n")
+
+	builder.WriteString("<UserQuery>\n")
+	builder.WriteString(mgr.UserQuery)
+	builder.WriteString("\n")
+	builder.WriteString("</UserQuery>\n\n")
+
 	if len(mgr.Thoughts) != 0 {
 		builder.WriteString("# ** Previous Thoughts **\n\n")
 		for _, t := range mgr.Thoughts {
@@ -534,9 +568,13 @@ You have access to the following tools:
 	if len(mgr.Observations) != 0 {
 		builder.WriteString("# ** Observations **\n\n")
 		for _, o := range mgr.Observations {
-			refs := strings.Trim(fmt.Sprint(o.Ref), "[]")
-			fmt.Fprintf(&builder, "- %s (Refs: %s)", o.Statement, refs)
+			var refs []string
+			for i := range o.Ref {
+				refs = append(refs, strconv.Itoa(o.Ref[i].id))
+			}
+			fmt.Fprintf(&builder, "- %s (Refs: %s)\n", o.Statement, strings.Join(refs, ","))
 		}
+		builder.WriteString("\n")
 	}
 	builder.WriteString("# ** In progress Thought and Actions **\n\n")
 	if mgr.CurrentThought == nil {

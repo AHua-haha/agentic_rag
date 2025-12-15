@@ -186,6 +186,11 @@ func (agent *BaseAgent) handleResponse(stream *openai.ChatCompletionStream, ctx 
 	file, _ := os.OpenFile("context.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	resp := aggregate.res()
 	file.WriteString(fmt.Sprintf("RESP:\n%s\n\n", resp.Content))
+	for i := range resp.ToolCalls {
+		if resp.ToolCalls[i].Function.Arguments == "" {
+			resp.ToolCalls[i].Function.Arguments = "{}"
+		}
+	}
 	ctx.addMessage(resp)
 	for _, toolCall := range resp.ToolCalls {
 		msg, err := ctx.toolCall(toolCall)

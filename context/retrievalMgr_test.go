@@ -22,7 +22,7 @@ func TestRetrieval_query(t *testing.T) {
 		}
 		defer db.Close()
 		mgr := RetrievalCtxMgr{
-			db: db,
+			DB: db,
 		}
 		// ["# LLAMA 2: Open Foundation and Fine-Tuned Chat Models","## 4 Safety","### 4.2 Safety Fine-Tuning","#### 4.2.2 Safety Supervised Fine-Tuning"]
 		mgr.query("# LLAMA 2: Open Foundation and Fine-Tuned Chat Models")
@@ -38,7 +38,7 @@ func TestRetrieval_search(t *testing.T) {
 		}
 		defer db.Close()
 		mgr := RetrievalCtxMgr{
-			db: db,
+			DB: db,
 		}
 		// ["# LLAMA 2: Open Foundation and Fine-Tuned Chat Models","## 4 Safety","### 4.2 Safety Fine-Tuning","#### 4.2.2 Safety Supervised Fine-Tuning"]
 		fmt.Printf("hello \n")
@@ -165,7 +165,7 @@ func TestSysprompt(t *testing.T) {
 		}
 		defer db.Close()
 		mgr := RetrievalCtxMgr{
-			db: db,
+			DB: db,
 		}
 		mgr.CurrentThought = &Thought{
 			Content: "do the next things",
@@ -180,6 +180,6 @@ func TestSysprompt(t *testing.T) {
 			Argument: fmt.Sprintf("vector search summary with query: %s", "no query"),
 			Result:   summaryRes,
 		})
-		fmt.Printf("%s\n", mgr.genSysPrompt())
+		fmt.Printf("%s\n", mgr.GenSysPrompt())
 	})
 }
