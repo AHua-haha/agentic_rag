@@ -221,6 +221,7 @@ func (db *DBmgr) Search(text string, topK int, filter string, fields []string, h
 		topK,
 		[]entity.Vector{entity.FloatVector(embedding[0])},
 	).WithOutputFields(fields...).
+		WithFilter(filter).
 		WithANNSField("text_dense"))
 	if err != nil {
 		return err

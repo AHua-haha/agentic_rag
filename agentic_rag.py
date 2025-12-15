@@ -29,16 +29,16 @@ def chunk(file:str):
         chunks = splitter.split_text(doc.page_content)
         headings = []
         if "h1" in doc.metadata:
-            heading = doc.metadata["h1"]
+            heading = "# " + doc.metadata["h1"]
             headings.append(heading)
         if "h2" in doc.metadata:
-            heading = doc.metadata["h2"]
+            heading = "## " + doc.metadata["h2"]
             headings.append(heading)
         if "h3" in doc.metadata:
-            heading = doc.metadata["h3"]
+            heading = "### " + doc.metadata["h3"]
             headings.append(heading)
         if "h4" in doc.metadata:
-            heading = doc.metadata["h4"]
+            heading = "#### " + doc.metadata["h4"]
             headings.append(heading)
         res.append({
             "headings":headings,

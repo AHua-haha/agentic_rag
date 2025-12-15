@@ -171,7 +171,8 @@ func (mgr *RetrievalCtxMgr) searchSummary(text string) []ChunkItem {
 }
 
 func (mgr *RetrievalCtxMgr) searchText(text string, heading string) []ChunkItem {
-	filter := fmt.Sprintf(`ARRAY_CONTAINS(headings, "%s")`, heading)
+	filter := fmt.Sprintf(`ARRAY_CONTAINS(headings, "%s") AND summary IS NULL`, heading)
+	// filter := "summary IS NULL"
 
 	var matches []ChunkItem
 	err := mgr.db.Search(text, 5, filter, []string{"text", "$meta"}, func(results []milvusclient.ResultSet) {

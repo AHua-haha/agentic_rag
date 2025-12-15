@@ -42,7 +42,7 @@ func TestRetrieval_search(t *testing.T) {
 		}
 		// ["# LLAMA 2: Open Foundation and Fine-Tuned Chat Models","## 4 Safety","### 4.2 Safety Fine-Tuning","#### 4.2.2 Safety Supervised Fine-Tuning"]
 		fmt.Printf("hello \n")
-		res := mgr.searchSummary("what does this document mainly talk about?")
+		res := mgr.searchText("what does this document mainly talk about?", "## Contents")
 		for _, r := range res {
 			fmt.Printf("%s\n", r.Metadata())
 		}
@@ -135,6 +135,22 @@ func TestInsertDocChunk(t *testing.T) {
 		err = db.Insert(cols)
 		if err != nil {
 			log.Error().Err(err).Msg("insert into db error")
+			return
+		}
+	})
+}
+
+func TestDelete(t *testing.T) {
+	t.Run("test delete rows", func(t *testing.T) {
+		db, err := utils.NewDBMgr()
+		if err != nil {
+			log.Error().Err(err).Msg("create db mgr failed")
+			return
+		}
+		defer db.Close()
+		_, err = db.Client.Delete(context.TODO(), milvusclient.NewDeleteOption("agentic_rag").WithExpr("summary IS NULL"))
+		if err != nil {
+			log.Error().Err(err).Msg("create db mgr failed")
 			return
 		}
 	})
